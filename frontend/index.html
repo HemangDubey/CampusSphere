@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CampusSphere — Your Smart Campus Companion</title>
+  <meta name="description" content="CampusSphere brings your timetable, campus services, events, interactive labs and an AI Assistant into one smart campus companion.">
+  <meta name="theme-color" content="#fdf8f3">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+<body id="top">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="nav" data-nav></header>
+
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero__top">
+          <div>
+            <span class="label label--accent reveal">Est. 2026 / Smart Campus Living</span>
+            <h1 class="hero__title reveal">Campus<br><em>companion</em></h1>
+          </div>
+          <div class="hero__meta reveal">
+            <span>Today on campus</span>
+            <strong>Lectures &bull; Labs &bull; Fest Night</strong>
+          </div>
+        </div>
+        <div class="hero__grid">
+          <div class="hero__copy">
+            <p class="hero__lead reveal">We make campus life feel effortless. <strong>One smart companion</strong> for your classes, services, events and labs, where every answer is a tap away.</p>
+            <a class="arrow-cta reveal" href="/dashboard">Explore your campus
+              <span class="arrow-cta__ring"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            </a>
+          </div>
+          <div class="hero__visual reveal">
+            <a class="media-card" href="/events" aria-label="Featured moment: Convocation Day">
+              <img class="hero-img" src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1600&q=80" alt="Graduates tossing their caps into a sunset sky" fetchpriority="high">
+              <span class="media-card__caption">
+                <span>Featured moment</span>
+                <strong>Convocation Day</strong>
+              </span>
+            </a>
+            <a class="badge" href="#modules" aria-label="Explore CampusSphere modules">
+              <span class="badge__num">01</span>
+              <span class="badge__text">Smart campus companion</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modules / Services -->
+    <section class="section section--alt" id="modules">
+      <div class="container">
+        <div class="section__head">
+          <div class="reveal">
+            <span class="label label--accent">What's inside</span>
+            <h2 class="display">Every <em>corner</em><br>of campus</h2>
+          </div>
+          <p class="reveal">Six connected modules designed around a student's real day, from the first lecture to the last lab slot.</p>
+        </div>
+        <div class="services" data-services></div>
+      </div>
+    </section>
+
+    <!-- Staggered campus spaces -->
+    <section class="section" id="spaces">
+      <div class="container">
+        <div class="section__head">
+          <div class="reveal">
+            <span class="label label--accent">Campus spaces</span>
+            <h2 class="display">Life <em>beyond</em><br>the lecture</h2>
+          </div>
+          <p class="reveal">Explore the places CampusSphere connects you to, with live availability, bookings and updates.</p>
+        </div>
+        <div class="gallery" data-gallery></div>
+      </div>
+    </section>
+
+    <!-- AI Assistant teaser -->
+    <section class="section section--alt" id="assistant">
+      <div class="container teaser">
+        <div class="teaser__copy reveal">
+          <span class="label label--teal">AI Assistant</span>
+          <h2 class="display">Just <em>ask</em></h2>
+          <p>Where is my next class? When does the library close? Is the robotics lab free at four? Type it or say it, and get an answer in seconds.</p>
+          <a class="btn-pill" href="/assistant">Meet the AI Assistant</a>
+        </div>
+        <form class="chat reveal" action="/assistant" method="get" aria-label="Ask the AI Assistant">
+          <div class="chat__head">
+            <span class="label">AI Assistant</span>
+            <span class="chip">Preview</span>
+          </div>
+          <div class="chat__msg chat__msg--me">Is the innovation lab open after 5pm today?</div>
+          <div class="chat__msg chat__msg--ai">Yes, Innovation Lab 2 is open until 8pm. Two bench slots are free at 5:30. Want me to book one?</div>
+          <div class="chat__form">
+            <input name="q" placeholder="Ask about your campus…" aria-label="Your question">
+            <a class="chat__mic" href="/assistant?mode=voice" aria-label="Ask by voice">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+            </a>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" data-footer></footer>
+  <script type="module" src="/js/main.js"></script>
+</body>
+</html>

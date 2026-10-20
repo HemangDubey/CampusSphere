@@ -1,0 +1,12 @@
+{
+  "name": "campussphere",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CampusSphere — Your Smart Campus Companion",
+  "scripts": {
+    "dev": "node backend/src/server.js",
+    "start": "node backend/src/server.js",
+    "test": "node backend/test/smoke.test.js"
+  },
+  "engines": { "node": ">=18" }
+}

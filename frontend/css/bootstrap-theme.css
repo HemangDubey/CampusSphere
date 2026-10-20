@@ -1,0 +1,166 @@
+/* ==========================================================================
+   CampusSphere x Bootstrap bridge
+   Retheme the local Bootstrap 5.3.3 build with CampusSphere tokens, so pages
+   that need Bootstrap (coursework demos, admin tables, forms, modals) still
+   look like CampusSphere and not default Bootstrap.
+
+   Only pages that need Bootstrap load it. Required order:
+     <link rel="stylesheet" href="/vendor/bootstrap-5.3.3/css/bootstrap.min.css">
+     <link rel="stylesheet" href="/css/tokens.css">
+     <link rel="stylesheet" href="/css/base.css">
+     <link rel="stylesheet" href="/css/components.css">
+     <link rel="stylesheet" href="/css/bootstrap-theme.css">
+     ... page CSS ...
+     <script src="/vendor/bootstrap-5.3.3/js/bootstrap.bundle.min.js" defer></script>
+   The landing page (index.html) never loads Bootstrap.
+   ========================================================================== */
+
+:root, [data-bs-theme='light'] {
+  --bs-body-font-family: var(--font-family-base);
+  --bs-body-color: var(--color-text-primary);
+  --bs-body-color-rgb: 38, 38, 38;
+  --bs-body-bg: var(--color-background);
+  --bs-body-bg-rgb: 253, 248, 243;
+  --bs-secondary-color: var(--color-text-secondary);
+  --bs-tertiary-color: var(--color-text-muted);
+  --bs-secondary-bg: var(--color-surface-alt);
+  --bs-tertiary-bg: var(--color-surface-alt);
+  --bs-emphasis-color: var(--color-text-primary);
+  --bs-heading-color: var(--color-text-primary);
+
+  --bs-primary: var(--color-accent-pink);
+  --bs-primary-rgb: 228, 164, 189;
+  --bs-primary-text-emphasis: var(--color-accent-pink-strong);
+  --bs-primary-bg-subtle: var(--color-accent-pink-soft);
+  --bs-primary-border-subtle: var(--color-accent-pink);
+  --bs-secondary: var(--color-accent-teal);
+  --bs-secondary-rgb: 47, 111, 115;
+  --bs-info: var(--color-accent-ocean);
+  --bs-info-rgb: 59, 110, 143;
+  --bs-success: var(--color-success);
+  --bs-success-rgb: 47, 111, 115;
+  --bs-danger: var(--color-error);
+  --bs-danger-rgb: 176, 71, 109;
+  --bs-dark: var(--color-text-primary);
+  --bs-dark-rgb: 38, 38, 38;
+  --bs-light: var(--color-surface-alt);
+  --bs-light-rgb: 245, 240, 235;
+
+  --bs-link-color: var(--color-text-primary);
+  --bs-link-color-rgb: 38, 38, 38;
+  --bs-link-hover-color: var(--color-accent-teal);
+  --bs-link-hover-color-rgb: 47, 111, 115;
+
+  --bs-border-color: var(--color-border);
+  --bs-border-color-translucent: var(--color-border);
+  --bs-border-radius: var(--radius-sm);
+  --bs-border-radius-sm: var(--radius-xs);
+  --bs-border-radius-lg: var(--radius-md);
+  --bs-border-radius-xl: var(--radius-lg);
+  --bs-border-radius-pill: var(--radius-pill);
+  --bs-box-shadow: var(--shadow-md);
+  --bs-box-shadow-sm: var(--shadow-sm);
+  --bs-box-shadow-lg: var(--shadow-lg);
+
+  --bs-focus-ring-color: var(--color-accent-teal-soft);
+  --bs-form-valid-color: var(--color-success);
+  --bs-form-valid-border-color: var(--color-success);
+  --bs-form-invalid-color: var(--color-error);
+  --bs-form-invalid-border-color: var(--color-error);
+}
+
+/* Buttons: same pill + type treatment as the landing page. */
+.btn {
+  --bs-btn-font-family: var(--font-family-base);
+  --bs-btn-font-size: var(--font-size-button);
+  --bs-btn-font-weight: var(--font-weight-extrabold);
+  --bs-btn-padding-x: 28px;
+  --bs-btn-padding-y: 12px;
+  --bs-btn-border-radius: var(--radius-pill);
+  --bs-btn-focus-box-shadow: 0 0 0 3px var(--color-accent-teal-soft);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  min-height: var(--tap-target);
+  transition: background-color var(--duration-base) var(--ease-premium), color var(--duration-base) var(--ease-premium), border-color var(--duration-base) var(--ease-premium);
+}
+.btn-sm { --bs-btn-padding-x: 18px; --bs-btn-padding-y: 8px; --bs-btn-font-size: var(--font-size-label); min-height: 36px; }
+.btn-lg { --bs-btn-padding-x: 40px; --bs-btn-padding-y: 16px; --bs-btn-font-size: 12px; }
+.btn-primary {
+  --bs-btn-color: var(--color-text-primary);
+  --bs-btn-bg: var(--color-accent-pink);
+  --bs-btn-border-color: var(--color-accent-pink);
+  --bs-btn-hover-color: var(--color-text-inverse);
+  --bs-btn-hover-bg: var(--color-text-primary);
+  --bs-btn-hover-border-color: var(--color-text-primary);
+  --bs-btn-active-color: var(--color-text-inverse);
+  --bs-btn-active-bg: var(--color-text-primary);
+  --bs-btn-active-border-color: var(--color-text-primary);
+  --bs-btn-disabled-color: var(--color-text-primary);
+  --bs-btn-disabled-bg: var(--color-accent-pink);
+  --bs-btn-disabled-border-color: var(--color-accent-pink);
+}
+.btn-secondary {
+  --bs-btn-color: var(--color-text-inverse);
+  --bs-btn-bg: var(--color-accent-teal);
+  --bs-btn-border-color: var(--color-accent-teal);
+  --bs-btn-hover-color: var(--color-text-inverse);
+  --bs-btn-hover-bg: var(--color-secondary-hover);
+  --bs-btn-hover-border-color: var(--color-secondary-hover);
+  --bs-btn-active-bg: var(--color-secondary-hover);
+  --bs-btn-active-border-color: var(--color-secondary-hover);
+  --bs-btn-disabled-bg: var(--color-accent-teal);
+  --bs-btn-disabled-border-color: var(--color-accent-teal);
+}
+.btn-outline-primary, .btn-outline-dark {
+  --bs-btn-color: var(--color-text-primary);
+  --bs-btn-border-color: var(--color-text-primary);
+  --bs-btn-hover-color: var(--color-text-inverse);
+  --bs-btn-hover-bg: var(--color-text-primary);
+  --bs-btn-hover-border-color: var(--color-text-primary);
+  --bs-btn-active-color: var(--color-text-inverse);
+  --bs-btn-active-bg: var(--color-text-primary);
+  --bs-btn-active-border-color: var(--color-text-primary);
+}
+
+/* Forms */
+.form-label { font-size: 11px; font-weight: var(--font-weight-extrabold); letter-spacing: var(--letter-spacing-wide); text-transform: uppercase; }
+.form-control, .form-select {
+  min-height: var(--tap-target);
+  background-color: var(--color-surface-alt);
+  border-color: var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 12px 18px;
+  font-size: 15px;
+}
+.form-control:focus, .form-select:focus {
+  background-color: var(--color-background);
+  border-color: var(--color-accent-teal);
+  box-shadow: 0 0 0 3px var(--color-accent-teal-soft);
+}
+.form-check-input:checked { background-color: var(--color-accent-teal); border-color: var(--color-accent-teal); }
+.form-check-input:focus { border-color: var(--color-accent-teal); box-shadow: 0 0 0 3px var(--color-accent-teal-soft); }
+.invalid-feedback, .valid-feedback { font-weight: var(--font-weight-semibold); }
+
+/* Cards, tables, modals, badges */
+.card {
+  --bs-card-bg: var(--color-surface);
+  --bs-card-border-color: var(--color-border);
+  --bs-card-border-radius: var(--radius-lg);
+  --bs-card-inner-border-radius: calc(var(--radius-lg) - 1px);
+  --bs-card-cap-bg: var(--color-surface-alt);
+  --bs-card-spacer-y: var(--spacing-md);
+  --bs-card-spacer-x: var(--spacing-md);
+}
+.card-title { font-weight: var(--font-weight-extrabold); }
+.table {
+  --bs-table-bg: transparent;
+  --bs-table-striped-bg: var(--color-surface-alt);
+  --bs-table-hover-bg: var(--color-accent-pink-soft);
+  --bs-table-border-color: var(--color-border);
+}
+.table > thead th { font-size: var(--font-size-label); font-weight: var(--font-weight-black); letter-spacing: var(--letter-spacing-wider); text-transform: uppercase; color: var(--color-text-secondary); }
+.modal { --bs-modal-bg: var(--color-background); --bs-modal-border-radius: var(--radius-lg); --bs-modal-border-color: var(--color-border); }
+.badge { --bs-badge-font-weight: var(--font-weight-bold); --bs-badge-border-radius: var(--radius-pill); letter-spacing: 0.04em; }
+.nav-link { --bs-nav-link-color: var(--color-text-primary); --bs-nav-link-hover-color: var(--color-accent-teal); }
+.nav-pills { --bs-nav-pills-link-active-bg: var(--color-accent-pink); --bs-nav-pills-link-active-color: var(--color-text-primary); }
+.page-link { --bs-pagination-color: var(--color-text-primary); --bs-pagination-active-bg: var(--color-accent-pink); --bs-pagination-active-border-color: var(--color-accent-pink); --bs-pagination-active-color: var(--color-text-primary); }

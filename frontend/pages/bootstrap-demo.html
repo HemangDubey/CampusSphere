@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bootstrap Starter | CampusSphere</title>
+  <meta name="description" content="Reference page: local Bootstrap 5.3.3 themed with CampusSphere tokens.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#fdf8f3">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Order matters: Bootstrap first, then CampusSphere layers, then the bridge. -->
+  <link rel="stylesheet" href="/vendor/bootstrap-5.3.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/bootstrap-theme.css">
+</head>
+<body id="top">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="nav" data-nav></header>
+
+  <main id="main" class="page">
+    <div class="container">
+      <header class="stack mb-5">
+        <span class="label label--accent">Coursework starter</span>
+        <h1 class="t-page-title">Bootstrap, <em>our way</em></h1>
+        <p class="t-lead" style="max-width: 48ch;">Local Bootstrap 5.3.3 grid, forms, tables and modals, themed by the CampusSphere bridge. Copy this page as the starting point for Bootstrap-based demos.</p>
+      </header>
+
+      <div class="row g-4">
+        <div class="col-lg-5">
+          <div class="card h-100">
+            <div class="card-body">
+              <h2 class="card-title h5">Event registration</h2>
+              <form class="needs-validation mt-3" novalidate data-bs-form>
+                <div class="mb-3">
+                  <label class="form-label" for="bs-name">Full name</label>
+                  <input class="form-control" id="bs-name" required>
+                  <div class="invalid-feedback">Please enter your name.</div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="bs-event">Event</label>
+                  <select class="form-select" id="bs-event" required>
+                    <option value="">Choose an event</option><option>Tech Fest 2026</option><option>Robotics Workshop</option>
+                  </select>
+                  <div class="invalid-feedback">Please choose an event.</div>
+                </div>
+                <div class="form-check mb-4">
+                  <input class="form-check-input" type="checkbox" id="bs-terms" required>
+                  <label class="form-check-label" for="bs-terms">I'll attend in person</label>
+                  <div class="invalid-feedback">Please confirm attendance.</div>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                  <button class="btn btn-primary" type="submit">Register</button>
+                  <button class="btn btn-outline-dark" type="button" data-bs-toggle="modal" data-bs-target="#bs-modal">Details</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-7">
+          <div class="card h-100">
+            <div class="card-body">
+              <h2 class="card-title h5">Upcoming events</h2>
+              <div class="table-responsive mt-3">
+                <table class="table table-hover align-middle mb-0">
+                  <thead><tr><th scope="col">Event</th><th scope="col">Date</th><th scope="col">Status</th></tr></thead>
+                  <tbody>
+                    <tr><td>Tech Fest 2026</td><td>12 Nov</td><td><span class="badge text-bg-primary">Open</span></td></tr>
+                    <tr><td>Robotics Workshop</td><td>18 Nov</td><td><span class="badge text-bg-secondary">Few seats</span></td></tr>
+                    <tr><td>Career Fair</td><td>02 Dec</td><td><span class="badge text-bg-light">Soon</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal fade" id="bs-modal" tabindex="-1" aria-labelledby="bs-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="bs-modal-title">Tech Fest 2026</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">Main auditorium, 12 November, 10:00 to 18:00. Bring your student ID.</div>
+        <div class="modal-footer"><button type="button" class="btn btn-primary" data-bs-dismiss="modal">Got it</button></div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer" data-footer></footer>
+  <script src="/vendor/bootstrap-5.3.3/js/bootstrap.bundle.min.js" defer></script>
+  <script type="module">
+    import { renderNav, renderFooter, initReveal } from '/js/layout.js';
+    renderNav('/pages/bootstrap-demo.html');
+    renderFooter();
+    initReveal();
+    // Bootstrap's documented validation pattern.
+    const form = document.querySelector('[data-bs-form]');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      form.classList.add('was-validated');
+    });
+  </script>
+</body>
+</html>
