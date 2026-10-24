@@ -1,6 +1,6 @@
 import { initShell } from '../shell.js';
 import { request } from '../api.js';
-import { $, esc, sample, pageHead, skeletons, emptyState, errorState, pager, qs, debounce, on, modal, fields, formRow, formError, showFormError, toast, notice, attempt, confirmDialog } from '../kit.js';
+import { $, esc, pageHead, skeletons, emptyState, errorState, pager, qs, debounce, on, modal, fields, formRow, formError, showFormError, toast, notice, attempt, confirmDialog } from '../kit.js';
 import { bindForm, required, minLength, maxLength, email, phoneIN, pattern, pastDate } from '../validators.js';
 
 const view = $('[data-view]');
@@ -14,7 +14,7 @@ view.innerHTML = `${pageHead({ eyebrow: 'Administration', title: 'Employee recor
 const list = $('[data-list]');
 const filters = $('[data-filters]');
 
-const card = (e) => `<article class="card" data-id="${e.id}"><div class="chips"><span class="badge badge--muted">${esc(e.employeeId)}</span>${e.isDemo ? sample : ''}</div><h3>${esc(e.name)}</h3><p class="small">${esc(e.designation)}<br>${esc(e.department)}</p><div class="row"><button class="button button--secondary button--sm" type="button" data-view>Profile</button><button class="button button--secondary button--sm" type="button" data-edit>Edit</button></div></article>`;
+const card = (e) => `<article class="card" data-id="${e.id}"><div class="chips"><span class="badge badge--muted">${esc(e.employeeId)}</span></div><h3>${esc(e.name)}</h3><p class="small">${esc(e.designation)}<br>${esc(e.department)}</p><div class="row"><button class="button button--secondary button--sm" type="button" data-view>Profile</button><button class="button button--secondary button--sm" type="button" data-edit>Edit</button></div></article>`;
 
 async function load() {
   list.innerHTML = skeletons(3);

@@ -45,7 +45,7 @@ function renderItems() {
 function showResult(kind, title, message) {
   const box = $('[data-result]');
   box.hidden = false;
-  box.innerHTML = `<h2 class="section-title">${esc(title)}</h2>${notice(kind, message)}<p><span class="badge badge--sample">Demonstration only</span></p><p><button class="button button--secondary" type="button" data-again>Start another demo order</button></p>`;
+  box.innerHTML = `<h2 class="section-title">${esc(title)}</h2>${notice(kind, message)}<p><span class="badge badge--muted">Demonstration only</span></p><p><button class="button button--secondary" type="button" data-again>Start another demo order</button></p>`;
   $('[data-checkout]').hidden = true;
   box.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }

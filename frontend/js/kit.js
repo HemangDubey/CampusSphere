@@ -29,7 +29,6 @@ export function badge(status, text) {
   const tone = Object.keys(TONES).find((t) => TONES[t].includes(status)) || 'muted';
   return `<span class="badge badge--${tone}">${esc(text || label(status))}</span>`;
 }
-export const sample = '<span class="badge badge--sample" title="Sample content for demonstration">Sample</span>';
 
 // ---------------------------------------------------------------- covers (photo with a generated fallback)
 const TONE_BY_KEY = { TECHNICAL: 'ocean', CULTURAL: 'pink', SPORTS: 'teal', WORKSHOP: 'sand', SYMPOSIUM: 'ocean', HERITAGE: 'pink', NATURE: 'teal', SPIRITUAL: 'sand', BEACH: 'ocean', CITY: 'ink', LIBRARY: 'sand', DEPARTMENT: 'ocean', FACILITY: 'teal', SUPPORT: 'pink', SERVICE: 'ocean', CLUB: 'teal', LINK: 'sand', ORGANIZATION: 'ink' };

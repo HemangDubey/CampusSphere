@@ -1,6 +1,6 @@
 import { initShell } from '../shell.js';
 import { request } from '../api.js';
-import { $, esc, label, dt, badge, sample, cover, pageHead, skeletons, emptyState, errorState, pager, tabs, field, qs, debounce, on, attempt, confirmDialog } from '../kit.js';
+import { $, esc, label, dt, badge, cover, pageHead, skeletons, emptyState, errorState, pager, tabs, field, qs, debounce, on, attempt, confirmDialog } from '../kit.js';
 import { openRegistration } from '../event-register.js';
 
 const view = $('[data-view]');
@@ -38,7 +38,7 @@ function card(e) {
     ? (e.canCancel ? `<button class="button button--secondary button--sm" type="button" data-cancel="${e.id}">Cancel registration</button>` : '')
     : e.registrationOpen ? `<button class="button button--sm" type="button" data-register="${e.id}">Register</button>` : '';
   return `<article class="card card--flush card--link">${cover(e.coverImage, e.title, e.category)}<div class="card__body">
-    <div class="chips"><span class="badge badge--muted">${esc(label(e.category))}</span><span class="badge badge--muted">${esc(label(e.mode))}</span>${e.isDemo ? sample : ''}${e.fee > 0 ? `<span class="badge badge--muted">₹${e.fee}</span>` : ''}</div>
+    <div class="chips"><span class="badge badge--muted">${esc(label(e.category))}</span><span class="badge badge--muted">${esc(label(e.mode))}</span>${e.fee > 0 ? `<span class="badge badge--muted">₹${e.fee}</span>` : ''}</div>
     <h3><a href="/events/${e.id}">${esc(e.title)}</a></h3>
     <p class="small">${esc(dt(e.startsAt))}<br>${esc(e.venue)}</p>
     <div class="row">${status(e)}${e.organizerDisplay ? `<span class="muted small">${esc(e.organizerDisplay)}</span>` : ''}</div>

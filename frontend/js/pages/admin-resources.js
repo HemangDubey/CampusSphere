@@ -1,6 +1,6 @@
 import { initShell } from '../shell.js';
 import { request } from '../api.js';
-import { $, esc, label, badge, sample, pageHead, skeletons, emptyState, errorState, pager, table, qs, debounce, on, modal, field, fields, formRow, formError, showFormError, toast, notice, attempt, confirmDialog, tabs } from '../kit.js';
+import { $, esc, label, badge, pageHead, skeletons, emptyState, errorState, pager, table, qs, debounce, on, modal, field, fields, formRow, formError, showFormError, toast, notice, attempt, confirmDialog, tabs } from '../kit.js';
 import { bindForm, required, minLength, maxLength, oneOf, httpsUrl } from '../validators.js';
 
 const view = $('[data-view]');
@@ -25,7 +25,7 @@ async function resources() {
     try {
       const data = await request(`/admin/resources?${qs({ ...Object.fromEntries(new FormData(f)), page: state.page })}`);
       state.rows = data.resources;
-      list.innerHTML = data.resources.length ? table([{ label: 'Resource', html: (r) => `<strong>${esc(r.title)}</strong> ${r.isDemo ? sample : ''}<br><span class="muted small">${esc(label(r.kind))}${r.category ? ` · ${esc(r.category.name)}` : ''}</span>` }, { label: 'Availability', html: (r) => badge(r.status) }, { label: 'Visible', html: (r) => badge(r.published ? 'PUBLISHED' : 'DRAFT', r.published ? 'Published' : 'Hidden') }, { label: 'Requests', html: (r) => (r.acceptsRequests ? 'Accepts requests' : '–') }, { label: '', html: (r) => `<div class="row"><button class="button button--secondary button--sm" type="button" data-edit="${r.id}">Edit</button><button class="button button--ghost button--sm" type="button" data-delete="${r.id}">Delete</button></div>` }], data.resources) : emptyState('No resources', 'Create a resource to add it to the directory.');
+      list.innerHTML = data.resources.length ? table([{ label: 'Resource', html: (r) => `<strong>${esc(r.title)}</strong> <br><span class="muted small">${esc(label(r.kind))}${r.category ? ` · ${esc(r.category.name)}` : ''}</span>` }, { label: 'Availability', html: (r) => badge(r.status) }, { label: 'Visible', html: (r) => badge(r.published ? 'PUBLISHED' : 'DRAFT', r.published ? 'Published' : 'Hidden') }, { label: 'Requests', html: (r) => (r.acceptsRequests ? 'Accepts requests' : '–') }, { label: '', html: (r) => `<div class="row"><button class="button button--secondary button--sm" type="button" data-edit="${r.id}">Edit</button><button class="button button--ghost button--sm" type="button" data-delete="${r.id}">Delete</button></div>` }], data.resources) : emptyState('No resources', 'Create a resource to add it to the directory.');
       pager(panel.querySelector('[data-pager]'), data, (p) => { state.page = p; draw(); });
     } catch (e) { list.innerHTML = errorState(e.message); }
   };

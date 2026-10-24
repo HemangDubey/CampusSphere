@@ -1,6 +1,6 @@
 import { initShell } from '../shell.js';
 import { request } from '../api.js';
-import { $, esc, label, dt, badge, sample, cover, skeletons, errorState, inr, on, attempt, confirmDialog, toast, notice } from '../kit.js';
+import { $, esc, label, dt, badge, cover, skeletons, errorState, inr, on, attempt, confirmDialog, toast, notice } from '../kit.js';
 import { openRegistration } from '../event-register.js';
 
 const view = $('[data-view]');
@@ -22,7 +22,7 @@ function render({ event: e, related }) {
   view.innerHTML = `<div class="hero-detail">
     ${cover(e.coverImage, e.title, e.category, 'cover--tall')}
     <div class="split"><div class="stack-lg">
-      <div><div class="chips"><span class="badge badge--muted">${esc(label(e.category))}</span><span class="badge badge--muted">${esc(label(e.mode))}</span>${e.status === 'CANCELLED' ? badge('CANCELLED') : ''}${e.isDemo ? sample : ''}</div>
+      <div><div class="chips"><span class="badge badge--muted">${esc(label(e.category))}</span><span class="badge badge--muted">${esc(label(e.mode))}</span>${e.status === 'CANCELLED' ? badge('CANCELLED') : ''}</div>
         <h1 class="page-head__title" style="font-size:clamp(30px,4.5vw,58px)">${esc(e.title)}</h1><p class="page-head__lead">${esc(e.description)}</p></div>
       ${e.status === 'CANCELLED' ? notice('error', `This event was cancelled.${e.cancelReason ? ` Reason: ${e.cancelReason}` : ''}`) : ''}
       ${lines(e.schedule).length ? `<section class="card"><h2 class="section-title">Schedule</h2><ul class="list">${lines(e.schedule).map((l) => `<li>${esc(l)}</li>`).join('')}</ul></section>` : ''}

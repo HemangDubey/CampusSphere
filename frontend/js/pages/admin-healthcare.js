@@ -1,6 +1,6 @@
 import { initShell } from '../shell.js';
 import { request } from '../api.js';
-import { $, esc, dt, label, badge, sample, pageHead, skeletons, emptyState, errorState, pager, table, qs, debounce, on, modal, field, fields, formError, showFormError, toast, timelineHtml, notice, attempt, confirmDialog, tabs } from '../kit.js';
+import { $, esc, dt, label, badge, pageHead, skeletons, emptyState, errorState, pager, table, qs, debounce, on, modal, field, fields, formError, showFormError, toast, timelineHtml, notice, attempt, confirmDialog, tabs } from '../kit.js';
 import { bindForm, required, minLength, maxLength, intRange, pattern } from '../validators.js';
 
 const view = $('[data-view]');
@@ -70,7 +70,7 @@ async function services() {
   try {
     ({ services: state.services } = await request('/manage/healthcare/services'));
     panel.innerHTML = `<div class="row row--between" style="margin-bottom:12px"><h2 class="section-title" style="margin:0">Services and providers</h2><button class="button" type="button" data-new-service>New service</button></div>
-      ${state.services.length ? state.services.map((s) => `<section class="card" data-svc="${s.id}" style="margin-bottom:12px"><div class="row row--between"><div><h3 style="margin:0">${esc(s.name)} ${s.published ? '' : badge('DRAFT', 'Unpublished')} ${s.isDemo ? sample : ''}</h3><p class="small muted">${esc(s.category)} · ${esc(s.description)}</p></div><div class="row"><button class="button button--secondary button--sm" type="button" data-edit-service>Edit</button><button class="button button--ghost button--sm" type="button" data-del-service>Delete</button><button class="button button--sm" type="button" data-new-provider>Add provider</button></div></div>
+      ${state.services.length ? state.services.map((s) => `<section class="card" data-svc="${s.id}" style="margin-bottom:12px"><div class="row row--between"><div><h3 style="margin:0">${esc(s.name)} ${s.published ? '' : badge('DRAFT', 'Unpublished')} </h3><p class="small muted">${esc(s.category)} · ${esc(s.description)}</p></div><div class="row"><button class="button button--secondary button--sm" type="button" data-edit-service>Edit</button><button class="button button--ghost button--sm" type="button" data-del-service>Delete</button><button class="button button--sm" type="button" data-new-provider>Add provider</button></div></div>
         ${s.providers.length ? `<ul class="list">${s.providers.map((p) => `<li data-prov="${p.id}"><div class="row row--between"><span><strong>${esc(p.name)}</strong> ${p.published ? '' : badge('DRAFT', 'Unpublished')}<br><span class="muted small">${esc(p.speciality)} · ${p._count.slots} open future slot(s)</span></span><span class="row"><button class="button button--sm" type="button" data-slots>Availability</button><button class="button button--secondary button--sm" type="button" data-edit-prov>Edit</button><button class="button button--ghost button--sm" type="button" data-del-prov>Delete</button></span></div></li>`).join('')}</ul>` : '<p class="small muted">No providers yet.</p>'}</section>`).join('') : emptyState('No services yet', 'Create a service, then add providers and availability.')}`;
   } catch (e) { panel.innerHTML = errorState(e.message); }
 }

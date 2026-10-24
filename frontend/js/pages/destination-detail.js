@@ -1,6 +1,6 @@
 import { initShell } from '../shell.js';
 import { request } from '../api.js';
-import { $, esc, label, inr, sample, cover, skeletons, errorState, on, attempt, modal, fields, formError, showFormError, toast, disclosure } from '../kit.js';
+import { $, esc, label, inr, cover, skeletons, errorState, on, attempt, modal, fields, formError, showFormError, toast, disclosure } from '../kit.js';
 import { bindForm, required, minLength, maxLength, intRange } from '../validators.js';
 
 const view = $('[data-view]');
@@ -15,7 +15,7 @@ function render({ destination: d, related }) {
   view.innerHTML = `<div class="hero-detail">${cover(d.imageUrl, d.name, d.type, 'cover--tall')}
     ${d.gallery?.length ? `<div class="grid grid--3">${d.gallery.map((g) => cover(g, d.name, d.type, 'cover--thumb')).join('')}</div>` : ''}
     <div class="split"><div class="stack-lg">
-      <div><div class="chips"><span class="badge badge--muted">${esc(label(d.type))}</span><span class="badge badge--muted">${esc(label(d.budget))}</span>${d.isDemo ? sample : ''}</div>
+      <div><div class="chips"><span class="badge badge--muted">${esc(label(d.type))}</span><span class="badge badge--muted">${esc(label(d.budget))}</span></div>
         <h1 class="page-head__title" style="font-size:clamp(30px,4.5vw,58px)">${esc(d.name)}</h1><p class="small muted">${esc(d.region)}</p><p class="page-head__lead">${esc(d.description)}</p></div>
       ${disclosure('Budget ranges and durations are approximate estimates, not live quotes. There is no booking or real-time availability here.')}
       ${d.activities?.length ? `<section class="card"><h2 class="section-title">Things to do</h2><ul class="dot-list">${d.activities.map((a) => `<li>${esc(a)}</li>`).join('')}</ul></section>` : ''}

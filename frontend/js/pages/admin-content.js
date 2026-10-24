@@ -1,6 +1,6 @@
 import { initShell } from '../shell.js';
 import { request } from '../api.js';
-import { $, esc, label, badge, sample, pageHead, skeletons, emptyState, errorState, pager, table, qs, debounce, on, modal, field, fields, formRow, formError, showFormError, toast, notice, attempt, confirmDialog, tabs, ago } from '../kit.js';
+import { $, esc, label, badge, pageHead, skeletons, emptyState, errorState, pager, table, qs, debounce, on, modal, field, fields, formRow, formError, showFormError, toast, notice, attempt, confirmDialog, tabs, ago } from '../kit.js';
 import { bindForm, required, minLength, maxLength, intRange, oneOf, pattern, httpsUrl } from '../validators.js';
 
 const view = $('[data-view]');
@@ -23,7 +23,7 @@ async function destinations() {
     try {
       const data = await request(`/admin/destinations?${qs({ ...Object.fromEntries(new FormData(f)), page: state.page })}`);
       state.rows = data.destinations;
-      list.innerHTML = data.destinations.length ? table([{ label: 'Destination', html: (d) => `<strong>${esc(d.name)}</strong> ${d.isDemo ? sample : ''}<br><span class="muted small">${esc(d.region)} · ${esc(label(d.type))}</span>` }, { label: 'Visible', html: (d) => badge(d.published ? 'PUBLISHED' : 'DRAFT', d.published ? 'Published' : 'Hidden') }, { label: 'Popularity', key: 'popularity' }, { label: '', html: (d) => `<div class="row"><button class="button button--secondary button--sm" type="button" data-edit-dest="${d.id}">Edit</button><button class="button button--ghost button--sm" type="button" data-del-dest="${d.id}">Delete</button></div>` }], data.destinations) : emptyState('No destinations', 'Create one to share it with students.');
+      list.innerHTML = data.destinations.length ? table([{ label: 'Destination', html: (d) => `<strong>${esc(d.name)}</strong> <br><span class="muted small">${esc(d.region)} · ${esc(label(d.type))}</span>` }, { label: 'Visible', html: (d) => badge(d.published ? 'PUBLISHED' : 'DRAFT', d.published ? 'Published' : 'Hidden') }, { label: 'Popularity', key: 'popularity' }, { label: '', html: (d) => `<div class="row"><button class="button button--secondary button--sm" type="button" data-edit-dest="${d.id}">Edit</button><button class="button button--ghost button--sm" type="button" data-del-dest="${d.id}">Delete</button></div>` }], data.destinations) : emptyState('No destinations', 'Create one to share it with students.');
       pager(panel.querySelector('[data-pager]'), data, (p) => { state.page = p; draw(); });
     } catch (e) { list.innerHTML = errorState(e.message); }
   };
@@ -66,7 +66,7 @@ async function announcements() {
   panel.innerHTML = skeletons(2, 'skeleton-row');
   try {
     ({ announcements: state.anns } = await request('/admin/announcements'));
-    panel.innerHTML = `<div class="row row--between" style="margin-bottom:12px"><span class="muted small">Published announcements appear on the dashboard and the community page.</span><button class="button" type="button" data-new-ann>New announcement</button></div>${state.anns.length ? table([{ label: 'Announcement', html: (a) => `<strong>${esc(a.title)}</strong> ${a.isDemo ? sample : ''}<br><span class="muted small">${esc(a.body.slice(0, 120))}${a.body.length > 120 ? '…' : ''}</span>` }, { label: 'Status', html: (a) => badge(a.status) }, { label: 'Updated', html: (a) => esc(ago(a.updatedAt)) }, { label: '', html: (a) => `<div class="row"><button class="button button--secondary button--sm" type="button" data-edit-ann="${a.id}">Edit</button><button class="button button--ghost button--sm" type="button" data-del-ann="${a.id}">Delete</button></div>` }], state.anns) : emptyState('No announcements', 'Write one to share news with students.')}`;
+    panel.innerHTML = `<div class="row row--between" style="margin-bottom:12px"><span class="muted small">Published announcements appear on the dashboard and the community page.</span><button class="button" type="button" data-new-ann>New announcement</button></div>${state.anns.length ? table([{ label: 'Announcement', html: (a) => `<strong>${esc(a.title)}</strong> <br><span class="muted small">${esc(a.body.slice(0, 120))}${a.body.length > 120 ? '…' : ''}</span>` }, { label: 'Status', html: (a) => badge(a.status) }, { label: 'Updated', html: (a) => esc(ago(a.updatedAt)) }, { label: '', html: (a) => `<div class="row"><button class="button button--secondary button--sm" type="button" data-edit-ann="${a.id}">Edit</button><button class="button button--ghost button--sm" type="button" data-del-ann="${a.id}">Delete</button></div>` }], state.anns) : emptyState('No announcements', 'Write one to share news with students.')}`;
   } catch (e) { panel.innerHTML = errorState(e.message); }
 }
 

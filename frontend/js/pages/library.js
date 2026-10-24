@@ -1,6 +1,6 @@
 import { initShell } from '../shell.js';
 import { request } from '../api.js';
-import { $, esc, sample, cover, pageHead, skeletons, emptyState, errorState, pager, tabs, qs, debounce, on, attempt, disclosure, badge } from '../kit.js';
+import { $, esc, cover, pageHead, skeletons, emptyState, errorState, pager, tabs, qs, debounce, on, attempt, badge } from '../kit.js';
 
 const view = $('[data-view]');
 const user = await initShell({ active: '/library', crumbs: [['Campus Life'], ['Library']] });
@@ -8,7 +8,6 @@ const state = { view: 'catalogue', page: 1, items: [] };
 const READING = { WANT_TO_READ: 'Want to read', READING: 'Reading', DONE: 'Finished' };
 
 view.innerHTML = `${pageHead({ eyebrow: 'Campus life', title: 'The library', lead: 'Search the catalogue, keep a reading list and save resources. Borrowing and reservations are not available in this version.', actions: '<button class="button button--secondary" type="button" data-suggest>Suggest a resource</button>' })}
-  ${disclosure('The catalogue is sample content and does not reflect what any real library holds.')}
   <div data-tabs></div>
   <form class="toolbar" data-filters role="search" aria-label="Search the library" novalidate>
     <div class="field field--wide"><label class="field__label" for="q">Search</label><input class="input" id="q" name="q" type="search" maxlength="80" placeholder="Title, author or topic"></div>
@@ -17,7 +16,7 @@ view.innerHTML = `${pageHead({ eyebrow: 'Campus life', title: 'The library', lea
 const list = $('[data-list]');
 const filters = $('[data-filters]');
 
-const card = (r) => `<article class="card card--flush card--link">${cover(r.imageUrl, r.title, 'LIBRARY', 'cover--thumb')}<div class="card__body"><div class="chips">${r.category ? `<span class="badge badge--muted">${esc(r.category.name)}</span>` : ''}${r.isDemo ? sample : ''}${r.readingStatus ? badge(r.readingStatus, READING[r.readingStatus]) : ''}</div>
+const card = (r) => `<article class="card card--flush card--link">${cover(r.imageUrl, r.title, 'LIBRARY', 'cover--thumb')}<div class="card__body"><div class="chips">${r.category ? `<span class="badge badge--muted">${esc(r.category.name)}</span>` : ''}${r.readingStatus ? badge(r.readingStatus, READING[r.readingStatus]) : ''}</div>
   <h3><a href="/resources/${r.id}">${esc(r.title)}</a></h3>${r.author ? `<p class="small">${esc(r.author)}</p>` : ''}<p class="small">${esc(r.summary)}</p>
   <div class="row"><a class="button button--secondary button--sm" href="/resources/${r.id}">Details</a>${user ? `<button class="button button--sm" type="button" data-rl="${r.id}">${r.readingStatus ? 'On my list' : 'Add to reading list'}</button><button class="button button--ghost button--sm" type="button" data-bm="${r.id}">${r.bookmarked ? 'Saved ✓' : 'Save'}</button>` : ''}</div></div></article>`;
 

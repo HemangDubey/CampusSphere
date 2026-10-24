@@ -1,6 +1,6 @@
 import { initShell } from '../shell.js';
 import { request } from '../api.js';
-import { $, esc, sample, pageHead, skeletons, emptyState, errorState, qs, debounce, on, modal, fields, formError, showFormError, notice, toast, dt, label } from '../kit.js';
+import { $, esc, pageHead, skeletons, emptyState, errorState, qs, debounce, on, modal, fields, formError, showFormError, notice, toast, dt, label } from '../kit.js';
 import { bindForm, required, minLength, maxLength, phoneIN, consent } from '../validators.js';
 
 const view = $('[data-view]');
@@ -16,7 +16,7 @@ view.innerHTML = `${pageHead({ eyebrow: 'Services', title: 'Campus healthcare', 
 const list = $('[data-list]');
 const filters = $('[data-filters]');
 
-const svcCard = (s) => `<article class="card" data-svc="${s.id}"><div class="chips"><span class="badge badge--muted">${esc(s.category)}</span>${s.isDemo ? sample : ''}</div><h3>${esc(s.name)}</h3><p>${esc(s.description)}</p>
+const svcCard = (s) => `<article class="card" data-svc="${s.id}"><div class="chips"><span class="badge badge--muted">${esc(s.category)}</span></div><h3>${esc(s.name)}</h3><p>${esc(s.description)}</p>
   ${s.providers.length ? `<ul class="list">${s.providers.map((p) => `<li><div class="row row--between"><span><strong>${esc(p.name)}</strong><br><span class="muted small">${esc(p.speciality)} · ${p.openSlots ? `${p.openSlots} slot${p.openSlots === 1 ? '' : 's'} open` : 'no open slots'}</span></span><button class="button button--sm" type="button" data-book data-provider="${p.id}">Book</button></div></li>`).join('')}</ul>` : '<p class="small muted">No providers are listed for this service yet.</p>'}
   <button class="button button--secondary button--sm" type="button" data-book>Request without choosing a provider</button></article>`;
 

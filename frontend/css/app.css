@@ -102,7 +102,6 @@ body.app-page { background: var(--color-background); }
 .badge--warn { color: #8a5a00; background: var(--color-warning-bg); }
 .badge--danger { color: var(--color-error); background: var(--color-error-bg); }
 .badge--muted { color: var(--color-text-secondary); background: var(--color-surface-alt); }
-.badge--sample { color: var(--color-accent-pink-strong); background: transparent; border-style: dashed; }
 .cover { position: relative; overflow: hidden; border-radius: var(--radius-md); aspect-ratio: 16 / 9; background: var(--tone, var(--color-surface-alt)); display: grid; place-items: center; }
 .cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
 .cover__letter { font-size: clamp(48px, 9vw, 96px); font-weight: var(--font-weight-black); color: rgba(38, 38, 38, 0.16); line-height: 1; }

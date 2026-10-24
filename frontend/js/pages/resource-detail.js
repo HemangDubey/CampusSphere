@@ -1,6 +1,6 @@
 import { initShell } from '../shell.js';
 import { request } from '../api.js';
-import { $, esc, label, sample, badge, cover, skeletons, errorState, on, attempt, modal, field, formError, showFormError, toast, notice } from '../kit.js';
+import { $, esc, label, badge, cover, skeletons, errorState, on, attempt, modal, field, formError, showFormError, toast, notice } from '../kit.js';
 import { openRequestForm } from '../request-form.js';
 import { bindForm, required, minLength, maxLength } from '../validators.js';
 
@@ -18,7 +18,7 @@ function render({ resource: r, related }) {
   const library = r.kind === 'LIBRARY';
   const canRequest = r.acceptsRequests && r.status !== 'UNAVAILABLE';
   view.innerHTML = `<div class="hero-detail">${cover(r.imageUrl, r.title, r.kind, 'cover--tall')}
-    <div class="split"><div class="stack-lg"><div><div class="chips"><span class="badge badge--muted">${esc(label(r.kind))}</span>${r.category ? `<span class="badge badge--muted">${esc(r.category.name)}</span>` : ''}${badge(r.status, AVAIL[r.status])}${r.isDemo ? sample : ''}</div>
+    <div class="split"><div class="stack-lg"><div><div class="chips"><span class="badge badge--muted">${esc(label(r.kind))}</span>${r.category ? `<span class="badge badge--muted">${esc(r.category.name)}</span>` : ''}${badge(r.status, AVAIL[r.status])}</div>
       <h1 class="page-head__title" style="font-size:clamp(28px,4vw,52px)">${esc(r.title)}</h1>${r.author ? `<p class="muted">by ${esc(r.author)}</p>` : ''}<p class="page-head__lead">${esc(r.summary)}</p></div>
       ${r.details ? `<section class="card"><h2 class="section-title">About</h2><p>${esc(r.details)}</p></section>` : ''}
       ${r.eligibility || r.instructions || r.requiredDocuments?.length ? `<section class="card"><h2 class="section-title">How it works</h2>${r.eligibility ? `<p><strong>Eligibility:</strong> ${esc(r.eligibility)}</p>` : ''}${r.instructions ? `<p><strong>Instructions:</strong> ${esc(r.instructions)}</p>` : ''}${r.requiredDocuments?.length ? `<p><strong>Required documents:</strong></p><ul class="dot-list">${r.requiredDocuments.map((d) => `<li>${esc(d)}</li>`).join('')}</ul>` : ''}</section>` : ''}

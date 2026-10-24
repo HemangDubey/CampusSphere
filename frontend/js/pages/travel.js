@@ -1,6 +1,6 @@
 import { initShell } from '../shell.js';
 import { request } from '../api.js';
-import { $, esc, label, inr, sample, cover, pageHead, skeletons, emptyState, errorState, pager, tabs, field, qs, debounce, on, attempt, disclosure } from '../kit.js';
+import { $, esc, label, inr, cover, pageHead, skeletons, emptyState, errorState, pager, tabs, field, qs, debounce, on, attempt, disclosure } from '../kit.js';
 
 const view = $('[data-view]');
 const user = await initShell({ active: '/travel', crumbs: [['Campus Life'], ['Travel Explorer']] });
@@ -25,7 +25,7 @@ const filters = $('[data-filters]');
 const saveBtn = (d) => `<button class="button ${d.favorited ? 'button--secondary' : 'button--teal'} button--sm" type="button" data-fav="${d.id}" aria-pressed="${d.favorited}">${d.favorited ? 'Saved ✓' : 'Save'}</button>`;
 function card(d) {
   return `<article class="card card--flush card--link">${cover(d.imageUrl, d.name, d.type)}<div class="card__body">
-    <div class="chips"><span class="badge badge--muted">${esc(label(d.type))}</span><span class="badge badge--muted">${esc(label(d.budget))}</span>${d.isDemo ? sample : ''}</div>
+    <div class="chips"><span class="badge badge--muted">${esc(label(d.type))}</span><span class="badge badge--muted">${esc(label(d.budget))}</span></div>
     <h3><a href="/travel/${esc(d.slug)}">${esc(d.name)}</a></h3><p class="small">${esc(d.region)}</p><p>${esc(d.summary)}</p>
     <p class="small"><strong>${esc(inr(d.budgetMinInr))} to ${esc(inr(d.budgetMaxInr))}</strong> (est.) · ${d.recommendedDays} day${d.recommendedDays > 1 ? 's' : ''}${d.distanceKm ? ` · ~${d.distanceKm} km` : ''}</p>
     <div class="row"><a class="button button--secondary button--sm" href="/travel/${esc(d.slug)}">View details</a>${user ? saveBtn(d) : '<a class="button button--teal button--sm" href="/login?next=/travel">Sign in to save</a>'}</div></div></article>`;
