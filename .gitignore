@@ -1,5 +1,15 @@
 node_modules/
-backend/.env
+# Secrets and local configuration: never commit real values (use backend/.env.example as the template)
 .env
+.env.*
+!.env.example
+backend/.env
+frontend/.env
+*.pem
+*.key
+# Tooling and logs
 .claude/
 *.log
+coverage/
+.DS_Store
+Thumbs.db

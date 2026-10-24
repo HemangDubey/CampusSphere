@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mouse Events Lab | CampusSphere</title>
+  <meta name="theme-color" content="#fdf8f3">
+  <meta name="api-base" content="">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/campus.css">
+  <link rel="stylesheet" href="/css/labs.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="nav" data-nav></header>
+  <main id="main" class="page">
+    <div class="container">
+      <div class="page__head">
+        <a class="auth__link" href="/labs">&larr; All labs</a>
+        <span class="label label--accent">Interactive lab</span>
+        <h1 class="display page__title">Mouse <em>events</em></h1>
+        <p class="page__lead">Interact with each zone to see which event fires and what information the browser gives you. Only the latest event is shown, so nothing floods the page.</p>
+      </div>
+      <div class="notice notice--info" role="note"><span class="notice__icon" aria-hidden="true"></span><p><strong>Touchscreens:</strong> mouse events are designed for a pointer. Phones and tablets simulate some of them (a tap usually produces mouseover, mousedown, mouseup and click) but hover, right-click and mousemove do not behave the same. Each demo has a keyboard button that dispatches a <em>simulated</em> event so you can still see the idea.</p></div>
+
+      <div class="lab-grid" data-demos></div>
+
+      <section class="section-block" aria-labelledby="cmp">
+        <h2 class="panel__title" id="cmp">mouseenter vs mouseover, mouseleave vs mouseout</h2>
+        <p class="page__lead">Move the pointer into the outer box, then into the inner box and back. <code>mouseenter</code>/<code>mouseleave</code> fire only for the element itself. <code>mouseover</code>/<code>mouseout</code> also fire when the pointer moves between the element and its children (they bubble).</p>
+        <div class="compare">
+          <div class="compare__outer" data-outer tabindex="0" aria-label="Outer box. Move the mouse over it and the inner box.">Outer box<div class="compare__inner" data-inner>Inner box</div></div>
+          <dl class="compare__counts" aria-live="off">
+            <div><dt>mouseenter</dt><dd data-c="mouseenter">0</dd></div><div><dt>mouseover</dt><dd data-c="mouseover">0</dd></div>
+            <div><dt>mouseleave</dt><dd data-c="mouseleave">0</dd></div><div><dt>mouseout</dt><dd data-c="mouseout">0</dd></div>
+          </dl>
+        </div>
+        <p><button class="button button--secondary button--sm" type="button" data-reset-compare>Reset counters</button></p>
+      </section>
+    </div>
+  </main>
+  <footer class="footer" data-footer></footer>
+  <script type="module" src="/js/labs-mouse.js"></script>
+</body>
+</html>

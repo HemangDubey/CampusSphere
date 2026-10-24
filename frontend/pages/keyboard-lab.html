@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Keyboard Events Lab | CampusSphere</title>
+  <meta name="theme-color" content="#fdf8f3">
+  <meta name="api-base" content="">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/campus.css">
+  <link rel="stylesheet" href="/css/labs.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="nav" data-nav></header>
+  <main id="main" class="page">
+    <div class="container">
+      <div class="page__head">
+        <a class="auth__link" href="/labs">&larr; All labs</a>
+        <span class="label label--accent">Interactive lab</span>
+        <h1 class="display page__title">Keyboard <em>events</em></h1>
+        <p class="page__lead">Type in the practice box to see keyboard events. Listeners are attached to that box only. Nothing you type is stored or sent anywhere.</p>
+      </div>
+      <div class="notice notice--warning" role="note"><span class="notice__icon" aria-hidden="true"></span><p>This is a practice area. Please do not type passwords or other private information.</p></div>
+
+      <div class="kb-layout">
+        <section class="panel" aria-labelledby="try">
+          <h2 class="panel__title" id="try">Practice box</h2>
+          <div class="field">
+            <label class="field__label" for="kb-input">Type here</label>
+            <textarea class="textarea" id="kb-input" rows="4" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="kb-hint"></textarea>
+            <p class="field__hint" id="kb-hint">Try letters, arrows, Shift, Ctrl/Cmd, Alt, or press Ctrl/Cmd + Enter.</p>
+          </div>
+          <p class="shortcut" role="status" aria-live="polite" data-shortcut>Shortcut not used yet. Press Ctrl/Cmd + Enter inside the box.</p>
+          <button class="button button--secondary button--sm" type="button" data-reset>Reset lab</button>
+        </section>
+
+        <section class="panel" aria-labelledby="latest">
+          <h2 class="panel__title" id="latest">Latest key event</h2>
+          <dl class="kv" data-readout aria-live="off">
+            <dt>Event</dt><dd data-f="type">none yet</dd>
+            <dt>key</dt><dd data-f="key">&ndash;</dd>
+            <dt>code</dt><dd data-f="code">&ndash;</dd>
+            <dt>location</dt><dd data-f="location">&ndash;</dd>
+            <dt>repeat</dt><dd data-f="repeat">&ndash;</dd>
+          </dl>
+          <div class="mods" aria-label="Modifier keys held during the latest event">
+            <span class="mod" data-mod="Shift">Shift</span><span class="mod" data-mod="Control">Ctrl</span><span class="mod" data-mod="Alt">Alt</span><span class="mod" data-mod="Meta">Meta</span>
+          </div>
+          <p class="field__hint">A lit modifier was held down when the latest event fired. Meta is the Windows or Command key and is not reported by every browser or OS.</p>
+          <p class="legacy" data-legacy>keypress: has not fired.</p>
+        </section>
+      </div>
+
+      <section class="section-block" aria-labelledby="diff">
+        <h2 class="panel__title" id="diff">keydown vs keyup (and keypress)</h2>
+        <ul class="plain-list">
+          <li><strong>keydown</strong> fires when a key is pressed, and repeatedly while it is held (<code>repeat</code> becomes true). Use it for shortcuts and games.</li>
+          <li><strong>keyup</strong> fires once when the key is released. Use it when you need to know a key is no longer held.</li>
+          <li><strong>keypress</strong> is <em>deprecated</em>. It only fired for keys that produce characters and is inconsistent across browsers. Use <code>keydown</code> with <code>event.key</code> instead. It is shown above only so you can see it is legacy.</li>
+          <li><code>event.key</code> is the character or key name (<code>"a"</code>, <code>"Enter"</code>); <code>event.code</code> is the physical key (<code>"KeyA"</code>), the same on every keyboard layout.</li>
+        </ul>
+      </section>
+    </div>
+  </main>
+  <footer class="footer" data-footer></footer>
+  <script type="module" src="/js/labs-keyboard.js"></script>
+</body>
+</html>

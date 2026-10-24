@@ -1,0 +1,239 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  FACULTY
+  ADMIN
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(STUDENT)
+  department   String?
+  yearOfStudy  Int?
+  phone        String?
+  bio          String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sessions      Session[]
+  resetTokens   PasswordResetToken[]
+  eventRegistrations EventRegistration[]
+  favorites     FavoriteDestination[]
+  appointments  Appointment[]
+  courseRegistrations CourseRegistration[]
+}
+
+// One row per signed-in browser. The JWT in the HTTP-only cookie carries this id;
+// revoking the row (logout, password reset) invalidates the session server-side.
+model Session {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+// Only a SHA-256 hash of the reset token is stored; tokens are single use and expire.
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+enum EventCategory {
+  TECHNICAL
+  CULTURAL
+  SPORTS
+  WORKSHOP
+  SYMPOSIUM
+}
+
+enum EventMode {
+  IN_PERSON
+  ONLINE
+  HYBRID
+}
+
+// isDemo marks seeded demonstration records. Replace them with verified data via prisma/seed.js or an admin tool.
+model Event {
+  id          String        @id @default(uuid())
+  title       String
+  description String
+  category    EventCategory
+  mode        EventMode     @default(IN_PERSON)
+  startsAt    DateTime
+  endsAt      DateTime?
+  venue       String
+  capacity    Int?
+  isDemo      Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+
+  registrations EventRegistration[]
+
+  @@index([startsAt])
+  @@index([category])
+}
+
+model EventRegistration {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  // Only collected for symposium events.
+  teamSize  Int?
+  track     String?
+  createdAt DateTime @default(now())
+
+  @@unique([userId, eventId])
+  @@index([eventId])
+}
+
+enum DestinationType {
+  HERITAGE
+  NATURE
+  SPIRITUAL
+  BEACH
+  CITY
+}
+
+enum BudgetCategory {
+  BUDGET
+  MODERATE
+  PREMIUM
+}
+
+model Destination {
+  id              String          @id @default(uuid())
+  slug            String          @unique
+  name            String
+  region          String
+  type            DestinationType
+  budget          BudgetCategory
+  summary         String
+  description     String
+  budgetMinInr    Int
+  budgetMaxInr    Int
+  recommendedDays Int
+  tips            String[]
+  isDemo          Boolean         @default(true)
+
+  favorites FavoriteDestination[]
+
+  @@index([type])
+  @@index([budget])
+}
+
+model FavoriteDestination {
+  id            String      @id @default(uuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  destinationId String
+  destination   Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+
+  @@unique([userId, destinationId])
+}
+
+enum ResourceKind {
+  DEPARTMENT
+  LIBRARY
+  FACILITY
+  SUPPORT
+  LINK
+  ORGANIZATION
+}
+
+model Resource {
+  id       String       @id @default(uuid())
+  kind     ResourceKind
+  category String?
+  title    String
+  summary  String
+  details  String?
+  isDemo   Boolean      @default(true)
+
+  @@index([kind])
+}
+
+enum TimePreference {
+  MORNING
+  AFTERNOON
+  EVENING
+}
+
+enum AppointmentStatus {
+  REQUESTED
+  CANCELLED
+}
+
+// A demonstration request record. Nothing is sent to a real clinic or hospital.
+model Appointment {
+  id             String            @id @default(uuid())
+  userId         String
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patientName    String
+  phone          String
+  department     String
+  preferredDate  DateTime          @db.Date
+  timePreference TimePreference
+  reason         String
+  status         AppointmentStatus @default(REQUESTED)
+  createdAt      DateTime          @default(now())
+
+  @@index([userId])
+}
+
+// Sample records for the employee module. Visible to administrators only.
+model Employee {
+  id          String   @id @default(uuid())
+  employeeId  String   @unique
+  name        String
+  designation String
+  department  String
+  email       String   @unique
+  phone       String?
+  joinedOn    DateTime @db.Date
+  isDemo      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum Semester {
+  ODD
+  EVEN
+  SUMMER
+}
+
+model CourseRegistration {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseCode String
+  semester   Semester
+  academicYear String
+  notes      String?
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, courseCode, semester, academicYear])
+}

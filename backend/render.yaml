@@ -1,0 +1,24 @@
+# TEMPLATE, NOT YET DEPLOYED OR TESTED. Render Blueprint for one web service that serves both the API and
+# the frontend (same origin, so cookies and CORS need no extra setup). Replace placeholders in the dashboard;
+# never put secret values in this file.
+services:
+  - type: web
+    name: campussphere
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install
+    # Applies committed migrations (non-destructive), then starts the server.
+    startCommand: npx prisma migrate deploy && node src/server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL        # Neon (or other PostgreSQL) connection string, add in the dashboard
+        sync: false
+      - key: JWT_SECRET          # 32+ random characters, add in the dashboard
+        sync: false
+      - key: GROQ_API_KEY        # optional: enables the AI Assistant
+        sync: false
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile

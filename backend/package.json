@@ -1,0 +1,31 @@
+{
+  "name": "campussphere-backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CampusSphere API and static host",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "node src/server.js",
+    "start": "node src/server.js",
+    "test": "node test/smoke.test.js && node test/rules.test.js && node test/auth.test.js && node test/ratelimit.test.js && node test/campus.test.js && node test/services.test.js && node test/ai.test.js && node test/privacy.test.js && node test/frontend.test.js && node test/security.test.js",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "postinstall": "prisma generate",
+    "db:seed": "node prisma/seed.js",
+    "admin:promote": "node scripts/make-admin.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.9",
+    "express": "^4.22.3",
+    "express-rate-limit": "^8.7.1",
+    "jsonwebtoken": "^9.0.3",
+    "prisma": "^6.19.3"
+  }
+}

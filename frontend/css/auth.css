@@ -1,0 +1,24 @@
+/* Authentication pages. Uses design tokens only; loaded on login, register and recovery pages. */
+.auth { padding: calc(var(--nav-height) + var(--spacing-3xl)) 0 96px; min-height: 80vh; }
+.auth__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 480px); gap: clamp(32px, 6vw, 96px); align-items: center; }
+.auth__title { font-size: clamp(48px, 7vw, 104px); margin: var(--spacing-sm) 0 var(--spacing-md); }
+.auth__lead { color: var(--color-text-secondary); font-size: 18px; line-height: var(--line-height-body); max-width: 38ch; margin: 0; }
+.auth__card { display: grid; gap: var(--spacing-md); padding: clamp(24px, 4vw, 44px); }
+.auth__card .panel__title { font-size: 22px; }
+.auth__row { display: flex; justify-content: flex-end; margin-top: calc(var(--spacing-xs) * -1); }
+.auth__switch { margin: 0; font-size: var(--font-size-body-sm); color: var(--color-text-secondary); }
+.auth__link { color: var(--color-accent-pink-strong); font-weight: var(--font-weight-bold); text-decoration: underline; text-underline-offset: 4px; }
+.auth__link:hover { color: var(--color-link-hover); }
+.auth [hidden] { display: none !important; }
+.input-wrap { position: relative; }
+.input-wrap .input { padding-right: 84px; }
+.input-wrap__toggle {
+  position: absolute; top: 50%; right: 8px; transform: translateY(-50%); min-height: 36px; padding: 0 14px;
+  border: 0; border-radius: var(--radius-pill); background: transparent; cursor: pointer;
+  font-size: 11px; font-weight: var(--font-weight-extrabold); letter-spacing: var(--letter-spacing-wide); text-transform: uppercase; color: var(--color-text-primary);
+}
+.input-wrap__toggle:hover { background: var(--color-accent-pink-soft); }
+@media (max-width: 860px) {
+  .auth__grid { grid-template-columns: 1fr; }
+  .auth__lead { font-size: 16px; }
+}

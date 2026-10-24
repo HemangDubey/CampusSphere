@@ -1,0 +1,36 @@
+/* Interactive labs (mouse and keyboard). Tokens only. */
+.lab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--spacing-md); margin-top: var(--spacing-lg); }
+.lab-card { display: grid; gap: var(--spacing-xs); align-content: start; padding: var(--spacing-md); border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); }
+.lab-card__title { margin: 0; font-size: 20px; }
+.lab-card__how { margin: 0; font-size: var(--font-size-body-sm); color: var(--color-text-secondary); line-height: var(--line-height-body); min-height: 4.5em; }
+.lab-card__out, .lab-card__count { margin: 0; font-size: var(--font-size-body-sm); }
+.lab-card__actions { display: flex; gap: 8px; flex-wrap: wrap; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.92em; background: var(--color-surface-alt); padding: 1px 6px; border-radius: 4px; }
+
+.zone { display: grid; place-items: center; min-height: 110px; border: 2px dashed var(--color-border-strong); border-radius: var(--radius-md); background: var(--color-surface-alt); color: var(--color-text-secondary); font-size: var(--font-size-body-sm); user-select: none; cursor: crosshair; transition: background var(--duration-fast), border-color var(--duration-fast), transform var(--duration-fast); }
+.zone:focus-visible { outline: 3px solid var(--focus-ring-color, var(--color-accent-teal)); outline-offset: 2px; }
+.zone.is-active { background: var(--color-accent-pink-soft); border-color: var(--color-accent-pink-strong); color: var(--color-text-primary); transform: scale(1.02); }
+
+.compare { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--spacing-lg); align-items: center; }
+.compare__outer { padding: var(--spacing-md); min-height: 220px; border: 2px solid var(--color-accent-teal); border-radius: var(--radius-lg); background: var(--color-accent-teal-soft); display: grid; gap: var(--spacing-sm); align-content: start; font-weight: var(--font-weight-bold); }
+.compare__outer:focus-visible { outline: 3px solid var(--focus-ring-color, var(--color-accent-teal)); outline-offset: 2px; }
+.compare__inner { min-height: 110px; display: grid; place-items: center; border: 2px solid var(--color-accent-ocean); border-radius: var(--radius-md); background: var(--color-accent-ocean-soft); }
+.compare__counts { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-sm); }
+.compare__counts div { padding: var(--spacing-sm); border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); }
+.compare__counts dt { font-family: ui-monospace, Consolas, monospace; font-size: var(--font-size-caption); color: var(--color-text-secondary); }
+.compare__counts dd { margin: 0; font-size: 32px; font-weight: var(--font-weight-black); }
+@media (max-width: 700px) { .compare { grid-template-columns: 1fr; } }
+
+.kb-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-lg); margin-top: var(--spacing-lg); align-items: start; }
+.kb-layout .panel { display: grid; gap: var(--spacing-md); align-content: start; }
+.mods { display: flex; gap: 8px; flex-wrap: wrap; }
+.mod { padding: 6px 14px; border-radius: var(--radius-pill); border: 1px solid var(--color-border-strong); font-size: 12px; font-weight: var(--font-weight-extrabold); text-transform: uppercase; letter-spacing: var(--letter-spacing-wide); color: var(--color-text-secondary); }
+.mod.is-on { background: var(--color-text-primary); color: var(--color-text-inverse); border-color: var(--color-text-primary); }
+.shortcut, .legacy { margin: 0; font-size: var(--font-size-body-sm); color: var(--color-text-secondary); }
+.legacy { font-style: italic; }
+
+/* Labs hub */
+.hub { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--spacing-md); margin-top: var(--spacing-lg); }
+.hub a.panel { display: grid; gap: var(--spacing-xs); align-content: start; }
+.hub p { margin: 0; color: var(--color-text-secondary); font-size: var(--font-size-body-sm); }
+@media (prefers-reduced-motion: reduce) { .zone { transition: none; } .zone.is-active { transform: none; } }

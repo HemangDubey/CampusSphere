@@ -1,9 +1,14 @@
 // Shared site chrome (nav + footer) so every page and future module stays consistent.
+import { authApi } from './api.js';
+
 export const NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/#modules', label: 'Modules' },
-  { href: '/#spaces', label: 'Campus' },
   { href: '/events', label: 'Events' },
+  { href: '/travel', label: 'Travel' },
+  { href: '/resources', label: 'Resources' },
+  { href: '/healthcare', label: 'Healthcare' },
+  { href: '/labs', label: 'Labs' },
   { href: '/assistant', label: 'AI Assistant' }
 ];
 
@@ -24,6 +29,11 @@ export function renderNav(activePath = '/') {
         <button class="nav__toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav-menu"><span></span><span></span><span></span></button>
       </div>
     </div>`;
+  // Swap "Get Started" for "Dashboard" when a session exists (the server decides; failures are ignored).
+  authApi.me().then(() => {
+    const cta = el.querySelector('.nav__actions .btn-pill');
+    if (cta) { cta.textContent = 'Dashboard'; cta.href = '/dashboard'; }
+  }).catch(() => {});
   const toggle = el.querySelector('.nav__toggle');
   toggle.addEventListener('click', () => {
     const open = el.classList.toggle('is-open');
@@ -53,8 +63,8 @@ export function renderFooter() {
         </div>
         <div class="footer__cols reveal">
           <div><h4>Explore</h4><ul>
-            <li><a href="/dashboard">Dashboard</a></li><li><a href="/services">Campus Services</a></li>
-            <li><a href="/events">Events</a></li><li><a href="/labs">Interactive Labs</a></li>
+            <li><a href="/dashboard">Dashboard</a></li><li><a href="/resources">Campus Resources</a></li>
+            <li><a href="/events">Events</a></li><li><a href="/travel">Travel Explorer</a></li><li><a href="/healthcare">Healthcare</a></li><li><a href="/courses">Course Registration</a></li><li><a href="/checkout">Checkout Demo</a></li><li><a href="/labs">Interactive Labs</a></li>
             <li><a href="/assistant">AI Assistant</a></li></ul></div>
           <div><h4>Connect</h4><ul>
             <li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li>
@@ -80,7 +90,7 @@ export function renderFooter() {
         body: JSON.stringify({ email: form.email.value.trim() })
       });
       const data = await res.json();
-      msg.textContent = data.message || data.error;
+      msg.textContent = data.message || data.error?.message || 'Something went wrong.';
       msg.classList.toggle('is-error', !res.ok);
       if (res.ok) form.reset();
     } catch {

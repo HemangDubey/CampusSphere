@@ -1,0 +1,39 @@
+{
+  "$comment": "TEMPLATE, NOT YET DEPLOYED OR TESTED. Optional split deployment: static frontend on Vercel, API on another host. Replace YOUR-BACKEND-HOST. /api is proxied so the browser stays same-origin (first-party cookies, no CORS).",
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://YOUR-BACKEND-HOST/api/:path*" },
+    { "source": "/login", "destination": "/pages/login.html" },
+    { "source": "/register", "destination": "/pages/register.html" },
+    { "source": "/forgot-password", "destination": "/pages/forgot-password.html" },
+    { "source": "/reset-password", "destination": "/pages/reset-password.html" },
+    { "source": "/dashboard", "destination": "/pages/dashboard.html" },
+    { "source": "/events", "destination": "/pages/events.html" },
+    { "source": "/travel", "destination": "/pages/travel.html" },
+    { "source": "/resources", "destination": "/pages/resources.html" },
+    { "source": "/services", "destination": "/pages/resources.html" },
+    { "source": "/healthcare", "destination": "/pages/healthcare.html" },
+    { "source": "/courses", "destination": "/pages/courses.html" },
+    { "source": "/checkout", "destination": "/pages/checkout.html" },
+    { "source": "/employees", "destination": "/pages/employees.html" },
+    { "source": "/assistant", "destination": "/pages/assistant.html" },
+    { "source": "/labs", "destination": "/pages/labs.html" },
+    { "source": "/labs/mouse", "destination": "/pages/mouse-lab.html" },
+    { "source": "/labs/keyboard", "destination": "/pages/keyboard-lab.html" },
+    { "source": "/about", "destination": "/pages/about.html" },
+    { "source": "/contact", "destination": "/pages/contact.html" },
+    { "source": "/privacy", "destination": "/pages/privacy.html" },
+    { "source": "/terms", "destination": "/pages/terms.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://images.unsplash.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "microphone=(self), camera=(), geolocation=(), payment=()" }
+      ]
+    }
+  ]
+}

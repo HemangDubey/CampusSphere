@@ -97,17 +97,6 @@
 
   <footer class="footer" data-footer></footer>
   <script src="/vendor/bootstrap-5.3.3/js/bootstrap.bundle.min.js" defer></script>
-  <script type="module">
-    import { renderNav, renderFooter, initReveal } from '/js/layout.js';
-    renderNav('/pages/bootstrap-demo.html');
-    renderFooter();
-    initReveal();
-    // Bootstrap's documented validation pattern.
-    const form = document.querySelector('[data-bs-form]');
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      form.classList.add('was-validated');
-    });
-  </script>
+  <script type="module" src="/js/bootstrap-demo.js"></script>
 </body>
 </html>

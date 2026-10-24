@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy | CampusSphere</title>
+  <meta name="theme-color" content="#fdf8f3">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/campus.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="nav" data-nav></header>
+  <main id="main" class="page">
+    <div class="container info">
+      <span class="label label--accent">Privacy</span>
+      <h1 class="display page__title">Your data,<br><em>plainly</em></h1>
+      <div class="info__body">
+      <p>This page describes how this demonstration app handles data. It is not legal advice and has not been reviewed by a lawyer.</p>
+      <ul><li><strong>Account data:</strong> your name, email and a salted password hash are stored in the project's database. Passwords are never stored in plain text.</li>
+      <li><strong>Session:</strong> signing in sets an HTTP-only cookie that identifies your session. Signing out ends the session on the server.</li>
+      <li><strong>Records you create:</strong> event and course registrations, saved destinations and demonstration appointment requests are linked to your account and visible only to you (employee records are visible to administrators only).</li>
+      <li><strong>Checkout demo:</strong> no card details are collected and nothing is stored.</li>
+      <li><strong>AI Assistant:</strong> the messages you send are passed through the server to an AI service to generate a reply. Do not share sensitive personal information in the chat.</li>
+      <li><strong>Voice:</strong> dictation and read-aloud use your browser's built-in features. CampusSphere does not record or store audio, but your browser may process dictation audio with its own speech service.</li>
+      <li><strong>Labs:</strong> keystrokes and mouse movements in the labs stay in your browser.</li></ul>
+      </div>
+    </div>
+  </main>
+  <footer class="footer" data-footer></footer>
+  <script type="module" src="/js/layout-only.js"></script>
+</body>
+</html>

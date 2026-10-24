@@ -4,9 +4,10 @@
   "private": true,
   "description": "CampusSphere — Your Smart Campus Companion",
   "scripts": {
-    "dev": "node backend/src/server.js",
-    "start": "node backend/src/server.js",
-    "test": "node backend/test/smoke.test.js"
+    "install:all": "npm --prefix backend install",
+    "dev": "npm --prefix backend run dev",
+    "start": "npm --prefix backend start",
+    "test": "npm --prefix backend test"
   },
   "engines": { "node": ">=18" }
 }

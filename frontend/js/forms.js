@@ -11,6 +11,7 @@ const CONTROLS = 'input:not([type=hidden]):not([type=submit]), select, textarea'
 function messageFor(control) {
   const v = control.validity;
   if (v.valid) return '';
+  if (v.customError) return control.validationMessage;
   const custom = control.dataset.error;
   if (custom) return custom;
   if (v.valueMissing) return 'This field is required.';
@@ -20,7 +21,15 @@ function messageFor(control) {
   return control.validationMessage;
 }
 
+// data-match="password" makes a field (e.g. confirm password) require the same value as another field.
+function applyMatch(control) {
+  const target = control.dataset.match && control.form?.elements[control.dataset.match];
+  if (!target) return;
+  control.setCustomValidity(control.value && control.value !== target.value ? (control.dataset.matchError || 'Values do not match.') : '');
+}
+
 export function validateField(control) {
+  applyMatch(control);
   const field = control.closest('.field');
   if (!field) return control.checkValidity();
   const error = field.querySelector('.field__error');
@@ -48,6 +57,7 @@ export function enhanceForm(form, { onSubmit } = {}) {
   const controls = () => [...form.querySelectorAll(CONTROLS)];
   // Validate on blur, and live once a field has been flagged.
   controls().forEach((c) => {
+    if (c.dataset.match) form.elements[c.dataset.match]?.addEventListener('input', () => { if (c.value) validateField(c); });
     c.addEventListener('blur', () => validateField(c));
     c.addEventListener('input', () => { if (c.getAttribute('aria-invalid') === 'true') validateField(c); });
   });

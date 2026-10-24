@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Course Registration | CampusSphere</title>
+  <meta name="theme-color" content="#fdf8f3">
+  <meta name="api-base" content="">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/campus.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="nav" data-nav></header>
+  <main id="main" class="page">
+    <div class="container">
+      <div class="page__head">
+        <span class="label label--accent">Course registration</span>
+        <h1 class="display page__title">Pick your <em>courses</em></h1>
+        <p class="page__lead">Register for a course in a given term. Your registrations are saved to your account.</p>
+      </div>
+      <p class="banner" role="note">The course list is a <strong>sample catalogue</strong> for demonstration, not your institution's official offering.</p>
+      <div class="notice notice--info" data-signin hidden><span class="notice__icon" aria-hidden="true"></span><p>Please <a class="auth__link" href="/login?next=/courses">sign in</a> to register for courses.</p></div>
+      <div class="notice notice--success" data-form-success role="status" hidden><span class="notice__icon" aria-hidden="true"></span><p></p></div>
+      <div class="notice notice--error" data-form-error role="alert" hidden><span class="notice__icon" aria-hidden="true"></span><p></p></div>
+
+      <div class="checkout">
+        <form class="form panel" data-form novalidate aria-labelledby="f-h">
+          <h2 class="panel__title" id="f-h">Register</h2>
+          <div class="field"><label class="field__label" for="courseCode">Course<span class="req" aria-hidden="true">*</span></label>
+            <select class="select" id="courseCode" name="courseCode" required><option value="">Choose a course…</option></select><p class="field__error"></p></div>
+          <div class="field"><label class="field__label" for="academicYear">Academic year<span class="req" aria-hidden="true">*</span></label>
+            <select class="select" id="academicYear" name="academicYear" required><option value="">Choose…</option></select><p class="field__error"></p></div>
+          <fieldset class="fieldset field"><legend class="field__label">Semester<span class="req" aria-hidden="true">*</span></legend>
+            <label class="check"><input type="radio" name="semester" value="ODD"><span>Odd</span></label>
+            <label class="check"><input type="radio" name="semester" value="EVEN"><span>Even</span></label>
+            <label class="check"><input type="radio" name="semester" value="SUMMER"><span>Summer</span></label>
+            <p class="field__error"></p></fieldset>
+          <div class="field"><label class="field__label" for="notes">Notes (optional)</label><textarea class="textarea" id="notes" name="notes" rows="2" maxlength="200"></textarea><p class="field__error"></p></div>
+          <div class="field"><label class="check"><input type="checkbox" name="consent"><span>I confirm the details above are correct.</span></label><p class="field__error"></p></div>
+          <button class="button" type="submit">Register for course</button>
+        </form>
+        <section class="panel" aria-labelledby="m-h"><h2 class="panel__title" id="m-h">My registrations</h2><div data-mine aria-live="polite"></div></section>
+      </div>
+    </div>
+  </main>
+  <footer class="footer" data-footer></footer>
+  <script type="module" src="/js/courses.js"></script>
+</body>
+</html>

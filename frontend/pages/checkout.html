@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkout Demo | CampusSphere</title>
+  <meta name="theme-color" content="#fdf8f3">
+  <meta name="api-base" content="">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/campus.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="nav" data-nav></header>
+  <main id="main" class="page">
+    <div class="container">
+      <div class="page__head">
+        <span class="label label--accent">Checkout demonstration</span>
+        <h1 class="display page__title">Pay <em>(not really)</em></h1>
+        <p class="page__lead">A coursework demo of an order summary, billing form and payment choice.</p>
+      </div>
+      <div class="notice notice--warning" role="note"><span class="notice__icon" aria-hidden="true"></span><p><strong>Demo checkout.</strong> No payment gateway is connected. Nothing is charged, no card details are collected and no real transaction is created. Tax and fees are illustrative.</p></div>
+
+      <div class="checkout" data-checkout>
+        <section aria-labelledby="items-h" class="panel">
+          <h2 class="panel__title" id="items-h">Your order</h2>
+          <div data-items></div>
+          <dl class="totals" aria-live="polite" data-totals></dl>
+        </section>
+
+        <form class="form panel" data-form novalidate aria-labelledby="details-h">
+          <h2 class="panel__title" id="details-h">Customer and billing details</h2>
+          <div class="notice notice--error" data-form-error role="alert" hidden><span class="notice__icon" aria-hidden="true"></span><p></p></div>
+          <div class="field"><label class="field__label" for="name">Full name<span class="req" aria-hidden="true">*</span></label><input class="input" id="name" name="name" autocomplete="name" maxlength="80" required><p class="field__error"></p></div>
+          <div class="form-row">
+            <div class="field"><label class="field__label" for="email">Email<span class="req" aria-hidden="true">*</span></label><input class="input" id="email" name="email" type="email" autocomplete="email" required><p class="field__error"></p></div>
+            <div class="field"><label class="field__label" for="phone">Mobile<span class="req" aria-hidden="true">*</span></label><input class="input" id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required><p class="field__error"></p></div>
+          </div>
+          <div class="field"><label class="field__label" for="address">Billing address<span class="req" aria-hidden="true">*</span></label><input class="input" id="address" name="address" autocomplete="street-address" maxlength="150" required><p class="field__error"></p></div>
+          <div class="form-row">
+            <div class="field"><label class="field__label" for="city">City<span class="req" aria-hidden="true">*</span></label><input class="input" id="city" name="city" autocomplete="address-level2" maxlength="60" required><p class="field__error"></p></div>
+            <div class="field"><label class="field__label" for="pincode">PIN code<span class="req" aria-hidden="true">*</span></label><input class="input" id="pincode" name="pincode" autocomplete="postal-code" inputmode="numeric" maxlength="6" required><p class="field__error"></p></div>
+          </div>
+          <fieldset class="fieldset field"><legend class="field__label">Payment method (demo)<span class="req" aria-hidden="true">*</span></legend>
+            <label class="check"><input type="radio" name="method" value="upi"><span>UPI (demo, no UPI ID needed)</span></label>
+            <label class="check"><input type="radio" name="method" value="card"><span>Card (demo, no card details needed)</span></label>
+            <label class="check"><input type="radio" name="method" value="netbanking"><span>Net banking (demo)</span></label>
+            <p class="field__error"></p></fieldset>
+          <div class="field"><label class="field__label" for="outcome">Test outcome<span class="req" aria-hidden="true">*</span></label>
+            <select class="select" id="outcome" name="outcome" aria-describedby="outcome-hint"><option value="">Choose…</option><option value="approve">Simulate approved</option><option value="decline">Simulate declined</option><option value="cancel">Simulate cancelled</option></select>
+            <p class="field__hint" id="outcome-hint">Demo outcomes let you show each result screen.</p><p class="field__error"></p></div>
+          <div class="field"><label class="check"><input type="checkbox" name="consent"><span>I understand this is a demonstration and no payment is made.</span></label><p class="field__error"></p></div>
+          <button class="button button--lg" type="submit">Place demo order</button>
+        </form>
+      </div>
+
+      <section class="panel" data-result aria-live="polite" hidden></section>
+    </div>
+  </main>
+  <footer class="footer" data-footer></footer>
+  <script type="module" src="/js/checkout.js"></script>
+</body>
+</html>

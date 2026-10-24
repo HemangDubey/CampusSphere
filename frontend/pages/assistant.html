@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Assistant | CampusSphere</title>
+  <meta name="theme-color" content="#fdf8f3">
+  <meta name="api-base" content="">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/campus.css">
+  <link rel="stylesheet" href="/css/assistant.css">
+</head>
+<body>
+  <a class="skip-link" href="#composer">Skip to message box</a>
+  <header class="nav" data-nav></header>
+  <main id="main" class="page assistant">
+    <div class="container assistant__wrap">
+      <div class="assistant__head">
+        <div>
+          <span class="label label--accent">AI Assistant</span>
+          <h1 class="display assistant__title">Ask <em>anything</em></h1>
+        </div>
+        <div class="assistant__tools">
+          <button class="button button--secondary button--sm" type="button" data-new>New conversation</button>
+          <button class="button button--ghost button--sm" type="button" data-clear>Clear messages</button>
+        </div>
+      </div>
+
+      <p class="banner" role="note">The AI Assistant gives general study and campus guidance. It has <strong>no access to live or official campus data</strong> and can make mistakes. Confirm anything important through official channels.</p>
+      <div class="notice notice--info" data-signin hidden><span class="notice__icon" aria-hidden="true"></span><p>Please <a class="auth__link" href="/login?next=/assistant">sign in</a> to use the AI Assistant.</p></div>
+
+      <section class="chat" aria-label="Conversation">
+        <div class="chat__log" data-log role="log" aria-live="polite" aria-relevant="additions" tabindex="0">
+          <div class="chat__empty" data-empty>
+            <p class="empty-state__title">How can I help today?</p>
+            <p class="empty-state__text">Try one of these, or type your own question.</p>
+            <div class="chat__examples">
+              <button class="chip chip--btn" type="button" data-example="Explain the difference between == and === in JavaScript with a short example.">Coursework: == vs ===</button>
+              <button class="chip chip--btn" type="button" data-example="Give me a 4-week study plan to learn HTML, CSS and JavaScript events.">Study plan for web basics</button>
+              <button class="chip chip--btn" type="button" data-example="What questions should I ask the library about borrowing rules?">Library: what to ask</button>
+              <button class="chip chip--btn" type="button" data-example="Explain what a SQL JOIN is, with a small example.">Programming: SQL JOIN</button>
+            </div>
+          </div>
+        </div>
+        <button class="button button--secondary button--sm chat__jump" type="button" data-jump hidden>Jump to latest</button>
+
+        <div class="chat__status" role="status" aria-live="polite" data-status></div>
+
+        <form class="chat__composer" data-form novalidate>
+          <label class="field__label" for="composer">Your message</label>
+          <textarea class="textarea" id="composer" name="message" rows="2" maxlength="2200" placeholder="Type a message. Enter to send, Shift+Enter for a new line." aria-describedby="composer-hint"></textarea>
+          <div class="chat__row">
+            <p class="field__hint" id="composer-hint"><span data-count>0</span> / 2000 characters</p>
+            <div class="chat__actions">
+              <button class="button button--secondary button--sm" type="button" data-mic aria-pressed="false" aria-label="Start dictation">
+                <span aria-hidden="true">🎤</span> <span data-mic-text>Dictate</span>
+              </button>
+              <button class="button button--sm" type="submit" data-send>Send</button>
+            </div>
+          </div>
+        </form>
+
+        <details class="chat__settings">
+          <summary>Voice and language settings</summary>
+          <div class="chat__settings-body">
+            <div class="field"><label class="field__label" for="lang">Language for dictation and reading aloud</label>
+              <select class="select" id="lang" data-lang><option value="en">English</option><option value="hi">Hindi</option><option value="hinglish">Hinglish (mixed)</option></select></div>
+            <label class="check"><input type="checkbox" data-autospeak><span>Read new replies aloud automatically</span></label>
+            <p class="field__hint" data-voice-note>Voice features use your browser's built-in speech support. Support and language quality vary by browser. Depending on the browser, dictation audio may be processed by the browser's own speech service; CampusSphere does not record, store or upload audio. Dictated text appears in the message box so you can edit it before sending.</p>
+          </div>
+        </details>
+      </section>
+    </div>
+  </main>
+  <footer class="footer" data-footer></footer>
+  <script type="module" src="/js/assistant.js"></script>
+</body>
+</html>

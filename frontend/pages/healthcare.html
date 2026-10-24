@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Healthcare | CampusSphere</title>
+  <meta name="theme-color" content="#fdf8f3">
+  <meta name="api-base" content="">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/campus.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="nav" data-nav></header>
+  <main id="main" class="page">
+    <div class="container">
+      <div class="page__head">
+        <span class="label label--accent">Healthcare</span>
+        <h1 class="display page__title">Care, <em>close by</em></h1>
+        <p class="page__lead">Browse sample health services and send a demonstration appointment request.</p>
+      </div>
+      <div class="notice notice--warning" role="note"><span class="notice__icon" aria-hidden="true"></span><p data-disclaimer><strong>Demonstration only.</strong> Not a medical service.</p></div>
+      <div class="notice notice--error" role="note" style="margin-top:12px"><span class="notice__icon" aria-hidden="true"></span><p data-emergency>In an emergency, call your local emergency number.</p></div>
+
+      <div data-state-error class="notice notice--error" role="alert" hidden><span class="notice__icon" aria-hidden="true"></span><p></p></div>
+
+      <section class="section-block" aria-labelledby="svc">
+        <h2 class="panel__title" id="svc">Service categories</h2>
+        <div class="card-item__tags" data-categories></div>
+      </section>
+      <section class="section-block" aria-labelledby="hosp">
+        <h2 class="panel__title" id="hosp">Hospitals and clinics (sample)</h2>
+        <div class="cards" data-hospitals></div>
+      </section>
+      <section class="section-block" aria-labelledby="docs">
+        <h2 class="panel__title" id="docs">Healthcare professionals (sample profiles)</h2>
+        <div class="cards" data-doctors></div>
+      </section>
+
+      <section class="section-block form-section" aria-labelledby="req">
+        <h2 class="panel__title" id="req">Request an appointment (demonstration)</h2>
+        <div data-signin class="notice notice--info" hidden><span class="notice__icon" aria-hidden="true"></span><p>Please <a class="auth__link" href="/login?next=/healthcare">sign in</a> to send a request.</p></div>
+        <div data-form-success class="notice notice--success" role="status" hidden><span class="notice__icon" aria-hidden="true"></span><p></p></div>
+        <div data-form-error class="notice notice--error" role="alert" hidden><span class="notice__icon" aria-hidden="true"></span><p></p></div>
+        <form class="form panel" data-form novalidate>
+          <div class="form-row">
+            <div class="field"><label class="field__label" for="patientName">Patient name<span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="patientName" name="patientName" type="text" autocomplete="name" maxlength="80" required><p class="field__error"></p></div>
+            <div class="field"><label class="field__label" for="phone">Contact number<span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="98765 43210" aria-describedby="phone-hint" required><p class="field__hint" id="phone-hint">10-digit mobile number</p><p class="field__error"></p></div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label class="field__label" for="department">Department<span class="req" aria-hidden="true">*</span></label>
+              <select class="select" id="department" name="department" required><option value="">Choose…</option></select><p class="field__error"></p></div>
+            <div class="field"><label class="field__label" for="preferredDate">Preferred date<span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="preferredDate" name="preferredDate" type="date" required><p class="field__error"></p></div>
+          </div>
+          <fieldset class="fieldset field"><legend class="field__label">Time preference<span class="req" aria-hidden="true">*</span></legend>
+            <label class="check"><input type="radio" name="timePreference" value="MORNING"><span>Morning</span></label>
+            <label class="check"><input type="radio" name="timePreference" value="AFTERNOON"><span>Afternoon</span></label>
+            <label class="check"><input type="radio" name="timePreference" value="EVENING"><span>Evening</span></label>
+            <p class="field__error"></p></fieldset>
+          <div class="field"><label class="field__label" for="reason">Reason for visit<span class="req" aria-hidden="true">*</span></label>
+            <textarea class="textarea" id="reason" name="reason" rows="3" maxlength="500" required aria-describedby="reason-hint"></textarea><p class="field__hint" id="reason-hint">Keep it short. Do not include sensitive medical details.</p><p class="field__error"></p></div>
+          <div class="field"><label class="check"><input type="checkbox" name="consent"><span>I understand this is a demonstration request and no real appointment is booked.</span></label><p class="field__error"></p></div>
+          <button class="button" type="submit">Send demonstration request</button>
+        </form>
+      </section>
+
+      <section class="section-block" aria-labelledby="mine">
+        <h2 class="panel__title" id="mine">Your requests</h2>
+        <div data-mine aria-live="polite"></div>
+      </section>
+    </div>
+  </main>
+  <footer class="footer" data-footer></footer>
+  <script type="module" src="/js/healthcare.js"></script>
+</body>
+</html>
