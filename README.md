@@ -1,155 +1,196 @@
-# CampusSphere — Your Smart Campus Companion
+# CampusSphere
 
-A student project for a Front End Design and Testing course: one calm, editorial web app that brings a student
-dashboard, campus events, a travel explorer, campus resources, a demonstration healthcare section, employee
-records, course and symposium forms, a demonstration checkout, interactive event labs and an AI Assistant together.
+**Your campus, in one place.** CampusSphere is a full-stack campus platform that brings events, travel planning, campus services, a digital library, student community, healthcare scheduling, leave approvals and an AI assistant into a single role-aware web application.
 
-> **Honesty note.** Most content is **sample or demonstration data** and is labelled in the UI. Nothing is connected
-> to a real university, hospital or payment provider. See [Known limitations](#known-limitations).
+## Features
 
-## Features and status
-
-Six roles: Student, Faculty/Staff, Event Organizer, Healthcare Admin, Campus Admin, Super Admin. Permissions are enforced by the server; the UI only hides links.
-
-| Area | Status |
+| Area | What you can do |
 | --- | --- |
-| Landing page, design system, collapsible sidebar app shell | Done (landing design preserved; copy corrected to match real features) |
-| Auth (register, login, logout, reset, profile), role and account management | Done. Reset emails are **not sent** |
-| Dashboard (role-aware, notifications, announcements, pending work) | Done |
-| Events: details, registration wizard, cancel, organizer create/edit/publish/cancel, attendance, CSV | Done |
-| Travel: filters, favourites, trip planner (items, expenses, share, collaborators) | Done with sample data, generated covers, no maps/prices/booking |
-| Resources and service requests with reference, tracking and staff queue | Done |
-| Library: search, reading list | Done. Borrowing/reservation **not implemented** |
-| Healthcare: services, providers, slots, booking, reschedule, cancel, staff review | Demonstration only; not a medical service |
-| Leave requests and approvals | Done (demonstration rules) |
-| Notifications, activity history, audit log, reports | Done (in-app only) |
-| Games & Recreation (six games, leaderboards) | Done; scores are self-reported |
-| Admin content management (events, destinations, resources, announcements, healthcare, users) | Done |
-| Employees, courses, checkout | Employees admin-only; checkout demonstration only |
-| AI Assistant (grounded in your own app data, voice dictation, read aloud) | Real reply verified once; voice **not** verified |
-| Mouse/keyboard labs, Bootstrap demo | Done (coursework evidence) |
-| Coursework pages Q01–Q41 | **Not built**: question wording unavailable ([COURSEWORK_COVERAGE.md](COURSEWORK_COVERAGE.md)) |
+| **Dashboard** | A personal overview of upcoming events, open requests, notifications, announcements and role-specific workload. |
+| **Events & Symposiums** | Search and filter events, register through a guided form, receive a reference number, cancel, and track registrations. Organizers create, publish and cancel events, manage attendance and export registrations. |
+| **Travel Explorer** | Browse destinations by type, budget and duration, save favourites, and build trip plans with day-by-day itineraries, expenses, budget tracking, sharing and collaborators. |
+| **Campus Resources** | Departments, facilities and support services with featured, most-saved and recently viewed sections, bookmarks, issue reports and a configurable service-request workflow with status tracking. |
+| **Library** | Searchable catalogue with tags and publication details, plus a private reading list with notes, progress, collections, ordering and CSV export. |
+| **Student Community** | Discussion feed with topics, comments, likes and saved posts; clubs and project groups with join requests, member management and announcements; reporting and moderation. |
+| **Healthcare** | Browse services and providers, book available time slots, reschedule or cancel, and follow appointment status. Staff review and manage schedules. |
+| **Leave Requests** | Submit leave to an assigned reviewer, respond to information requests, withdraw, and follow the decision history. |
+| **Notifications & Activity** | In-app notifications and a personal activity history generated from real events. |
+| **Games & Recreation** | Six playable games with difficulty levels and leaderboards. |
+| **AI Assistant** | A chat assistant with voice dictation and read-aloud, grounded in the signed-in user's own campus data. |
+| **Administration** | User and role management, role approvals, content and announcement management, request queues, community moderation, reports and an audit log. |
 
-Other documents: [FUNCTIONALITY_AUDIT.md](FUNCTIONALITY_AUDIT.md), [INTERACTION_VERIFICATION.md](INTERACTION_VERIFICATION.md), [ARCHITECTURE.md](ARCHITECTURE.md), [IMPLEMENTATION_PROGRESS.md](IMPLEMENTATION_PROGRESS.md), [SCREENSHOT_CHECKLIST.md](SCREENSHOT_CHECKLIST.md).
+## Roles and access
 
-## Architecture and stack
+Access is enforced on the server by permission, with object-level checks on every record.
 
-- **Frontend** `frontend/`: plain HTML, CSS and ES-module JavaScript, no framework or build step.
-- **Backend** `backend/`: Node.js 18+, Express 4, Prisma 6, PostgreSQL. Serves `/api` and, in development, the frontend files.
-- **Auth:** bcrypt password hashes; signed token in an HTTP-only cookie that points at a server-side session row.
-- **AI Assistant:** the browser calls `POST /api/ai/chat`; only the backend talks to the AI provider.
-- Details: [ARCHITECTURE.md](ARCHITECTURE.md).
+| Role | Responsibilities |
+| --- | --- |
+| **Student** | Default role. Uses all everyday features for their own records. |
+| **Faculty / Staff** | Reviews assigned leave and service requests. |
+| **Event Organizer** | Creates and manages events, registrations and attendance. |
+| **Healthcare Admin** | Manages healthcare services, providers, slots and appointments. |
+| **Campus Admin** | Manages events, requests, resources, content and employee records; views reports and the audit log; moderates the community. |
+| **Super Admin** | Everything above, plus users, roles and role requests. |
 
-```
-frontend/   pages, css, js, vendor (Bootstrap 5.3.3)
-backend/    src (app, routes, controllers, validators, middleware, services), prisma (schema, migrations, seed), test, scripts
-```
+New accounts start as students. The registration form lets a person ask for another role; a Super Admin approves or declines the request in **Administration → Users & Roles**.
 
-## Prerequisites
+## Tech stack
 
-Node.js 18 or newer, npm, and a PostgreSQL database (Docker for local development, or a hosted one such as Neon).
+- **Frontend:** HTML, CSS and ES-module JavaScript. No framework and no build step.
+- **Backend:** Node.js, Express 4, Prisma 6.
+- **Database:** PostgreSQL 16.
+- **Authentication:** bcrypt password hashes and revocable server-side sessions delivered in an HTTP-only cookie.
+- **Security:** Content Security Policy and standard security headers, origin checks on writes, rate limiting on authentication, AI and community writes, input validation on every endpoint.
+- **AI:** provider access is isolated in `backend/src/services/aiService.js` and is server-side only.
 
-## Install and run locally
+## Getting started
+
+### Prerequisites
+
+- Node.js 18 or newer
+- npm
+- PostgreSQL 16 (Docker is the quickest way to run it locally)
+
+### Install and run
 
 ```bash
-# 1. dependencies
+# 1. Install dependencies
 npm run install:all
 
-# 2. a local PostgreSQL (skip if you use a hosted database)
+# 2. Start PostgreSQL
 docker run -d --name campussphere-pg -e POSTGRES_PASSWORD=devpass -e POSTGRES_DB=campussphere -p 5433:5432 postgres:16-alpine
 
-# 3. configuration
+# 3. Configure the backend
 cp backend/.env.example backend/.env
-#    edit backend/.env: DATABASE_URL=postgresql://postgres:devpass@localhost:5433/campussphere?schema=public
-#    and JWT_SECRET=<output of: node -e "console.log(require('crypto').randomBytes(48).toString('hex'))">
+#    set DATABASE_URL=postgresql://postgres:devpass@localhost:5433/campussphere?schema=public
+#    set JWT_SECRET to a long random string:
+#    node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
 
-# 4. database
-cd backend && npx prisma migrate deploy && npm run db:seed && cd ..
+# 4. Create the schema and load starter content
+cd backend
+npx prisma migrate deploy
+npm run db:seed
+cd ..
 
-# 5. start
-npm run dev          # http://localhost:3000
+# 5. Start the app
+npm run dev
 ```
 
-Everything (pages and API) is served from `http://localhost:3000`, so no CORS setup is needed in development.
+The application, including the API, is served at **http://localhost:3000**.
 
-## Environment variables (`backend/.env`)
-
-| Variable | Purpose |
-| --- | --- |
-| `DATABASE_URL` | PostgreSQL connection string. Required in production |
-| `JWT_SECRET` | 32+ random characters for signing sessions. Required in production (dev uses a random per-process secret) |
-| `NODE_ENV` | `production` enables Secure cookies and strict config checks |
-| `PORT` | Defaults to 3000 |
-| `CORS_ORIGINS` | Comma-separated browser origins allowed cross-origin. Empty = same-origin only |
-| `COOKIE_SAMESITE` | `lax` (default). `none` only for a cross-origin frontend over HTTPS |
-| `SESSION_DAYS`, `AUTH_RATE_LIMIT_MAX` | Session length and auth attempts per 15 minutes per IP |
-| `GROQ_API_KEY` | AI provider key. Server-side only. Empty = the AI Assistant reports "not available" |
-| `GROQ_MODEL` | Model id (default `openai/gpt-oss-120b`; change it if the provider retires it) |
-| `AI_TIMEOUT_MS`, `AI_RATE_LIMIT_MAX` | AI request timeout and per-user messages per minute |
-
-Process environment variables win over `backend/.env` (for example a `GROQ_API_KEY` set in your OS). Real secrets
-belong only in `backend/.env` or your host's secret store, never in git. The frontend has no secrets; its only
-setting is `frontend/js/config.js` (`apiBase`).
-
-## Database
+### Local sign-in accounts
 
 ```bash
 cd backend
-npx prisma migrate dev --name <change>   # create and apply a migration while developing
-npx prisma migrate deploy                # apply committed migrations (staging/production, non-destructive)
-npm run db:seed                          # base content plus connected starter content for all roles (idempotent: only adds what is missing)
-npm run db:seed -- --reset-demo          # clear demo content (isDemo rows) first, then reseed
-npm run db:seed:activity                # only the connected starter content for the six role accounts (safe to re-run)
-npm run admin:promote -- user@example.edu SUPER_ADMIN  # roles: FACULTY, EVENT_ORGANIZER, HEALTHCARE_ADMIN, CAMPUS_ADMIN, SUPER_ADMIN
+npm run dev:accounts
 ```
 
-There is no default admin account; public registration always creates a Student. The registration form has a role picker: choosing another role files a request that a Super Admin approves in Admin > Users & Roles. For local testing run `npm run dev:accounts` (one account per role, password in the git-ignored `backend/dev-accounts.txt`). Or register normally, then promote that user (or have a Super Admin change roles in Admin > Users) from a machine that has `DATABASE_URL`.
-Never run `prisma migrate reset` against a production database.
+This creates one account for each of the six roles and writes the credentials to `backend/dev-accounts.txt`, which is git-ignored. It refuses to run when `NODE_ENV=production`.
 
-## Tests
+## Configuration
+
+Set these in `backend/.env` (or in your host's secret store).
+
+| Variable | Description |
+| --- | --- |
+| `DATABASE_URL` | PostgreSQL connection string. Required in production. |
+| `JWT_SECRET` | Secret of at least 32 characters used to sign sessions. Required in production. |
+| `NODE_ENV` | `production` enables secure cookies and strict configuration checks. |
+| `PORT` | Server port. Defaults to `3000`. |
+| `CORS_ORIGINS` | Comma-separated list of browser origins allowed cross-origin. Empty means same-origin only. |
+| `COOKIE_SAMESITE` | `lax` by default. Use `none` only for a cross-origin frontend served over HTTPS. |
+| `SESSION_DAYS` | Session lifetime in days. |
+| `AUTH_RATE_LIMIT_MAX` | Authentication attempts allowed per 15 minutes per IP. |
+| `COMMUNITY_RATE_LIMIT_MAX` | Community writes allowed per minute per user. |
+| `GROQ_API_KEY` | AI provider key. Server-side only. The assistant reports itself as unavailable when empty. |
+| `GROQ_MODEL` | AI model identifier. |
+| `AI_TIMEOUT_MS` | Timeout for AI requests. |
+| `AI_RATE_LIMIT_MAX` | AI messages allowed per minute per user. |
+
+Environment variables set in the operating system take precedence over `backend/.env`. Never commit real secrets.
+
+## Database and content
 
 ```bash
-npm test      # needs the database; runs 16 backend and frontend suites
+cd backend
+npx prisma migrate dev --name <change>       # create and apply a migration while developing
+npx prisma migrate deploy                    # apply committed migrations (staging and production)
+npm run db:seed                              # base content plus starter content for every role (idempotent)
+npm run db:seed:activity                     # starter content for the role accounts only
+npm run db:seed -- --reset-demo              # remove seeded content, then reseed
+npm run admin:promote -- user@example.edu SUPER_ADMIN
 ```
 
-Suites: smoke (pages, health, errors), validation rule parity (browser vs server), auth, rate limits, events, travel, resources, leave, healthcare, admin/RBAC, games, misc, AI endpoint (**provider stubbed**), privacy (no provider names or keys in the
-frontend or tracked files), frontend checks (assistant helpers, link integrity, Bootstrap isolation) and security
-(headers, CORS, anonymous access to every private endpoint, production config failure modes, JS syntax).
-There are no automated DOM/browser tests; UI behaviour was verified by hand in a browser (see IMPLEMENTATION_PROGRESS.md).
+Seeding only adds what is missing, so it is safe to run repeatedly. Roles for existing users can be set with `admin:promote` (`FACULTY`, `EVENT_ORGANIZER`, `HEALTHCARE_ADMIN`, `CAMPUS_ADMIN`, `SUPER_ADMIN`) or by a Super Admin in the app. Do not run `prisma migrate reset` against a production database.
+
+## Testing
+
+```bash
+npm test
+```
+
+The suite runs against a real PostgreSQL database and covers authentication, authorization for every role, events, travel, resources and requests, leave, healthcare, administration, community, library, role requests, games, the AI endpoint, privacy, frontend integrity (routes, assets, imports, links) and security (headers, CORS, anonymous access to every private endpoint, JavaScript syntax).
+
+## Project structure
+
+```
+frontend/            Pages, styles and ES-module scripts
+  css/               Design tokens, components and page styles
+  js/pages/          One module per page
+  js/games/          Game logic and UI
+  img/stock/         Category photography
+  pages/             HTML shells for each route
+backend/
+  src/               Express app, routes, controllers, services, middleware, validators
+  prisma/            Schema, migrations and seed scripts
+  scripts/           Provisioning and maintenance scripts
+  test/              Integration and frontend test suites
+```
+
+## API overview
+
+All endpoints live under `/api` and return a consistent JSON envelope:
+
+```json
+{ "success": true, "data": {}, "message": "optional" }
+{ "success": false, "error": { "code": "VALIDATION_ERROR", "message": "…", "details": {} } }
+```
+
+| Group | Examples |
+| --- | --- |
+| Auth | `POST /auth/register`, `POST /auth/login`, `GET /auth/me` |
+| Events | `GET /events`, `POST /events/:id/register`, `GET /manage/events` |
+| Travel | `GET /destinations`, `GET /trips`, `PUT /trips/:id/items` |
+| Resources | `GET /resources`, `GET /resources/home`, `POST /service-requests` |
+| Library | `GET /reading-list`, `PATCH /reading-list/:id`, `GET /reading-list/export.csv` |
+| Community | `GET /community/posts`, `POST /community/groups/:id/join`, `POST /community/reports` |
+| Healthcare | `GET /healthcare/services`, `POST /healthcare/appointments` |
+| Leave | `POST /leave`, `GET /manage/leave` |
+| Administration | `GET /admin/users`, `GET /admin/role-requests`, `GET /admin/audit` |
+| AI | `POST /ai/chat` |
 
 ## Deployment
 
-Recommended: **one Render web service** (serves API and pages from the same origin) plus a **Neon** database.
-Nothing has been deployed and no deployment URL exists.
+CampusSphere runs as a single Node service that serves both the API and the pages, so it needs one web service and one PostgreSQL database.
 
-1. Create a Neon project and copy its connection string (with `?sslmode=require`).
-2. Create a Render web service from this repo (see `backend/render.yaml`, an untested template): root `backend`,
-   build `npm install`, start `npx prisma migrate deploy && node src/server.js`, health check `/api/health`.
-3. Set `NODE_ENV=production`, `DATABASE_URL`, `JWT_SECRET` (and optionally `GROQ_API_KEY`) in the Render dashboard.
-4. Open the service URL, register, then run `npm run admin:promote -- you@example.edu` with `DATABASE_URL` pointing at Neon.
-5. Optional split hosting: `frontend/vercel.json` proxies `/api` to the backend so cookies stay first-party (untested template).
+1. Provision PostgreSQL and copy its connection string.
+2. Create a web service with root directory `backend`, build command `npm install`, start command `npx prisma migrate deploy && node src/server.js`, and health check `/api/health`. A starting configuration is provided in `backend/render.yaml`.
+3. Set `NODE_ENV=production`, `DATABASE_URL` and `JWT_SECRET`, plus `GROQ_API_KEY` to enable the AI assistant.
+4. Register an account, then promote it with `npm run admin:promote -- you@example.edu SUPER_ADMIN` using the production `DATABASE_URL`.
 
-Cross-origin (not recommended): set `CORS_ORIGINS` to the frontend origin, `COOKIE_SAMESITE=none`, serve both over
-HTTPS, set `frontend/js/config.js` `apiBase`, and allow the API origin in the frontend host's CSP `connect-src`.
+To host the frontend separately, `frontend/vercel.json` proxies `/api` to the backend so cookies stay first-party. For a cross-origin setup, set `CORS_ORIGINS`, `COOKIE_SAMESITE=none`, serve both origins over HTTPS and set `apiBase` in `frontend/js/config.js`.
 
 ## Troubleshooting
 
-- **`DATABASE_URL must be set in production` / `JWT_SECRET must be set`**: add the variable; the server refuses to start without it.
-- **500 "Something went wrong" on every database action**: the database is unreachable or migrations are not applied. Run `npx prisma migrate deploy`.
-- **`prisma generate` or engine download fails**: check network access, then run `npx prisma generate` in `backend/`.
-- **Signed in locally but session lost after deploy**: cookies are `Secure` in production, so use HTTPS; behind a proxy keep one origin or follow the cross-origin notes above.
-- **AI Assistant says it is unavailable or could not complete**: check `GROQ_API_KEY` (also in your OS environment), `GROQ_MODEL`, and that the server can reach the provider.
-- **Browser blocks scripts or styles after adding a CDN/inline script**: the Content Security Policy (`backend/src/middleware/securityHeaders.js`) only allows same-origin scripts.
-- **CORS error**: only needed for cross-origin setups; add the exact origin to `CORS_ORIGINS`.
+| Symptom | Fix |
+| --- | --- |
+| Server exits with `DATABASE_URL must be set` or `JWT_SECRET must be set` | Add the variable. Production refuses to start without both. |
+| Every database action returns an error | The database is unreachable or migrations are missing. Run `npx prisma migrate deploy`. |
+| `prisma generate` fails with a file-lock error on Windows | Stop the running dev server, then run `npx prisma generate`. |
+| Signed in locally but the session is lost after deploying | Cookies are `Secure` in production. Serve over HTTPS and keep one origin. |
+| The AI assistant says it is unavailable | Check `GROQ_API_KEY`, `GROQ_MODEL` and outbound network access. |
+| A script or style is blocked in the browser | The Content Security Policy allows same-origin scripts only. Add scripts as files, not inline. |
 
-## Known limitations
+## License
 
-- Standalone coursework pages (Q01–Q41) are missing until the original questions are provided.
-- No email is sent (password reset links appear only in the dev server console).
-- A real AI reply was obtained once from the development machine; real voice input/output has not been verified.
-- No real screenshots were captured; see SCREENSHOT_CHECKLIST.md.
-- Notifications are in-app only; no email, SMS or push.
-- Library borrowing, real travel maps/bookings/prices, real healthcare booking and real payments do not exist.
-- Replies from the AI Assistant render as plain text with code blocks (no rich markdown).
-- No automated browser tests; accessibility was checked by hand only partially (no screen-reader pass).
-- Deployment files are untested templates.
+All rights reserved by the repository owner unless a license file states otherwise.
