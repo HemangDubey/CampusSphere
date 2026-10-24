@@ -25,7 +25,7 @@ async function render() {
   document.title = `${g.name} | CampusSphere`;
   const manage = g.canManage;
   view.innerHTML = `<p><a class="auth__link" href="/community/groups">&larr; Clubs &amp; groups</a></p>
-    <div class="hero-detail">${cover(g.coverUrl, g.name, g.kind === 'CLUB' ? 'CLUB' : 'SUPPORT', 'cover--tall')}
+    <div class="hero-detail">${cover(g.coverUrl, g.name, g.kind === 'CLUB' ? 'CLUB' : 'PROJECT_GROUP', 'cover--tall')}
     <div class="split"><div class="stack-lg">
       <div><div class="chips"><span class="badge badge--muted">${esc(label(g.kind))}</span><span class="badge badge--muted">${esc(label(g.category))}</span>${g.verified ? badge('PUBLISHED', 'Verified by administrators') : '<span class="badge badge--muted">Not verified</span>'}${g.status === 'ARCHIVED' ? badge('CANCELLED', 'Archived') : ''}${g.myMembership ? badge(g.myMembership.status, g.myMembership.status === 'ACTIVE' ? (isManager() ? 'Manager' : 'Member') : 'Request pending') : ''}</div>
       <h1 class="page-head__title" style="font-size:clamp(28px,4vw,52px)">${esc(g.name)}</h1><p class="page-head__lead">${esc(g.description)}</p></div>

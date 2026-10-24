@@ -9,6 +9,7 @@ const state = { page: 1, rows: [], roles: [] };
 
 view.innerHTML = `${pageHead({ eyebrow: 'Administration', title: 'Users and roles', lead: 'Change roles and suspend or reactivate accounts. Changes take effect immediately and are written to the audit log.' })}
   ${notice('info', 'Public registration only creates student accounts. Staff roles are assigned here, or with the server-side provisioning script for the very first administrator.')}
+  <section class="card" style="margin-top:12px"><h2 class="section-title">Role requests</h2><div data-requests aria-live="polite"></div></section>
   <form class="toolbar" data-filters role="search" novalidate style="margin-top:12px"><div class="field field--wide"><label class="field__label" for="q">Search</label><input class="input" id="q" name="q" type="search" maxlength="60" placeholder="Name or email"></div>
   <div class="field"><label class="field__label" for="role">Role</label><select class="select" id="role" name="role"><option value="">All roles</option></select></div>
   ${field({ name: 'status', label: 'Status', type: 'select', placeholder: 'Any', options: [['ACTIVE', 'Active'], ['SUSPENDED', 'Suspended']] })}<button class="button button--secondary" type="reset">Clear</button></form>
@@ -31,6 +32,25 @@ async function load() {
     pager($('[data-pager]'), data, (p) => { state.page = p; load(); });
   } catch (e) { list.innerHTML = errorState(e.message); }
 }
+
+async function loadRequests() {
+  const box = $('[data-requests]');
+  try {
+    const { requests } = await request('/admin/role-requests?status=PENDING');
+    box.innerHTML = requests.length ? `<ul class="list">${requests.map((r) => `<li data-rid="${r.id}"><strong>${esc(r.user.name)}</strong><span class="muted small">${esc(r.user.email)} · asked for ${esc(ROLE_LABELS[r.requestedRole])} · now ${esc(ROLE_LABELS[r.user.role])}</span><span class="row"><button class="button button--sm" type="button" data-decide="approve">Approve</button><button class="button button--secondary button--sm" type="button" data-decide="reject">Decline</button></span></li>`).join('')}</ul>` : '<p class="muted small">No pending role requests. People choose a role on the registration form; anything other than Student waits here for approval.</p>';
+  } catch (e) { box.innerHTML = errorState(e.message); }
+}
+
+view.addEventListener('click', async (e) => {
+  const b = e.target.closest('[data-decide]');
+  if (!b) return;
+  const id = b.closest('[data-rid]').dataset.rid;
+  const approve = b.dataset.decide === 'approve';
+  if (!(await confirmDialog({ title: approve ? 'Grant this role?' : 'Decline this request?', message: approve ? 'The person gets staff access immediately and must sign in again.' : 'The person stays a student and is told the request was declined.', confirmLabel: approve ? 'Approve' : 'Decline', danger: !approve }))) return;
+  try { await request(`/admin/role-requests/${id}/decision`, { method: 'POST', body: { decision: b.dataset.decide } }); toast(approve ? 'Role approved.' : 'Request declined.'); } catch (err) { toast(err.message, 'error'); }
+  loadRequests();
+  load();
+});
 
 async function patch(id, body, success) {
   try { await request(`/admin/users/${id}`, { method: 'PATCH', body }); toast(success); } catch (e) { toast(e.message, 'error'); }
@@ -59,3 +79,4 @@ filters.addEventListener('change', reload);
 filters.addEventListener('reset', () => setTimeout(reload));
 filters.addEventListener('submit', (e) => e.preventDefault());
 load();
+loadRequests();

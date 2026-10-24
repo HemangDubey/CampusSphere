@@ -58,6 +58,8 @@ model User {
   auditLogs           AuditLog[]
   gameScores          GameScore[]
   posts               CommunityPost[]
+  roleRequests        RoleRequest[]           @relation("RoleRequester")
+  roleDecisions       RoleRequest[]           @relation("RoleDecider")
   comments            CommunityComment[]
   postLikes           PostLike[]
   postBookmarks       PostBookmark[]
@@ -844,4 +846,28 @@ model ContentReport {
 
   @@unique([reporterId, targetType, targetId])
   @@index([status, createdAt])
+}
+
+enum RoleRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// Chosen on the registration form. The account is always created as a student; staff access only changes
+// when a super administrator approves the request.
+model RoleRequest {
+  id            String            @id @default(uuid())
+  userId        String
+  user          User              @relation("RoleRequester", fields: [userId], references: [id], onDelete: Cascade)
+  requestedRole Role
+  status        RoleRequestStatus @default(PENDING)
+  deciderId     String?
+  decider       User?             @relation("RoleDecider", fields: [deciderId], references: [id], onDelete: SetNull)
+  note          String?
+  createdAt     DateTime          @default(now())
+  decidedAt     DateTime?
+
+  @@index([status, createdAt])
+  @@index([userId])
 }

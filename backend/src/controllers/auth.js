@@ -12,6 +12,9 @@ const BCRYPT_ROUNDS = 12;
 const DUMMY_HASH = bcrypt.hashSync('not-a-real-password', BCRYPT_ROUNDS);
 const hashToken = (t) => crypto.createHash('sha256').update(t).digest('hex');
 
+const REQUESTABLE_ROLES = ['FACULTY', 'EVENT_ORGANIZER', 'HEALTHCARE_ADMIN', 'CAMPUS_ADMIN'];
+const { notifyMany } = require('../services/notify');
+
 function publicUser(u) {
   const { id, name, email, role, department, yearOfStudy, phone, bio, registrationNo, createdAt } = u;
   return { id, name, email, role, department, yearOfStudy, phone, bio, registrationNo, createdAt, permissions: permissionsFor(role) };
@@ -25,6 +28,10 @@ function validated(result) {
 exports.register = async (req, res, next) => {
   try {
     const { name, email, password } = validated(v.register(req.body));
+    // Only a request is recorded; the role itself is never taken from the client.
+    const wanted = req.body?.requestedRole;
+    if (wanted !== undefined && wanted !== '' && wanted !== 'STUDENT' && !REQUESTABLE_ROLES.includes(wanted)) throw new HttpError(400, 'VALIDATION_ERROR', 'Please correct the highlighted fields.', { requestedRole: 'Choose one of the listed roles.' });
+    const requestedRole = REQUESTABLE_ROLES.includes(wanted) ? wanted : null;
     if (await db.user.findUnique({ where: { email } })) {
       throw new HttpError(409, 'EMAIL_TAKEN', 'An account with this email already exists. Try signing in.', { email: 'This email is already registered.' });
     }
@@ -35,8 +42,13 @@ exports.register = async (req, res, next) => {
       if (e.code === 'P2002') throw new HttpError(409, 'EMAIL_TAKEN', 'An account with this email already exists. Try signing in.', { email: 'This email is already registered.' });
       throw e;
     }
+    if (requestedRole) {
+      await db.roleRequest.create({ data: { userId: user.id, requestedRole } });
+      const approvers = await db.user.findMany({ where: { role: 'SUPER_ADMIN', status: 'ACTIVE' }, select: { id: true } });
+      await notifyMany(approvers.map((a) => a.id), { type: 'SYSTEM', title: `Role request from ${user.name}`, body: `Requested ${requestedRole.replace('_', ' ').toLowerCase()} access`, link: '/admin/users' });
+    }
     await startSession(res, user.id);
-    ok(res, { user: publicUser(user) }, { status: 201, message: 'Account created.' });
+    ok(res, { user: publicUser(user), roleRequest: requestedRole ? { requestedRole, status: 'PENDING' } : null }, { status: 201, message: requestedRole ? 'Account created as a student. Your role request is waiting for approval.' : 'Account created.' });
   } catch (e) { next(e); }
 };
 

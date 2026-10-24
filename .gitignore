@@ -13,3 +13,4 @@ frontend/.env
 coverage/
 .DS_Store
 Thumbs.db
+backend/dev-accounts.txt

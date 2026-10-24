@@ -19,7 +19,7 @@ const list = $('[data-list]');
 const filters = $('[data-filters]');
 
 const STATUS = { ACTIVE: 'Member', PENDING: 'Request pending' };
-const card = (g) => `<article class="card card--flush card--link">${cover(g.coverUrl, g.name, g.kind === 'CLUB' ? 'CLUB' : 'SUPPORT', 'cover--thumb')}<div class="card__body">
+const card = (g) => `<article class="card card--flush card--link">${cover(g.coverUrl, g.name, g.kind === 'CLUB' ? 'CLUB' : 'PROJECT_GROUP', 'cover--thumb')}<div class="card__body">
   <div class="chips"><span class="badge badge--muted">${esc(label(g.kind))}</span><span class="badge badge--muted">${esc(label(g.category))}</span>${g.verified ? badge('PUBLISHED', 'Verified by administrators') : ''}${g.myMembership ? badge(g.myMembership.status, STATUS[g.myMembership.status]) : ''}</div>
   <h3><a href="/community/groups/${g.id}">${esc(g.name)}</a></h3><p class="small">${esc(g.description.slice(0, 160))}${g.description.length > 160 ? '…' : ''}</p>
   <p class="small muted">${g.memberCount} member${g.memberCount === 1 ? '' : 's'} · ${g.joinPolicy === 'OPEN' ? 'Open to join' : 'Join by request'}</p>

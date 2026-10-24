@@ -32,14 +32,23 @@ export function badge(status, text) {
 
 // ---------------------------------------------------------------- covers (photo with a generated fallback)
 const TONE_BY_KEY = { TECHNICAL: 'ocean', CULTURAL: 'pink', SPORTS: 'teal', WORKSHOP: 'sand', SYMPOSIUM: 'ocean', HERITAGE: 'pink', NATURE: 'teal', SPIRITUAL: 'sand', BEACH: 'ocean', CITY: 'ink', LIBRARY: 'sand', DEPARTMENT: 'ocean', FACILITY: 'teal', SUPPORT: 'pink', SERVICE: 'ocean', CLUB: 'teal', LINK: 'sand', ORGANIZATION: 'ink' };
+// Category photos in /img/stock (see CREDITS.md there). They show a type of place or activity, never a specific item.
+const STOCK = new Set(['library', 'department', 'facility', 'support', 'service', 'link', 'organization', 'club', 'project_group', 'technical', 'cultural', 'sports', 'workshop', 'symposium', 'heritage', 'nature', 'spiritual', 'beach', 'city']);
 export function cover(src, title, key = '', cls = '') {
   const tone = TONE_BY_KEY[key] || 'sand';
   const initial = esc(String(title || '?').trim().slice(0, 1).toUpperCase());
-  const img = src ? `<img src="${esc(src)}" alt="" loading="lazy" referrerpolicy="no-referrer" data-cover-img>` : '';
+  const k = String(key).toLowerCase();
+  const stock = `/img/stock/${STOCK.has(k) ? k : 'default'}.jpg`;
+  const img = `<img src="${esc(src || stock)}" alt="" loading="lazy" referrerpolicy="no-referrer" data-cover-img${src ? ` data-fallback="${stock}"` : ''}>`;
   return `<div class="cover cover--${tone} ${cls}" aria-hidden="true">${img}<span class="cover__letter">${initial}</span></div>`;
 }
-// Broken images fall back to the generated cover (the letter underneath shows through).
-document.addEventListener('error', (e) => { if (e.target?.matches?.('[data-cover-img]')) e.target.remove(); }, true);
+// If an item's own image fails, show the category photo; if that fails too, the generated tile underneath shows through.
+document.addEventListener('error', (e) => {
+  const img = e.target;
+  if (!img?.matches?.('[data-cover-img]')) return;
+  const fb = img.dataset.fallback;
+  if (fb && !img.src.endsWith(fb)) { img.src = fb; delete img.dataset.fallback; } else img.remove();
+}, true);
 
 // ---------------------------------------------------------------- states
 export const skeletons = (n = 3, cls = 'skeleton-card') => Array.from({ length: n }, () => `<div class="skeleton ${cls}"></div>`).join('');

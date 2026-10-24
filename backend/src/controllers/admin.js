@@ -5,6 +5,7 @@ const r = require('../validators/rules');
 const { ok, HttpError } = require('../utils/response');
 const { pageParams, oneOf, text, uuid } = require('../utils/query');
 const { audit } = require('../services/audit');
+const { notify } = require('../services/notify');
 const { ROLES } = require('../permissions');
 
 const fail = (errors) => { throw new HttpError(400, 'VALIDATION_ERROR', 'Please correct the highlighted fields.', errors); };
@@ -293,5 +294,36 @@ exports.deleteAnnouncement = async (req, res, next) => {
     if (!count) throw new HttpError(404, 'NOT_FOUND', 'Announcement not found.');
     await audit(req.user, 'announcement.delete', 'Announcement', id, 'Deleted an announcement');
     ok(res, null, { message: 'Announcement deleted.' });
+  } catch (e) { next(e); }
+};
+
+// ---------------------------------------------------------------- role requests (from the registration form)
+exports.roleRequests = async (req, res, next) => {
+  try {
+    const status = oneOf(req.query.status, ['PENDING', 'APPROVED', 'REJECTED'], 'status') || 'PENDING';
+    const rows = await db.roleRequest.findMany({ where: { status }, orderBy: { createdAt: 'asc' }, take: 100, include: { user: { select: { id: true, name: true, email: true, role: true, createdAt: true } }, decider: { select: { name: true } } } });
+    ok(res, { requests: rows });
+  } catch (e) { next(e); }
+};
+
+exports.decideRoleRequest = async (req, res, next) => {
+  try {
+    const decision = oneOf(req.body?.decision, ['approve', 'reject'], 'decision');
+    if (!decision) fail({ decision: 'Choose approve or reject.' });
+    const note = String(req.body?.note || '').trim().slice(0, 300);
+    const rr = await db.roleRequest.findUnique({ where: { id: uuid(req.params.id) }, include: { user: true } });
+    if (!rr) throw new HttpError(404, 'NOT_FOUND', 'Role request not found.');
+    if (rr.status !== 'PENDING') throw new HttpError(409, 'ALREADY_DECIDED', 'This request was already decided.');
+    if (rr.userId === req.user.id) throw new HttpError(403, 'FORBIDDEN', 'You cannot decide your own request.');
+    await db.$transaction(async (tx) => {
+      await tx.roleRequest.update({ where: { id: rr.id }, data: { status: decision === 'approve' ? 'APPROVED' : 'REJECTED', deciderId: req.user.id, decidedAt: new Date(), note: note || null } });
+      if (decision === 'approve') {
+        await tx.user.update({ where: { id: rr.userId }, data: { role: rr.requestedRole } });
+        await tx.session.updateMany({ where: { userId: rr.userId, revokedAt: null }, data: { revokedAt: new Date() } });
+      }
+      await audit(req.user, `user.role_request.${decision}`, 'User', rr.userId, `${decision === 'approve' ? 'Approved' : 'Rejected'} ${rr.requestedRole} request from ${rr.user.email}`, { note }, tx);
+    });
+    await notify(rr.userId, { type: 'SYSTEM', title: decision === 'approve' ? 'Your role request was approved' : 'Your role request was declined', body: decision === 'approve' ? 'Sign in again to use your new access.' : note || undefined, link: '/dashboard' });
+    ok(res, null, { message: decision === 'approve' ? 'Role approved. The user must sign in again.' : 'Request declined.' });
   } catch (e) { next(e); }
 };

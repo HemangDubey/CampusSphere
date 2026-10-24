@@ -102,7 +102,7 @@ npm run db:seed -- --reset-demo          # clear demo content (isDemo rows) firs
 npm run admin:promote -- user@example.edu SUPER_ADMIN  # roles: FACULTY, EVENT_ORGANIZER, HEALTHCARE_ADMIN, CAMPUS_ADMIN, SUPER_ADMIN
 ```
 
-There is no default admin account; public registration always creates a Student. Register normally, then promote that user (or have a Super Admin change roles in Admin > Users) from a machine that has `DATABASE_URL`.
+There is no default admin account; public registration always creates a Student. The registration form has a role picker: choosing another role files a request that a Super Admin approves in Admin > Users & Roles. For local testing run `npm run dev:accounts` (one account per role, password in the git-ignored `backend/dev-accounts.txt`). Or register normally, then promote that user (or have a Super Admin change roles in Admin > Users) from a machine that has `DATABASE_URL`.
 Never run `prisma migrate reset` against a production database.
 
 ## Tests

@@ -7,6 +7,8 @@ router.use('/admin', requireAuth);
 
 router.get('/admin/users', need('user:manage'), a.users);
 router.patch('/admin/users/:id', need('user:manage'), a.updateUser);
+router.get('/admin/role-requests', need('user:manage'), a.roleRequests);
+router.post('/admin/role-requests/:id/decision', need('user:manage'), a.decideRoleRequest);
 router.get('/admin/audit', need('audit:view'), a.audit);
 router.get('/admin/reports', need('report:view'), a.reports);
 

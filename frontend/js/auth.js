@@ -46,8 +46,8 @@ const handlers = {
     location.assign(next && /^\/(?![/\\])/.test(next) ? next : '/dashboard');
   },
   register: async (d) => {
-    await authApi.register({ name: d.name.trim(), email: d.email.trim(), password: d.password, confirmPassword: d.confirmPassword });
-    show(successBox, 'Account created. Taking you to your dashboard…');
+    await authApi.register({ name: d.name.trim(), email: d.email.trim(), password: d.password, confirmPassword: d.confirmPassword, requestedRole: d.requestedRole });
+    show(successBox, d.requestedRole && d.requestedRole !== 'STUDENT' ? 'Account created as a student. Your role request is waiting for approval. Taking you to your dashboard…' : 'Account created. Taking you to your dashboard…');
     setTimeout(() => location.assign('/dashboard'), 800);
   },
   forgot: async (d) => {

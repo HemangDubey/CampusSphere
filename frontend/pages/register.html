@@ -41,6 +41,18 @@
             <p class="field__error" id="email-error"></p>
           </div>
           <div class="field">
+            <label class="field__label" for="requestedRole">I am joining as</label>
+            <select class="select" id="requestedRole" name="requestedRole">
+              <option value="STUDENT">Student</option>
+              <option value="FACULTY">Faculty / Staff</option>
+              <option value="EVENT_ORGANIZER">Event Organizer</option>
+              <option value="HEALTHCARE_ADMIN">Healthcare Admin</option>
+              <option value="CAMPUS_ADMIN">Campus Admin</option>
+            </select>
+            <p class="field__hint">Students get access straight away. Any other role starts as a student account and is switched on once an administrator approves it.</p>
+            <p class="field__error" id="requestedRole-error"></p>
+          </div>
+          <div class="field">
             <label class="field__label" for="password">Password<span class="req" aria-hidden="true">*</span></label>
             <div class="input-wrap">
               <input class="input" id="password" name="password" type="password" autocomplete="new-password" required minlength="8" maxlength="128" pattern="(?=.*[A-Za-z])(?=.*\d).{8,}" title="Use at least 8 characters with a letter and a number.">
