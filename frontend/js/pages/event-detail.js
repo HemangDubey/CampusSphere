@@ -38,7 +38,7 @@ function render({ event: e, related }) {
         <dt>Seats</dt><dd>${esc(util)}${e.spotsLeft != null ? ` (${e.spotsLeft} left)` : ''}</dd>
         ${e.capacity ? `<dt></dt><dd><div class="meter" aria-hidden="true"><span style="width:${Math.min(100, Math.round((e.registrationCount / e.capacity) * 100))}%"></span></div></dd>` : ''}
         <dt>Registration</dt><dd>${e.registrationOpensAt ? `Opens ${esc(dt(e.registrationOpensAt))}<br>` : ''}Closes ${esc(dt(e.registrationClosesAt || e.startsAt))}</dd>
-        <dt>Fee</dt><dd>${e.fee > 0 ? `${esc(inr(e.fee))} (demonstration only, no payment is taken)` : 'Free'}</dd></dl>
+        <dt>Fee</dt><dd>${e.fee > 0 ? `${esc(inr(e.fee))} (not collected in CampusSphere)` : 'Free'}</dd></dl>
       <button class="button button--secondary button--sm" type="button" data-share>Copy link to share</button>
     </aside></div></div>`;
 }

@@ -43,4 +43,3 @@ export function debounce(fn, ms = 300) {
   return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
 }
 
-export const DEMO_BADGE = '<span class="chip chip--demo">Demo data</span>';

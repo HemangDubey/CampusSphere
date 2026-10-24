@@ -9,7 +9,7 @@ const { notify } = require('../services/notify');
 const { recordStatus, timeline } = require('../services/history');
 const { audit } = require('../services/audit');
 
-const NOTICE = 'CampusSphere is a student project. Services, providers and appointment requests here are demonstration data and are not sent to any real hospital or clinic. This is not a medical or diagnosis service. In an emergency call your local emergency number (112 in India).';
+const NOTICE = 'Appointment requests are recorded in CampusSphere and are not sent to a hospital or clinic. This is not a medical or diagnosis service. In an emergency call your local emergency number (112 in India).';
 const ACTIVE = ['REQUESTED', 'CONFIRMED', 'RESCHEDULE_REQUESTED'];
 const ADMIN_TRANSITIONS = {
   REQUESTED: ['CONFIRMED', 'REJECTED', 'CANCELLED'],
@@ -56,7 +56,7 @@ const schema = {
   patientName: [r.required('Enter the patient name.'), r.minLength(2), r.maxLength(80)],
   phone: [r.required('Enter a contact number.'), r.phoneIN()],
   reason: [r.required('Briefly describe the reason for the visit.'), r.minLength(5), r.maxLength(300)],
-  consent: [r.consent('Please confirm you understand this is a demonstration request.')]
+  consent: [r.consent('Please confirm you understand how this request works.')]
 };
 
 // Students never get the phone number back (they typed it); administrators need it to contact the patient.
@@ -105,8 +105,8 @@ exports.create = async (req, res, next) => {
       await recordStatus('APPOINTMENT', created.id, req.user, null, 'REQUESTED', 'Request submitted', tx);
       return created;
     }, { isolationLevel: 'Serializable' });
-    await notify(req.user.id, { type: 'APPOINTMENT', title: 'Appointment request submitted (demo)', body: `Reference ${appt.referenceNo}`, link: `/appointments` });
-    ok(res, { appointment: shape(appt) }, { status: 201, message: 'Demonstration request recorded. No real appointment has been booked.' });
+    await notify(req.user.id, { type: 'APPOINTMENT', title: 'Appointment request submitted', body: `Reference ${appt.referenceNo}`, link: `/appointments` });
+    ok(res, { appointment: shape(appt) }, { status: 201, message: 'Request recorded. It is not a confirmed clinic appointment.' });
   } catch (e) {
     if (e.code === 'P2034' || (e.code === 'P2002' && String(e.meta?.target || '').includes('slotId'))) return next(new HttpError(409, 'SLOT_UNAVAILABLE', 'That slot was just taken. Please choose another.', { slotId: 'That slot was just taken.' }));
     return next(e);
@@ -166,7 +166,7 @@ exports.reschedule = async (req, res, next) => {
       await recordStatus('APPOINTMENT', a.id, req.user, a.status, 'RESCHEDULE_REQUESTED', reason, tx);
       return u;
     }, { isolationLevel: 'Serializable' });
-    await notify(req.user.id, { type: 'APPOINTMENT', title: 'Reschedule requested (demo)', body: `Reference ${a.referenceNo}`, link: '/appointments' });
+    await notify(req.user.id, { type: 'APPOINTMENT', title: 'Reschedule requested', body: `Reference ${a.referenceNo}`, link: '/appointments' });
     ok(res, { appointment: shape(updated) }, { message: 'Reschedule request sent for review.' });
   } catch (e) {
     if (e.code === 'P2034') return next(new HttpError(409, 'SLOT_UNAVAILABLE', 'That slot was just taken. Please choose another.', { slotId: 'That slot was just taken.' }));
@@ -217,7 +217,7 @@ exports.adminTransition = async (req, res, next) => {
       await recordStatus('APPOINTMENT', a.id, req.user, a.status, to, note, tx);
       return u;
     });
-    await notify(a.userId, { type: 'APPOINTMENT', title: `Appointment ${to.toLowerCase().replace('_', ' ')} (demo)`, body: note || a.referenceNo, link: '/appointments' });
+    await notify(a.userId, { type: 'APPOINTMENT', title: `Appointment ${to.toLowerCase().replace('_', ' ')} `, body: note || a.referenceNo, link: '/appointments' });
     await audit(req.user, `appointment.${to.toLowerCase()}`, 'Appointment', a.id, `Appointment ${a.referenceNo} ${a.status} -> ${to}`, { note });
     ok(res, { appointment: shapeAdmin(updated) }, { message: 'Status updated.' });
   } catch (e) { next(e); }

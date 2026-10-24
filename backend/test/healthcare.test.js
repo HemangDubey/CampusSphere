@@ -60,7 +60,7 @@ const iso = (days) => { const d = new Date(); d.setDate(d.getDate() + days); ret
     // ---- Book a slot
     r = await a.api.post('/api/healthcare/appointments', form());
     assert.equal(r.status, 201);
-    assert.match(r.body.message, /No real appointment/);
+    assert.match(r.body.message, /not a confirmed clinic appointment/);
     const appt = r.body.data.appointment;
     assert.match(appt.referenceNo, /^APT-\d{4}-[A-Z0-9]{6}$/);
     assert.equal(appt.status, 'REQUESTED');

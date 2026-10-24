@@ -8,7 +8,7 @@ await initShell({ active: '/healthcare', crumbs: [['Services'], ['Healthcare', '
 let items = [];
 const ACTIVE = ['REQUESTED', 'CONFIRMED', 'RESCHEDULE_REQUESTED'];
 
-view.innerHTML = `${pageHead({ eyebrow: 'Healthcare', title: 'My appointments', lead: 'Your demonstration appointment requests, their status and history.', actions: '<a class="button" href="/healthcare">New request</a>' })}<div data-list aria-live="polite"></div>`;
+view.innerHTML = `${pageHead({ eyebrow: 'Healthcare', title: 'My appointments', lead: 'Your appointment requests, their status and history.', actions: '<a class="button" href="/healthcare">New request</a>' })}<div data-list aria-live="polite"></div>`;
 const list = $('[data-list]');
 
 const card = (a) => `<article class="card" data-id="${a.id}"><div class="row row--between">${badge(a.status)}<span class="muted small">Ref ${esc(a.referenceNo)}</span></div>
@@ -19,7 +19,7 @@ async function load() {
   list.innerHTML = skeletons(3);
   try {
     ({ appointments: items } = await request('/healthcare/appointments/mine'));
-    list.innerHTML = items.length ? `<div class="grid grid--cards">${items.map(card).join('')}</div>` : emptyState('No appointment requests', 'Pick a service and a time to send your first demonstration request.', '<a class="button button--sm" href="/healthcare">Browse services</a>');
+    list.innerHTML = items.length ? `<div class="grid grid--cards">${items.map(card).join('')}</div>` : emptyState('No appointment requests', 'Pick a service and a time to send your first request.', '<a class="button button--sm" href="/healthcare">Browse services</a>');
   } catch (e) { list.innerHTML = errorState(e.message); }
 }
 

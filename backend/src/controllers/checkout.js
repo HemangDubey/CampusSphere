@@ -23,7 +23,7 @@ const schema = {
   pincode: [r.required('Enter your PIN code.'), r.pattern(/^[1-9]\d{5}$/, 'Enter a valid 6-digit PIN code.')],
   method: [r.required('Choose a payment method.'), r.oneOf(METHODS)],
   outcome: [r.required('Choose a test outcome.'), r.oneOf(OUTCOMES)],
-  consent: [r.consent('Please confirm you understand this is a demonstration.')]
+  consent: [r.consent('Please confirm you understand no payment is made.')]
 };
 
 function price(items) {
@@ -56,9 +56,9 @@ exports.submit = (req, res, next) => {
 
     const summary = { lines: priced.lines, subtotal: priced.subtotal, tax: priced.tax, fee: priced.fee, total: priced.total, currency: 'INR' };
     const byOutcome = {
-      approve: { status: 200, result: 'DEMO_APPROVED', message: 'Demonstration only: this simulated order was approved. No payment was made and nothing was charged.' },
-      decline: { status: 402, result: 'DEMO_DECLINED', message: 'Demonstration only: this simulated payment was declined. No money moved.' },
-      cancel: { status: 200, result: 'DEMO_CANCELLED', message: 'Demonstration only: the checkout was cancelled. Nothing was charged.' }
+      approve: { status: 200, result: 'DEMO_APPROVED', message: 'Your order was approved. No payment was made and nothing was charged.' },
+      decline: { status: 402, result: 'DEMO_DECLINED', message: 'The payment was declined. No money moved.' },
+      cancel: { status: 200, result: 'DEMO_CANCELLED', message: 'The checkout was cancelled. Nothing was charged.' }
     }[values.outcome];
     const payload = { success: byOutcome.status < 400, data: { demo: true, result: byOutcome.result, summary }, message: byOutcome.message };
     if (byOutcome.status >= 400) {

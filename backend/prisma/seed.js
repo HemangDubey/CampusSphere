@@ -227,7 +227,8 @@ async function main() {
     await db.announcement.createMany({ data: announcements.map((a) => ({ ...a, status: 'PUBLISHED', isDemo: true, publishedAt: new Date() })) });
   }
   for (const e of employees) await db.employee.upsert({ where: { employeeId: e.employeeId }, update: {}, create: { ...e, joinedOn: new Date('2022-07-01'), isDemo: true } });
-  console.log('Demo data ready.');
+  console.log('Base content ready.');
+  if (!process.argv.includes('--base-only')) await require('./seed-activity').main();
 }
 
 main().catch((e) => { console.error(e); process.exitCode = 1; }).finally(() => db.$disconnect());

@@ -1,6 +1,6 @@
 import { initShell } from './shell.js';
 
-await initShell({ active: '/coursework', crumbs: [['Discover'], ['Coursework Demonstrations', '/coursework'], ['Keyboard events lab']] });
+await initShell({ active: '/coursework', crumbs: [['Discover'], ['Coursework', '/coursework'], ['Keyboard events lab']] });
 
 const input = document.getElementById('kb-input');
 const fields = {};

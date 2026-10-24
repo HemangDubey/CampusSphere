@@ -8,7 +8,7 @@ const user = await initShell({ active: '/healthcare', crumbs: [['Services'], ['H
 let services = [];
 
 view.innerHTML = `${pageHead({ eyebrow: 'Services', title: 'Campus healthcare', lead: 'Browse services and providers, pick an available time and send an appointment request.', actions: `<a class="button button--secondary" href="${user ? '/appointments' : '/login?next=/appointments'}">My appointments</a>` })}
-  <p class="disclosure" data-notice>Demonstration service: requests are stored in this app and not sent to a real clinic. Not a medical service. In an emergency call 112.</p>
+  <p class="disclosure" data-notice>Requests are recorded in CampusSphere and are not sent to a clinic. This is not a medical service. In an emergency call 112.</p>
   <form class="toolbar" data-filters role="search" aria-label="Find a service" novalidate>
     <div class="field field--wide"><label class="field__label" for="q">Search services or providers</label><input class="input" id="q" name="q" type="search" maxlength="60" placeholder="e.g. dental, physiotherapy"></div>
     <div class="field"><label class="field__label" for="category">Category</label><select class="select" id="category" name="category"><option value="">All categories</option></select></div><button class="button button--secondary" type="reset">Clear</button></form>
@@ -69,11 +69,11 @@ async function openBooking(service, providerId) {
   }
 
   function stepDetails() {
-    m.body.innerHTML = `${steps(2)}<form class="form" novalidate>${formError}${fields([{ name: 'patientName', label: 'Patient name', required: true, value: values.patientName, maxlength: 80, autocomplete: 'name' }, { name: 'phone', label: 'Contact number', type: 'tel', required: true, value: values.phone, hint: '10-digit mobile number. Shown only to healthcare administrators.', autocomplete: 'tel' }, { name: 'reason', label: 'Reason for the visit', type: 'textarea', required: true, rows: 3, value: values.reason, maxlength: 300, hint: 'Keep it brief. Do not include detailed medical history.' }, { name: 'consent', label: 'I understand this is a demonstration request and no real appointment is booked.', type: 'checkbox', value: values.consent }])}
+    m.body.innerHTML = `${steps(2)}<form class="form" novalidate>${formError}${fields([{ name: 'patientName', label: 'Patient name', required: true, value: values.patientName, maxlength: 80, autocomplete: 'name' }, { name: 'phone', label: 'Contact number', type: 'tel', required: true, value: values.phone, hint: '10-digit mobile number. Shown only to healthcare administrators.', autocomplete: 'tel' }, { name: 'reason', label: 'Reason for the visit', type: 'textarea', required: true, rows: 3, value: values.reason, maxlength: 300, hint: 'Keep it brief. Do not include detailed medical history.' }, { name: 'consent', label: 'I understand this request is recorded in CampusSphere and does not book a clinic appointment.', type: 'checkbox', value: values.consent }])}
       <div class="modal__actions"><button class="button button--secondary" type="button" data-back>Back</button><button class="button" type="submit">Review request</button></div></form>`;
     const form = m.body.querySelector('form');
     form.querySelector('[data-back]').addEventListener('click', () => (provider ? stepSlot() : m.close()));
-    bindForm(form, { patientName: [required('Enter the patient name.'), minLength(2), maxLength(80)], phone: [required('Enter a contact number.'), phoneIN()], reason: [required('Briefly describe the reason for the visit.'), minLength(5), maxLength(300)], consent: [consent('Please confirm you understand this is a demonstration request.')] }, (v) => { values = v; stepReview(); });
+    bindForm(form, { patientName: [required('Enter the patient name.'), minLength(2), maxLength(80)], phone: [required('Enter a contact number.'), phoneIN()], reason: [required('Briefly describe the reason for the visit.'), minLength(5), maxLength(300)], consent: [consent('Please confirm you understand how this request works.')] }, (v) => { values = v; stepReview(); });
   }
 
   function stepReview() {
@@ -87,9 +87,9 @@ async function openBooking(service, providerId) {
       send.classList.add('is-loading');
       try {
         const { appointment } = await request('/healthcare/appointments', { method: 'POST', body: { serviceId: service.id, providerId: provider?.id, slotId: chosen || undefined, ...values, consent: true, confirm: true } });
-        m.body.innerHTML = `${steps(4)}${notice('success', 'Demonstration request recorded. No real appointment has been booked.')}<div class="review-box"><dl class="kv"><dt>Reference</dt><dd><strong>${esc(appointment.referenceNo)}</strong></dd><dt>Status</dt><dd>${esc(label(appointment.status))}</dd>${appointment.slot ? `<dt>Time</dt><dd>${esc(dt(appointment.slot.startsAt))}</dd>` : ''}</dl></div><div class="modal__actions"><button class="button button--secondary" type="button" data-done>Close</button><a class="button" href="/appointments">My appointments</a></div>`;
+        m.body.innerHTML = `${steps(4)}${notice('success', 'Request recorded. It is not a confirmed clinic appointment.')}<div class="review-box"><dl class="kv"><dt>Reference</dt><dd><strong>${esc(appointment.referenceNo)}</strong></dd><dt>Status</dt><dd>${esc(label(appointment.status))}</dd>${appointment.slot ? `<dt>Time</dt><dd>${esc(dt(appointment.slot.startsAt))}</dd>` : ''}</dl></div><div class="modal__actions"><button class="button button--secondary" type="button" data-done>Close</button><a class="button" href="/appointments">My appointments</a></div>`;
         m.body.querySelector('[data-done]').addEventListener('click', m.close);
-        toast('Request recorded (demo).');
+        toast('Request recorded.');
         load();
       } catch (e) {
         send.disabled = false;

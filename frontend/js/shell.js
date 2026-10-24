@@ -51,7 +51,7 @@ const SECTIONS = [
   { title: 'Overview', items: [['Dashboard', '/dashboard', 'dashboard', signedIn], ['Notifications', '/notifications', 'bell', signedIn], ['My Activity', '/activity', 'activity', signedIn]] },
   { title: 'Campus Life', items: [['Events & Symposiums', '/events', 'calendar', everyone], ['Travel Explorer', '/travel', 'compass', everyone], ['Campus Resources', '/resources', 'building', everyone], ['Library', '/library', 'book', everyone], ['Student Community', '/community', 'users', everyone]] },
   { title: 'Services', items: [['Healthcare', '/healthcare', 'heart', everyone], ['Leave & Approvals', '/leave', 'leave', signedIn], ['Service Requests', '/requests', 'inbox', signedIn], ['Student Services', '/courses', 'graduation', signedIn]] },
-  { title: 'Discover', items: [['AI Assistant', '/assistant', 'sparkles', everyone], ['Games & Recreation', '/games', 'gamepad', everyone], ['Coursework Demonstrations', '/coursework', 'flask', everyone]] },
+  { title: 'Discover', items: [['AI Assistant', '/assistant', 'sparkles', everyone], ['Games & Recreation', '/games', 'gamepad', everyone], ['Coursework', '/coursework', 'flask', everyone]] },
   {
     title: 'Administration', visible: anyPerm,
     items: [['Admin Dashboard', '/admin', 'shield', anyPerm], ['Event Management', '/admin/events', 'calendar', perm('event:manage')], ['Leave Approvals', '/approvals', 'leave', perm('leave:review')],

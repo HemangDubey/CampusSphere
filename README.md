@@ -97,8 +97,9 @@ setting is `frontend/js/config.js` (`apiBase`).
 cd backend
 npx prisma migrate dev --name <change>   # create and apply a migration while developing
 npx prisma migrate deploy                # apply committed migrations (staging/production, non-destructive)
-npm run db:seed                          # demonstration data (safe to re-run)
+npm run db:seed                          # base content plus connected starter content for all roles (idempotent: only adds what is missing)
 npm run db:seed -- --reset-demo          # clear demo content (isDemo rows) first, then reseed
+npm run db:seed:activity                # only the connected starter content for the six role accounts (safe to re-run)
 npm run admin:promote -- user@example.edu SUPER_ADMIN  # roles: FACULTY, EVENT_ORGANIZER, HEALTHCARE_ADMIN, CAMPUS_ADMIN, SUPER_ADMIN
 ```
 

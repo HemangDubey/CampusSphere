@@ -1,6 +1,6 @@
 import { initShell } from './shell.js';
 
-await initShell({ active: '/coursework', crumbs: [['Discover'], ['Coursework Demonstrations', '/coursework'], ['Mouse events lab']] });
+await initShell({ active: '/coursework', crumbs: [['Discover'], ['Coursework', '/coursework'], ['Mouse events lab']] });
 
 // Real events carry a pointer position; simulated (keyboard-triggered) ones do not, so no coordinates are shown.
 const pos = (e) => (e.isTrusted ? ` at ${Math.round(e.offsetX)}, ${Math.round(e.offsetY)}` : '');

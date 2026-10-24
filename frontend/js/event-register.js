@@ -45,8 +45,8 @@ export function openRegistration(event, user, onDone) {
       <dt>Event</dt><dd>${esc(event.title)}</dd><dt>When</dt><dd>${esc(dt(event.startsAt))}</dd><dt>Name</dt><dd>${esc(values.fullName)}</dd>
       <dt>Registration no.</dt><dd>${esc(values.registrationNo)}</dd><dt>Email</dt><dd>${esc(values.email)}</dd><dt>Department</dt><dd>${esc(values.department)}, year ${esc(values.yearOfStudy)}</dd>
       ${symposium ? `<dt>Team</dt><dd>${esc(values.teamSize)} member(s), ${esc(values.track)}</dd>` : ''}
-      ${event.fee > 0 ? `<dt>Fee</dt><dd>${esc(inr(event.fee))} (demonstration value, shown for illustration)</dd>` : ''}</dl></div>
-      ${event.fee > 0 ? notice('info', 'This is a demonstration. No payment is collected or processed by CampusSphere.') : ''}
+      ${event.fee > 0 ? `<dt>Fee</dt><dd>${esc(inr(event.fee))}</dd>` : ''}</dl></div>
+      ${event.fee > 0 ? notice('info', 'Payment is not collected in CampusSphere. Follow the organizer's instructions for any fee.') : ''}
       <div data-error></div>
       <div class="modal__actions"><button class="button button--secondary" type="button" data-back>Back</button><button class="button" type="button" data-confirm>Confirm registration</button></div>`;
     m.body.querySelector('[data-back]').addEventListener('click', () => stepDetails());

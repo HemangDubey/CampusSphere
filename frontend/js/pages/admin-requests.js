@@ -24,7 +24,7 @@ async function load() {
   try {
     const data = await request(`/manage/requests?${qs({ ...Object.fromEntries(new FormData(filters)), page: state.page })}`);
     state.rows = data.requests;
-    $('[data-overdue]').innerHTML = data.overdueCount ? notice('error', `${data.overdueCount} request${data.overdueCount === 1 ? ' is' : 's are'} past the target date (demonstration target of 5 days).`) : '';
+    $('[data-overdue]').innerHTML = data.overdueCount ? notice('error', `${data.overdueCount} request${data.overdueCount === 1 ? ' is' : 's are'} past the target date (target of 5 days).`) : '';
     list.innerHTML = data.requests.length ? table([
       { label: 'Request', html: (r) => `<strong>${esc(r.resource.title)}</strong><br><span class="muted small">${esc(r.referenceNo)}</span>` },
       { label: 'Requester', html: (r) => `${esc(r.requester.name)}<br><span class="muted small">${esc(r.requester.department || '')}</span>` },

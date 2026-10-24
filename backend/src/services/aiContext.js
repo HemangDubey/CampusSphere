@@ -8,7 +8,7 @@ const HOW_IT_WORKS = [
   '- Events: open an event, press Register, fill your details, review them and confirm. You get a reference number and can cancel under Events > My events until the event starts. An event can refuse registration if it is full, closed, cancelled or past.',
   '- Service requests: open a resource that accepts requests, fill its form, review and submit. Statuses: Submitted, Under review, Information required, Approved, Rejected, Cancelled. If staff ask for information, add it on the request page.',
   '- Leave requests: choose a reviewer, dates and a reason. Statuses: Submitted, Information required, Approved, Rejected, Withdrawn. Only the assigned reviewer or an administrator can decide, never the student.',
-  '- Healthcare: demonstration only. Appointment requests are stored in the app and are not sent to a real clinic.',
+  '- Healthcare: appointment requests are recorded in the app and are not sent to a clinic.',
   '- The AI Assistant cannot register you, submit forms or change anything. It can only explain and guide.'
 ].join('\n');
 
@@ -20,13 +20,13 @@ async function buildContext(user) {
     db.resource.findMany({ where: { published: true, acceptsRequests: true }, select: { title: true, status: true }, take: 10 }),
     db.resource.findMany({ where: { published: true }, select: { title: true, kind: true, isDemo: true }, orderBy: { title: 'asc' }, take: 25 })
   ]);
-  const lines = [HOW_IT_WORKS, '', 'Verified data from the CampusSphere database (entries marked [sample] are demonstration content, not official campus facts):'];
+  const lines = [HOW_IT_WORKS, '', 'Verified data from the CampusSphere database (not official institutional announcements):'];
   lines.push('Upcoming published events:');
-  lines.push(events.length ? events.map((e) => `- ${e.title} [${e.category}${e.isDemo ? ', sample' : ''}] on ${fmt(e.startsAt)} at ${e.venue}; ${e.capacity == null ? 'no seat limit' : `${Math.max(e.capacity - e._count.registrations, 0)} of ${e.capacity} seats left`}`).join('\n') : '- none right now');
+  lines.push(events.length ? events.map((e) => `- ${e.title} [${e.category}] on ${fmt(e.startsAt)} at ${e.venue}; ${e.capacity == null ? 'no seat limit' : `${Math.max(e.capacity - e._count.registrations, 0)} of ${e.capacity} seats left`}`).join('\n') : '- none right now');
   lines.push('Services that accept requests:');
   lines.push(services.length ? services.map((s) => `- ${s.title} (${s.status.toLowerCase()})`).join('\n') : '- none');
   lines.push('Directory entries (titles only):');
-  lines.push(resources.map((r) => `- ${r.title} (${r.kind.toLowerCase()}${r.isDemo ? ', sample' : ''})`).join('\n'));
+  lines.push(resources.map((r) => `- ${r.title} (${r.kind.toLowerCase()})`).join('\n'));
 
   if (user) {
     const [mineEvents, mineRequests, mineLeave] = await Promise.all([

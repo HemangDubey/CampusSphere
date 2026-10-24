@@ -8,7 +8,7 @@ const user = await initShell({ active: '/employees', crumbs: [['Administration']
 if (!user.permissions.includes('employee:manage')) { view.innerHTML = pageHead({ title: 'Employee records', eyebrow: 'Restricted' }) + notice('error', 'Employee records are private. Only campus and super administrators can view them.'); await new Promise(() => {}); }
 const state = { page: 1, rows: [] };
 
-view.innerHTML = `${pageHead({ eyebrow: 'Administration', title: 'Employee records', lead: 'Employee profiles and registration. Seeded records are fictional samples.', actions: '<button class="button" type="button" data-new>Add employee</button>' })}
+view.innerHTML = `${pageHead({ eyebrow: 'Administration', title: 'Employee records', lead: 'Employee profiles and registration.', actions: '<button class="button" type="button" data-new>Add employee</button>' })}
   <form class="toolbar" data-filters role="search" novalidate><div class="field field--wide"><label class="field__label" for="q">Search</label><input class="input" id="q" name="q" type="search" maxlength="80" placeholder="Name, ID or designation"></div><div class="field"><label class="field__label" for="dept">Department</label><select class="select" id="dept" name="department"><option value="">All departments</option></select></div><button class="button button--secondary" type="reset">Clear</button></form>
   <p class="results-note" data-count></p><div class="grid grid--cards" data-list aria-live="polite"></div><div class="pager" data-pager></div>`;
 const list = $('[data-list]');

@@ -64,7 +64,7 @@ export function renderFooter() {
         <div class="footer__cols reveal">
           <div><h4>Explore</h4><ul>
             <li><a href="/dashboard">Dashboard</a></li><li><a href="/resources">Campus Resources</a></li>
-            <li><a href="/events">Events</a></li><li><a href="/travel">Travel Explorer</a></li><li><a href="/healthcare">Healthcare</a></li><li><a href="/leave">Leave &amp; Approvals</a></li><li><a href="/games">Games &amp; Recreation</a></li><li><a href="/coursework">Coursework Demonstrations</a></li>
+            <li><a href="/events">Events</a></li><li><a href="/travel">Travel Explorer</a></li><li><a href="/healthcare">Healthcare</a></li><li><a href="/leave">Leave &amp; Approvals</a></li><li><a href="/games">Games &amp; Recreation</a></li><li><a href="/coursework">Coursework</a></li>
             <li><a href="/assistant">AI Assistant</a></li></ul></div>
           <div><h4>Connect</h4><ul>
             <li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li>

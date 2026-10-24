@@ -9,7 +9,7 @@ let catalog = { courses: [], academicYears: [] };
 
 view.innerHTML = `${pageHead({ eyebrow: 'Services', title: 'Student services', lead: 'Register for courses this term, or open another service.' })}
   <div class="grid grid--3" style="margin-bottom:20px"><a class="card card--link" href="/requests"><h3>Service requests</h3><p>Enrolment letters, IT help and more.</p></a><a class="card card--link" href="/leave"><h3>Leave requests</h3><p>Ask for time away and track the decision.</p></a><a class="card card--link" href="/library"><h3>Library</h3><p>Catalogue and your reading list.</p></a></div>
-  ${disclosure('The course list is a sample catalogue for demonstration, not your institution\'s official offering.')}
+  ${disclosure('Course availability is confirmed by your department.')}
   <div class="split"><form class="card form" data-form novalidate aria-labelledby="f-h"><h2 class="section-title" id="f-h">Register for a course</h2>${formError}<div data-fields></div><button class="button" type="submit">Register for course</button></form>
   <section class="card"><h2 class="section-title">My registrations</h2><div data-mine aria-live="polite">${skeletons(2, 'skeleton-row')}</div></section></div>`;
 const form = $('[data-form]');

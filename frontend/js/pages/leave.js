@@ -73,5 +73,5 @@ async function newRequest() {
 
 tabs($('[data-tabs]'), [['all', 'All'], ['SUBMITTED', 'Awaiting decision'], ['INFO_REQUIRED', 'Needs information'], ['APPROVED', 'Approved'], ['REJECTED', 'Rejected'], ['WITHDRAWN', 'Withdrawn']], 'all', (t) => { status = t === 'all' ? '' : t; load(); });
 on(view, 'click', { '[data-new]': newRequest, '[data-retry]': load });
-(async () => { try { ({ rules } = await request('/leave/rules')); $('[data-rules]').innerHTML = disclosure(`Demonstration rules, not official policy: up to ${rules.maxDays} days per request, no overlapping requests, and leave cannot start more than ${rules.maxBackdateDays} days in the past.`); } catch { /* rules are optional context */ } })();
+(async () => { try { ({ rules } = await request('/leave/rules')); $('[data-rules]').innerHTML = disclosure(`Leave rules: up to ${rules.maxDays} days per request, no overlapping requests, and leave cannot start more than ${rules.maxBackdateDays} days in the past.`); } catch { /* rules are optional context */ } })();
 load();

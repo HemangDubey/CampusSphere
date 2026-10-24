@@ -7,7 +7,7 @@ const view = $('[data-view]');
 const user = await initShell({ active: '/admin/healthcare', crumbs: [['Administration'], ['Healthcare Management']], requireAuth: true });
 if (!user.permissions.includes('healthcare:manage')) { view.innerHTML = pageHead({ title: 'Healthcare management', eyebrow: 'Restricted' }) + notice('error', 'Only healthcare administrators can manage appointments and services.'); await new Promise(() => {}); }
 
-view.innerHTML = `${pageHead({ eyebrow: 'Administration', title: 'Healthcare management', lead: 'Review appointment requests, and manage the demonstration services, providers and availability.' })}<div data-tabs></div><div data-panel></div>`;
+view.innerHTML = `${pageHead({ eyebrow: 'Administration', title: 'Healthcare management', lead: 'Review appointment requests, and manage services, providers and availability.' })}<div data-tabs></div><div data-panel></div>`;
 const panel = $('[data-panel]');
 const state = { page: 1, appts: [], services: [] };
 
