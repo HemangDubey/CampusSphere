@@ -14,3 +14,6 @@ coverage/
 .DS_Store
 Thumbs.db
 backend/dev-accounts.txt
+
+# Documentation kept locally only
+*.md
