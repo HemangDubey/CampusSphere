@@ -1,17 +1,21 @@
 import { initShell } from '../shell.js';
+import { renderDiscovery } from '../discover.js';
+import { renderReadingList } from '../library-list.js';
 import { request } from '../api.js';
 import { $, esc, cover, pageHead, skeletons, emptyState, errorState, pager, tabs, qs, debounce, on, attempt, badge } from '../kit.js';
 
 const view = $('[data-view]');
 const user = await initShell({ active: '/library', crumbs: [['Campus Life'], ['Library']] });
 const state = { view: 'catalogue', page: 1, items: [] };
+let discovered = false;
 const READING = { WANT_TO_READ: 'Want to read', READING: 'Reading', DONE: 'Finished' };
 
 view.innerHTML = `${pageHead({ eyebrow: 'Campus life', title: 'The library', lead: 'Search the catalogue, keep a reading list and save resources. Borrowing and reservations are not available in this version.', actions: '<button class="button button--secondary" type="button" data-suggest>Suggest a resource</button>' })}
   <div data-tabs></div>
   <form class="toolbar" data-filters role="search" aria-label="Search the library" novalidate>
     <div class="field field--wide"><label class="field__label" for="q">Search</label><input class="input" id="q" name="q" type="search" maxlength="80" placeholder="Title, author or topic"></div>
-    <div class="field"><label class="field__label" for="categoryId">Category</label><select class="select" id="categoryId" name="categoryId"><option value="">All categories</option></select></div><button class="button button--secondary" type="reset">Clear</button></form>
+    <div class="field"><label class="field__label" for="categoryId">Category</label><select class="select" id="categoryId" name="categoryId"><option value="">All categories</option></select></div><div class="field"><label class="field__label" for="sort">Sort by</label><select class="select" id="sort" name="sort"><option value="title">Title (A to Z)</option><option value="recent">Recently added</option><option value="popular">Most saved</option></select></div><button class="button button--secondary" type="reset">Clear</button></form>
+  <div data-discover hidden></div>
   <p class="results-note" data-count></p><div class="grid grid--cards" data-list aria-live="polite"></div><div class="pager" data-pager></div>`;
 const list = $('[data-list]');
 const filters = $('[data-filters]');
@@ -24,14 +28,19 @@ async function load() {
   list.innerHTML = skeletons(6);
   $('[data-pager]').innerHTML = '';
   try {
+    $('[data-discover]').hidden = true;
     if (state.view === 'reading') {
       if (!user) { location.assign('/login?next=/library'); return; }
-      const { items } = await request('/reading-list');
-      state.items = items.map((i) => ({ ...i.resource, readingStatus: i.status }));
-      $('[data-count]').textContent = `${items.length} on your reading list`;
-      list.innerHTML = state.items.length ? state.items.map(card).join('') : `<div style="grid-column:1/-1">${emptyState('Your reading list is empty', 'Add books from the catalogue to track what you want to read, are reading, or have finished.', '<button class="button button--sm" type="button" data-cat>Browse the catalogue</button>')}</div>`;
+      filters.hidden = true;
+      list.className = '';
+      await renderReadingList(list, $('[data-count]'));
       return;
     }
+    filters.hidden = false;
+    list.className = 'grid grid--cards';
+    const f = Object.fromEntries(new FormData(filters));
+    const plain = state.page === 1 && !f.q && !f.categoryId && (f.sort || 'title') === 'title';
+    if (plain) { if (!discovered) { discovered = true; await renderDiscovery($('[data-discover]'), { kind: 'LIBRARY' }); } else if ($('[data-discover]').innerHTML) $('[data-discover]').hidden = false; }
     const data = await request(`/resources?${qs({ ...Object.fromEntries(new FormData(filters)), kind: 'LIBRARY', page: state.page, pageSize: 12 })}`);
     state.items = data.resources;
     $('[data-count]').textContent = `${data.total} item${data.total === 1 ? '' : 's'}`;

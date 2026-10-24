@@ -193,7 +193,8 @@ const KINDS = ['DEPARTMENT', 'LIBRARY', 'FACILITY', 'SUPPORT', 'LINK', 'ORGANIZA
 const resSchema = {
   kind: [r.required('Choose a type.'), r.oneOf(KINDS)], title: [r.required('Enter a title.'), r.minLength(2), r.maxLength(120)], summary: [r.required('Enter a summary.'), r.maxLength(300)],
   details: [r.maxLength(3000)], author: [r.maxLength(120)], status: [r.required('Choose an availability.'), r.oneOf(['AVAILABLE', 'LIMITED', 'UNAVAILABLE'])],
-  eligibility: [r.maxLength(500)], instructions: [r.maxLength(2000)], contactInfo: [r.maxLength(300)], imageUrl: [r.httpsUrl()]
+  eligibility: [r.maxLength(500)], instructions: [r.maxLength(2000)], contactInfo: [r.maxLength(300)], imageUrl: [r.httpsUrl()],
+  accessUrl: [r.httpsUrl()], publisher: [r.maxLength(120)], publishedYear: [r.intRange(1400, 2100, 'Enter a four-digit year.')]
 };
 function validFields(raw) {
   if (raw === undefined || raw === null || raw === '') return null;
@@ -217,7 +218,9 @@ async function resData(body) {
   return {
     kind: v.kind, title: v.title, summary: v.summary, details: v.details || null, author: v.author || null, status: v.status, eligibility: v.eligibility || null,
     instructions: v.instructions || null, contactInfo: v.contactInfo || null, imageUrl: v.imageUrl || null, requiredDocuments: reqDocs, categoryId,
-    acceptsRequests, formFields: formFields || undefined, published: body.published !== false, isDemo: false
+    acceptsRequests, formFields: formFields || undefined, published: body.published !== false, isDemo: false,
+    featured: Boolean(body.featured), accessUrl: v.accessUrl || null, publisher: v.publisher || null, publishedYear: v.publishedYear ? Number(v.publishedYear) : null,
+    tags: lines(body.tags).flatMap((t) => t.split(',')).map((t) => t.trim().toLowerCase().slice(0, 30)).filter(Boolean).slice(0, 10)
   };
 }
 exports.resources = async (req, res, next) => {

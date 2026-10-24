@@ -40,22 +40,31 @@ model User {
   sessions            Session[]
   resetTokens         PasswordResetToken[]
   eventRegistrations  EventRegistration[]
-  organizedEvents     Event[]               @relation("EventOrganizer")
+  organizedEvents     Event[]                 @relation("EventOrganizer")
   favorites           FavoriteDestination[]
   recentViews         RecentDestinationView[]
   trips               Trip[]
   tripMemberships     TripMember[]
   resourceBookmarks   ResourceBookmark[]
+  resourceViews       ResourceView[]
   readingList         ReadingListItem[]
-  serviceRequests     ServiceRequest[]      @relation("RequestRequester")
-  assignedRequests    ServiceRequest[]      @relation("RequestAssignee")
-  leaveRequests       LeaveRequest[]        @relation("LeaveStudent")
-  leaveToReview       LeaveRequest[]        @relation("LeaveReviewer")
+  serviceRequests     ServiceRequest[]        @relation("RequestRequester")
+  assignedRequests    ServiceRequest[]        @relation("RequestAssignee")
+  leaveRequests       LeaveRequest[]          @relation("LeaveStudent")
+  leaveToReview       LeaveRequest[]          @relation("LeaveReviewer")
   appointments        Appointment[]
   courseRegistrations CourseRegistration[]
   notifications       Notification[]
   auditLogs           AuditLog[]
   gameScores          GameScore[]
+  posts               CommunityPost[]
+  comments            CommunityComment[]
+  postLikes           PostLike[]
+  postBookmarks       PostBookmark[]
+  clubMemberships     ClubMember[]
+  clubsCreated        Club[]
+  reportsFiled        ContentReport[]         @relation("ReportReporter")
+  reportsResolved     ContentReport[]         @relation("ReportResolver")
 }
 
 // One row per signed-in browser. The JWT in the HTTP-only cookie carries this id;
@@ -90,6 +99,7 @@ enum NotificationType {
   REQUEST
   LEAVE
   APPOINTMENT
+  COMMUNITY
   SYSTEM
 }
 
@@ -184,31 +194,31 @@ enum EventStatus {
 }
 
 model Event {
-  id                  String        @id @default(uuid())
-  title               String
-  description         String
-  category            EventCategory
-  mode                EventMode     @default(IN_PERSON)
-  status              EventStatus   @default(PUBLISHED)
-  startsAt            DateTime
-  endsAt              DateTime?
-  venue               String
-  onlineLink          String?
-  schedule            String?
-  eligibility         String?
-  instructions        String?
-  organizerId         String?
-  organizer           User?         @relation("EventOrganizer", fields: [organizerId], references: [id], onDelete: SetNull)
-  organizerName       String?
-  coverImage          String?
-  capacity            Int?
-  registrationOpensAt DateTime?
+  id                   String        @id @default(uuid())
+  title                String
+  description          String
+  category             EventCategory
+  mode                 EventMode     @default(IN_PERSON)
+  status               EventStatus   @default(PUBLISHED)
+  startsAt             DateTime
+  endsAt               DateTime?
+  venue                String
+  onlineLink           String?
+  schedule             String?
+  eligibility          String?
+  instructions         String?
+  organizerId          String?
+  organizer            User?         @relation("EventOrganizer", fields: [organizerId], references: [id], onDelete: SetNull)
+  organizerName        String?
+  coverImage           String?
+  capacity             Int?
+  registrationOpensAt  DateTime?
   registrationClosesAt DateTime?
-  fee                 Int           @default(0)
-  cancelReason        String?
-  isDemo              Boolean       @default(true)
-  createdAt           DateTime      @default(now())
-  updatedAt           DateTime      @updatedAt
+  fee                  Int           @default(0)
+  cancelReason         String?
+  isDemo               Boolean       @default(true)
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
 
   registrations EventRegistration[]
 
@@ -223,25 +233,25 @@ enum RegistrationStatus {
 }
 
 model EventRegistration {
-  id            String             @id @default(uuid())
-  referenceNo   String             @unique
-  userId        String
-  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  eventId       String
-  event         Event              @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  status        RegistrationStatus @default(REGISTERED)
-  fullName      String?
+  id             String             @id @default(uuid())
+  referenceNo    String             @unique
+  userId         String
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eventId        String
+  event          Event              @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  status         RegistrationStatus @default(REGISTERED)
+  fullName       String?
   registrationNo String?
-  email         String?
-  department    String?
-  yearOfStudy   Int?
-  teamSize      Int?
-  track         String?
-  answers       Json?
-  attended      Boolean            @default(false)
-  attendedAt    DateTime?
-  cancelledAt   DateTime?
-  createdAt     DateTime           @default(now())
+  email          String?
+  department     String?
+  yearOfStudy    Int?
+  teamSize       Int?
+  track          String?
+  answers        Json?
+  attended       Boolean            @default(false)
+  attendedAt     DateTime?
+  cancelledAt    DateTime?
+  createdAt      DateTime           @default(now())
 
   @@unique([userId, eventId])
   @@index([eventId, status])
@@ -409,9 +419,15 @@ model Resource {
   acceptsRequests   Boolean           @default(false)
   formFields        Json?
   published         Boolean           @default(true)
+  featured          Boolean           @default(false)
+  accessUrl         String?
+  tags              String[]
+  publisher         String?
+  publishedYear     Int?
   isDemo            Boolean           @default(true)
   createdAt         DateTime          @default(now())
 
+  views       ResourceView[]
   bookmarks   ResourceBookmark[]
   readingList ReadingListItem[]
   requests    ServiceRequest[]
@@ -435,12 +451,28 @@ enum ReadingStatus {
   DONE
 }
 
+// Last time a signed-in user opened a resource: powers "recently viewed" and engagement counts.
+model ResourceView {
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resourceId String
+  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  viewedAt   DateTime @default(now())
+
+  @@id([userId, resourceId])
+  @@index([userId, viewedAt])
+}
+
 model ReadingListItem {
   userId     String
   user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   resourceId String
   resource   Resource      @relation(fields: [resourceId], references: [id], onDelete: Cascade)
   status     ReadingStatus @default(WANT_TO_READ)
+  notes      String?
+  progress   Int?
+  collection String?
+  position   Int           @default(0)
   addedAt    DateTime      @default(now())
 
   @@id([userId, resourceId])
@@ -456,20 +488,20 @@ enum RequestStatus {
 }
 
 model ServiceRequest {
-  id          String        @id @default(uuid())
-  referenceNo String        @unique
-  requesterId String
-  requester   User          @relation("RequestRequester", fields: [requesterId], references: [id], onDelete: Cascade)
-  resourceId  String
-  resource    Resource      @relation(fields: [resourceId], references: [id], onDelete: Restrict)
-  data        Json
-  status      RequestStatus @default(SUBMITTED)
-  assigneeId  String?
-  assignee    User?         @relation("RequestAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
-  dueAt       DateTime?
+  id           String        @id @default(uuid())
+  referenceNo  String        @unique
+  requesterId  String
+  requester    User          @relation("RequestRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  resourceId   String
+  resource     Resource      @relation(fields: [resourceId], references: [id], onDelete: Restrict)
+  data         Json
+  status       RequestStatus @default(SUBMITTED)
+  assigneeId   String?
+  assignee     User?         @relation("RequestAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  dueAt        DateTime?
   decisionNote String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
   @@index([requesterId])
   @@index([status, dueAt])
@@ -477,26 +509,26 @@ model ServiceRequest {
 
 // ---------------------------------------------------------------- healthcare (demonstration)
 model HealthService {
-  id          String           @id @default(uuid())
-  name        String
-  category    String
-  description String
-  published   Boolean          @default(true)
-  isDemo      Boolean          @default(true)
-  providers   HealthProvider[]
+  id           String           @id @default(uuid())
+  name         String
+  category     String
+  description  String
+  published    Boolean          @default(true)
+  isDemo       Boolean          @default(true)
+  providers    HealthProvider[]
   appointments Appointment[]
 }
 
 model HealthProvider {
-  id         String        @id @default(uuid())
-  serviceId  String
-  service    HealthService @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-  name       String
-  speciality String
-  bio        String?
-  published  Boolean       @default(true)
-  isDemo     Boolean       @default(true)
-  slots      HealthSlot[]
+  id           String        @id @default(uuid())
+  serviceId    String
+  service      HealthService @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  name         String
+  speciality   String
+  bio          String?
+  published    Boolean       @default(true)
+  isDemo       Boolean       @default(true)
+  slots        HealthSlot[]
   appointments Appointment[]
 }
 
@@ -507,12 +539,12 @@ enum SlotStatus {
 }
 
 model HealthSlot {
-  id         String         @id @default(uuid())
-  providerId String
-  provider   HealthProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
-  startsAt   DateTime
-  endsAt     DateTime
-  status     SlotStatus     @default(OPEN)
+  id          String         @id @default(uuid())
+  providerId  String
+  provider    HealthProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  startsAt    DateTime
+  endsAt      DateTime
+  status      SlotStatus     @default(OPEN)
   appointment Appointment?
 
   @@unique([providerId, startsAt])
@@ -625,15 +657,191 @@ model CourseRegistration {
 }
 
 model GameScore {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  game      String
-  difficulty String  @default("normal")
-  score     Int
-  meta      Json?
-  createdAt DateTime @default(now())
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game       String
+  difficulty String   @default("normal")
+  score      Int
+  meta       Json?
+  createdAt  DateTime @default(now())
 
   @@index([game, difficulty, score])
   @@index([userId, game])
+}
+
+// ---------------------------------------------------------------- student community
+enum PostTopic {
+  ACADEMICS
+  PROJECTS
+  TECHNOLOGY
+  CAMPUS_LIFE
+  CLUBS
+  CAREERS
+  GENERAL
+}
+
+enum ContentStatus {
+  VISIBLE
+  HIDDEN
+  REMOVED
+}
+
+enum GroupKind {
+  CLUB
+  PROJECT_GROUP
+}
+
+enum JoinPolicy {
+  OPEN
+  REQUEST
+}
+
+enum GroupStatus {
+  PUBLISHED
+  ARCHIVED
+}
+
+// A student club or a project group. Not "official" until an administrator sets verified.
+model Club {
+  id          String      @id @default(uuid())
+  name        String      @unique
+  kind        GroupKind   @default(CLUB)
+  category    PostTopic   @default(GENERAL)
+  description String
+  joinPolicy  JoinPolicy  @default(REQUEST)
+  contactLink String?
+  coverUrl    String?
+  verified    Boolean     @default(false)
+  status      GroupStatus @default(PUBLISHED)
+  createdById String?
+  createdBy   User?       @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime    @default(now())
+
+  members ClubMember[]
+  posts   CommunityPost[]
+
+  @@index([kind, status])
+}
+
+enum MemberRole {
+  MEMBER
+  MANAGER
+}
+
+enum MemberStatus {
+  PENDING
+  ACTIVE
+}
+
+model ClubMember {
+  clubId    String
+  club      Club         @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      MemberRole   @default(MEMBER)
+  status    MemberStatus @default(ACTIVE)
+  message   String?
+  createdAt DateTime     @default(now())
+
+  @@id([clubId, userId])
+  @@index([userId])
+}
+
+model CommunityPost {
+  id             String        @id @default(uuid())
+  authorId       String
+  author         User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  clubId         String?
+  club           Club?         @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  topic          PostTopic     @default(GENERAL)
+  title          String
+  body           String
+  isAnnouncement Boolean       @default(false)
+  status         ContentStatus @default(VISIBLE)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  comments  CommunityComment[]
+  likes     PostLike[]
+  bookmarks PostBookmark[]
+
+  @@index([status, createdAt])
+  @@index([clubId, createdAt])
+  @@index([topic])
+}
+
+model CommunityComment {
+  id        String             @id @default(uuid())
+  postId    String
+  post      CommunityPost      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User               @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parentId  String?
+  parent    CommunityComment?  @relation("Replies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   CommunityComment[] @relation("Replies")
+  body      String
+  status    ContentStatus      @default(VISIBLE)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  @@index([postId, createdAt])
+}
+
+model PostLike {
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    String
+  post      CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt DateTime      @default(now())
+
+  @@id([userId, postId])
+}
+
+model PostBookmark {
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    String
+  post      CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt DateTime      @default(now())
+
+  @@id([userId, postId])
+}
+
+enum ReportTarget {
+  POST
+  COMMENT
+}
+
+enum ReportReason {
+  SPAM
+  HARASSMENT
+  INAPPROPRIATE
+  MISINFORMATION
+  OTHER
+}
+
+enum ReportStatus {
+  OPEN
+  ACTIONED
+  DISMISSED
+}
+
+model ContentReport {
+  id             String       @id @default(uuid())
+  reporterId     String
+  reporter       User         @relation("ReportReporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  targetType     ReportTarget
+  targetId       String
+  reason         ReportReason
+  details        String?
+  status         ReportStatus @default(OPEN)
+  resolverId     String?
+  resolver       User?        @relation("ReportResolver", fields: [resolverId], references: [id], onDelete: SetNull)
+  resolutionNote String?
+  createdAt      DateTime     @default(now())
+  resolvedAt     DateTime?
+
+  @@unique([reporterId, targetType, targetId])
+  @@index([status, createdAt])
 }

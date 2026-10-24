@@ -212,3 +212,16 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fo
 .plan-item .icon-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 .review-box dl { margin: 0; }
 .field--wide { grid-column: span 2; }
+
+/* ---- community */
+.chip--btn.is-active { background: var(--color-accent-teal); color: #fff; }
+.post__body { white-space: pre-wrap; overflow-wrap: anywhere; }
+.post__actions { margin-top: 8px; flex-wrap: wrap; }
+.comment { padding: 12px 0; border-top: 1px solid var(--color-border); }
+.comment__replies { margin: 8px 0 0 20px; padding-left: 12px; border-left: 2px solid var(--color-border); }
+.quote { margin: 8px 0; padding: 12px 16px; border-left: 3px solid var(--color-accent-teal); background: var(--color-surface-alt, transparent); white-space: pre-wrap; overflow-wrap: anywhere; }
+.discover { margin: 8px 0 24px; }
+.discover__head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.mini h3 { font-size: 1rem; margin: 6px 0 2px; }
+.rl__notes { white-space: pre-wrap; overflow-wrap: anywhere; color: var(--color-text-secondary); }
+.select--sm { min-height: 36px; padding-block: 4px; }

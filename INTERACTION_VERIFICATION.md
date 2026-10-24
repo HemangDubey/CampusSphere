@@ -44,3 +44,18 @@ Not verified anywhere: real microphone dictation, real speech synthesis, real sc
 | Mouse / Keyboard labs | Coursework exercises | – | – | – | Browser (earlier prompts) |
 
 Known limitations: dialogs' `close` events do not fire in the in-app browser pane (handled by explicit cleanup); notification delivery is in-app only.
+
+## Community, library and resources upgrade
+
+| Page | Control | Endpoint | Level |
+| --- | --- | --- | --- |
+| Community | New post, topic chips, search, sort, load more, tabs (Feed/Saved/My posts) | `/community/posts` | API; browser: post, like and save checked |
+| Community | Like, Save, Report | `/community/posts/:id/{like,bookmark}`, `/community/reports` | API; like/save in browser; report dialog code-only |
+| Post page | Comment, reply, edit/delete own comment, edit/delete own post | `/community/*` | API; comment and reply in browser; edit/delete dialogs code-only |
+| Groups | Directory filters, start a group | `/community/groups` | API; directory in browser |
+| Group page | Join/request, leave, announce, approve/decline, roles, remove, edit, archive | `/community/groups/:id/*` | API; announce and manager view in browser; approve/decline, roles, remove code-only |
+| Moderation | Hide, remove, dismiss, restore | `/manage/community/*` | API only (UI not opened in a browser) |
+| Library | Search, sort, discovery sections | `/resources`, `/resources/home` | API + browser |
+| Reading list | Status, notes and progress dialog, reorder, remove, CSV export | `/reading-list*` | API; status, notes, progress and reorder in browser; export link code-only |
+| Resources | Sort, discovery sections | `/resources/home` | API + browser (sort checked) |
+| Admin resources | Feature, access link, tags, publisher, year | `/admin/resources` | API; form fields code-only |

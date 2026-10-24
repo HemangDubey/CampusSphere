@@ -75,7 +75,7 @@ const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
   }
   for (const f of jsFiles) {
     const js = fs.readFileSync(f, 'utf8');
-    for (const m of js.matchAll(/href="(\/[^"#?]*)"/g)) check(f, m[1]); // links built in JS templates
+    for (const m of js.matchAll(/href="(\/[^"#?]*)"/g)) if (!m[1].startsWith('/api/')) check(f, m[1]); // links built in JS templates (API downloads are checked by the API suites)
   }
   assert.deepEqual(broken, [], `broken links: ${broken.join('; ')}`);
 
@@ -136,7 +136,7 @@ const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
     for (const m of src.matchAll(/import\s+\{([^}]*)\}\s+from\s+['"][^'"]+['"]/g)) {
       for (const raw of m[1].split(',').map((x) => x.trim()).filter(Boolean)) {
         const local = raw.split(/\s+as\s+/).pop();
-        if (!new RegExp(`(^|[^A-Za-z0-9_$.])${local.replace(/\$/g, '\\$')}(?![A-Za-z0-9_$])`).test(body)) unused.push(`${path.relative(root, f)}: ${local}`);
+        if (!new RegExp(`(^|\.\.\.|[^A-Za-z0-9_$.])${local.replace(/\$/g, '\\$')}(?![A-Za-z0-9_$])`).test(body)) unused.push(`${path.relative(root, f)}: ${local}`);
       }
     }
   }

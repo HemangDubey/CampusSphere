@@ -8,8 +8,12 @@ const router = Router();
 // Directory (public) and personal lists. Fixed paths come before ":id".
 router.get('/resource-categories', resources.categories);
 router.get('/resources', optionalAuth, resources.list);
+router.get('/resources/home', optionalAuth, resources.home);
 router.get('/resources/bookmarks', requireAuth, resources.bookmarks);
 router.get('/reading-list', requireAuth, resources.readingList);
+router.get('/reading-list/export.csv', requireAuth, resources.exportReading);
+router.put('/reading-list-order', requireAuth, resources.reorderReading);
+router.patch('/reading-list/:id', requireAuth, resources.updateReading);
 router.get('/resources/:id', optionalAuth, resources.get);
 router.put('/resources/:id/bookmark', requireAuth, resources.addBookmark);
 router.delete('/resources/:id/bookmark', requireAuth, resources.removeBookmark);

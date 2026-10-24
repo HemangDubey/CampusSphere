@@ -150,3 +150,18 @@ Not verified / not done
 - Real microphone dictation and speech synthesis; real screenshots; DOM-level automated tests; deployment templates.
 - Library borrowing; mail/SMS; maps/prices; destination photography.
 - Coursework Q01–Q41: question wording still unavailable.
+
+## Resources, Library and Community upgrade (second brief): PARTLY DONE
+
+Done and tested
+- "Sample" badge and sample-content notices removed from the UI (commit f7b6e46).
+- Community: posts, comments, likes, saves, clubs and project groups, membership workflow, reports and moderation with audit log, notifications. New permission `community:moderate`. Migration `20261025000000_community`. Suite `community.test.js`.
+- Library: featured/recent/most-saved/recently-viewed discovery, tags, publisher/year, access link, reading-list notes, progress, collections, ordering, CSV export. Migration `20261025010000_resources_library`. Suite `library.test.js`.
+- Resources: sort and discovery sections. Admin form gained the new fields.
+- Guides: CAMPUS_RESOURCES_GUIDE.md, LIBRARY_FEATURE_GUIDE.md, STUDENT_COMMUNITY_GUIDE.md.
+
+Not done (stated in the guides)
+- Resource booking/reservations and library borrowing/inventory (no real data model), "completed" request status, engagement-metrics screen, request-form builder UI.
+- Community: image uploads, block/mute, event RSVP/calendar integration, project-group shared notes.
+- Seed data is still development data; it must be cleared (`--reset-demo`) and replaced with real content.
+- Prompt 1 of the same message (image audit and AI travel discovery) has not been started.

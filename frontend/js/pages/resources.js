@@ -1,4 +1,5 @@
 import { initShell } from '../shell.js';
+import { renderDiscovery } from '../discover.js';
 import { request } from '../api.js';
 import { $, esc, label, badge, cover, pageHead, skeletons, emptyState, errorState, pager, tabs, field, qs, debounce, on, attempt } from '../kit.js';
 
@@ -6,6 +7,7 @@ const view = $('[data-view]');
 const user = await initShell({ active: '/resources', crumbs: [['Campus Life'], ['Campus Resources']] });
 const params = new URLSearchParams(location.search);
 const KINDS = [['', 'All'], ['DEPARTMENT', 'Departments'], ['FACILITY', 'Facilities'], ['SUPPORT', 'Student support'], ['SERVICE', 'Services'], ['CLUB', 'Clubs'], ['ORGANIZATION', 'Organisations'], ['LINK', 'Links']];
+let discovered = false;
 const state = { kind: '', page: 1, saved: params.get('view') === 'saved' && Boolean(user), items: [] };
 
 view.innerHTML = `${pageHead({ eyebrow: 'Campus life', title: 'Campus resources', lead: 'Departments, facilities, support and services. Save what you use, and send a request where a service accepts them.' })}
@@ -14,7 +16,9 @@ view.innerHTML = `${pageHead({ eyebrow: 'Campus life', title: 'Campus resources'
     <div class="field field--wide"><label class="field__label" for="q">Search</label><input class="input" id="q" name="q" type="search" maxlength="80" placeholder="Search resources"></div>
     <div class="field"><label class="field__label" for="categoryId">Category</label><select class="select" id="categoryId" name="categoryId"><option value="">All categories</option></select></div>
     ${field({ name: 'status', label: 'Availability', type: 'select', placeholder: 'Any', options: [['AVAILABLE', 'Available'], ['LIMITED', 'Limited'], ['UNAVAILABLE', 'Unavailable']] })}
+    <div class="field"><label class="field__label" for="sort">Sort by</label><select class="select" id="sort" name="sort"><option value="title">Title (A to Z)</option><option value="recent">Recently added</option><option value="popular">Most saved</option></select></div>
     <label class="check"><input type="checkbox" name="requestable" value="true"><span>Accepts requests</span></label><button class="button button--secondary" type="reset">Clear</button></form>
+  <div data-discover hidden></div>
   <p class="results-note" data-count></p><div class="grid grid--cards" data-list aria-live="polite"></div><div class="pager" data-pager></div>`;
 const list = $('[data-list]');
 const filters = $('[data-filters]');
@@ -31,6 +35,7 @@ async function load() {
   list.innerHTML = skeletons(6);
   $('[data-pager]').innerHTML = '';
   try {
+    $('[data-discover]').hidden = true;
     if (state.saved) {
       const { resources } = await request('/resources/bookmarks');
       state.items = resources;
@@ -39,6 +44,8 @@ async function load() {
       return;
     }
     const q = Object.fromEntries(new FormData(filters));
+    const plain = state.page === 1 && !state.kind && !q.q && !q.categoryId && !q.status && !q.requestable && (q.sort || 'title') === 'title';
+    if (plain) { if (!discovered) { discovered = true; await renderDiscovery($('[data-discover]')); } else if ($('[data-discover]').innerHTML) $('[data-discover]').hidden = false; }
     const data = await request(`/resources?${qs({ ...q, kind: state.kind, page: state.page, pageSize: 12 })}`);
     state.items = data.resources;
     $('[data-count]').textContent = `${data.total} result${data.total === 1 ? '' : 's'}`;

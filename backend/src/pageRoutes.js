@@ -15,6 +15,9 @@ const APP_PAGES = [
   { route: '/resources/:id', file: 'resource-detail.html', js: 'resource-detail', title: 'Resource' },
   { route: '/library', file: 'library.html', js: 'library', title: 'Library' },
   { route: '/community', file: 'community.html', js: 'community', title: 'Student Community' },
+  { route: '/community/posts/:id', file: 'community-post.html', js: 'community-post', title: 'Community Post' },
+  { route: '/community/groups', file: 'groups.html', js: 'groups', title: 'Clubs & Groups' },
+  { route: '/community/groups/:id', file: 'group-detail.html', js: 'group-detail', title: 'Group' },
   { route: '/healthcare', file: 'healthcare.html', js: 'healthcare', title: 'Healthcare' },
   { route: '/appointments', file: 'appointments.html', js: 'appointments', title: 'My Appointments' },
   { route: '/leave', file: 'leave.html', js: 'leave', title: 'Leave Requests' },
@@ -34,6 +37,7 @@ const APP_PAGES = [
   { route: '/admin/healthcare', file: 'admin-healthcare.html', js: 'admin-healthcare', title: 'Healthcare Management' },
   { route: '/admin/resources', file: 'admin-resources.html', js: 'admin-resources', title: 'Resource Management' },
   { route: '/admin/content', file: 'admin-content.html', js: 'admin-content', title: 'Content & Announcements' },
+  { route: '/admin/moderation', file: 'admin-moderation.html', js: 'admin-moderation', title: 'Community Moderation' },
   { route: '/admin/users', file: 'admin-users.html', js: 'admin-users', title: 'Users & Roles' },
   { route: '/admin/reports', file: 'admin-reports.html', js: 'admin-reports', title: 'Reports & Audit Logs' }
 ];

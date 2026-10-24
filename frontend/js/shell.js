@@ -57,7 +57,7 @@ const SECTIONS = [
     items: [['Admin Dashboard', '/admin', 'shield', anyPerm], ['Event Management', '/admin/events', 'calendar', perm('event:manage')], ['Leave Approvals', '/approvals', 'leave', perm('leave:review')],
       ['Request Queue', '/admin/requests', 'inbox', perm('request:review')], ['Healthcare Management', '/admin/healthcare', 'stethoscope', perm('healthcare:manage')],
       ['Resource Management', '/admin/resources', 'folder', perm('resource:manage')], ['Content & Announcements', '/admin/content', 'map', perm('content:manage')], ['Employee Records', '/employees', 'briefcase', perm('employee:manage')],
-      ['Users & Roles', '/admin/users', 'userCog', perm('user:manage')], ['Reports & Audit Logs', '/admin/reports', 'chart', (u) => perm('report:view')(u) || perm('audit:view')(u)]]
+      ['Community Moderation', '/admin/moderation', 'shield', perm('community:moderate')], ['Users & Roles', '/admin/users', 'userCog', perm('user:manage')], ['Reports & Audit Logs', '/admin/reports', 'chart', (u) => perm('report:view')(u) || perm('audit:view')(u)]]
   }
 ];
 

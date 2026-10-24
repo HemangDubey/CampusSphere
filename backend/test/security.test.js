@@ -74,6 +74,11 @@ const UUID = '11111111-1111-4111-8111-111111111111';
       ['GET', '/api/employees'], ['POST', '/api/employees'], ['GET', `/api/employees/${UUID}`], ['PUT', `/api/employees/${UUID}`], ['DELETE', `/api/employees/${UUID}`],
       ['GET', '/api/courses/registrations/mine'], ['POST', '/api/courses/registrations'], ['DELETE', `/api/courses/registrations/${UUID}`],
       ['POST', '/api/games/scores'], ['GET', '/api/games/scores/mine'],
+      ['POST', '/api/community/posts'], ['PATCH', `/api/community/posts/${UUID}`], ['DELETE', `/api/community/posts/${UUID}`], ['PUT', `/api/community/posts/${UUID}/like`], ['PUT', `/api/community/posts/${UUID}/bookmark`],
+      ['POST', `/api/community/posts/${UUID}/comments`], ['PATCH', `/api/community/comments/${UUID}`], ['DELETE', `/api/community/comments/${UUID}`], ['POST', '/api/community/reports'],
+      ['POST', '/api/community/groups'], ['PATCH', `/api/community/groups/${UUID}`], ['POST', `/api/community/groups/${UUID}/join`], ['GET', `/api/community/groups/${UUID}/requests`],
+      ['GET', '/api/manage/community/reports'], ['POST', `/api/manage/community/reports/${UUID}/resolve`],
+      ['PATCH', `/api/reading-list/${UUID}`], ['PUT', '/api/reading-list-order'], ['GET', '/api/reading-list/export.csv'],
       ['POST', '/api/ai/chat']
     ];
     for (const [method, p] of priv) {

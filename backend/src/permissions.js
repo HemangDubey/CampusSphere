@@ -2,7 +2,7 @@
 // with requirePermission() and, for per-record rules (own events, assigned requests), in the controller.
 const ALL = [
   'event:manage', 'leave:review', 'request:review', 'healthcare:manage', 'resource:manage',
-  'content:manage', 'employee:manage', 'user:manage', 'audit:view', 'report:view'
+  'content:manage', 'employee:manage', 'user:manage', 'audit:view', 'report:view', 'community:moderate'
 ];
 
 const MAP = {
@@ -10,7 +10,7 @@ const MAP = {
   FACULTY: ['leave:review', 'request:review'],
   EVENT_ORGANIZER: ['event:manage'],
   HEALTHCARE_ADMIN: ['healthcare:manage'],
-  CAMPUS_ADMIN: ['event:manage', 'leave:review', 'request:review', 'resource:manage', 'content:manage', 'employee:manage', 'audit:view', 'report:view'],
+  CAMPUS_ADMIN: ['event:manage', 'leave:review', 'request:review', 'resource:manage', 'content:manage', 'employee:manage', 'audit:view', 'report:view', 'community:moderate'],
   SUPER_ADMIN: ALL
 };
 

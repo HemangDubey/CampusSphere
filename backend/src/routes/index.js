@@ -9,6 +9,7 @@ api.use('/auth', require('./auth'));
 api.use(require('./events'));
 api.use(require('./travel'));
 api.use(require('./resources'));
+api.use(require('./community'));
 api.use(require('./leave'));
 api.use(require('./healthcare'));
 api.use(require('./me'));
