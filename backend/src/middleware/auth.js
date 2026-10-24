@@ -3,6 +3,7 @@ const rateLimit = require('express-rate-limit');
 const config = require('../config');
 const db = require('../db');
 const { HttpError } = require('../utils/response');
+const { can } = require('../permissions');
 
 const COOKIE = 'cs_session';
 
@@ -36,7 +37,7 @@ async function loadSession(req) {
   let payload;
   try { payload = jwt.verify(token, config.jwtSecret); } catch { return null; }
   const session = await db.session.findUnique({ where: { id: payload.sid }, include: { user: true } });
-  if (!session || session.revokedAt || session.expiresAt < new Date()) return null;
+  if (!session || session.revokedAt || session.expiresAt < new Date() || session.user.status !== 'ACTIVE') return null;
   return session;
 }
 
@@ -52,6 +53,9 @@ async function requireAuth(req, res, next) {
     return next();
   } catch (e) { return next(e); }
 }
+
+const requirePermission = (permission) => (req, res, next) =>
+  can(req.user, permission) ? next() : next(new HttpError(403, 'FORBIDDEN', 'You do not have permission to do that.'));
 
 // Like requireAuth but anonymous visitors pass through with req.user unset.
 async function optionalAuth(req, res, next) {
@@ -83,4 +87,4 @@ const authLimiter = rateLimit({
   handler: (req, res, next) => next(new HttpError(429, 'RATE_LIMITED', 'Too many attempts. Please wait a few minutes and try again.'))
 });
 
-module.exports = { optionalAuth, requireAuth, requireRole, checkOrigin, authLimiter, startSession, clearSessionCookie, loadSession };
+module.exports = { optionalAuth, requireAuth, requireRole, requirePermission, checkOrigin, authLimiter, startSession, clearSessionCookie, loadSession };

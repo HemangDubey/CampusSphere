@@ -59,3 +59,18 @@ export function errorMessageFor(err) {
 
 // Which messages are too long to send (the composer shows a counter and blocks sending).
 export const tooLong = (text) => text.length > AI_LIMITS.maxMessage;
+
+// Small, safe markdown subset for replies: paragraphs, bullet/numbered lists, **bold**, `inline code`.
+// All text is HTML-escaped first; no raw HTML from a reply is ever inserted.
+const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const inline = (s) => escapeHtml(s).replace(/`([^`\n]+)`/g, '<code>$1</code>').replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+export function renderMarkdown(text) {
+  return String(text).split(/\n{2,}/).map((block) => block.trim()).filter(Boolean).map((block) => {
+    const lines = block.split('\n');
+    if (lines.every((l) => /^\s*[-*•]\s+/.test(l))) return `<ul>${lines.map((l) => `<li>${inline(l.replace(/^\s*[-*•]\s+/, ''))}</li>`).join('')}</ul>`;
+    if (lines.every((l) => /^\s*\d+[.)]\s+/.test(l))) return `<ol>${lines.map((l) => `<li>${inline(l.replace(/^\s*\d+[.)]\s+/, ''))}</li>`).join('')}</ol>`;
+    const heading = /^#{1,4}\s+(.*)$/.exec(lines[0]);
+    if (heading && lines.length === 1) return `<p><strong>${inline(heading[1])}</strong></p>`;
+    return `<p>${lines.map(inline).join('<br>')}</p>`;
+  }).join('');
+}

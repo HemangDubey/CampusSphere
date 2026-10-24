@@ -6,32 +6,11 @@ const securityHeaders = require('./middleware/securityHeaders');
 const path = require('path');
 const config = require('./config');
 const api = require('./routes');
+const { match } = require('./pageRoutes');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 
-// Clean URLs mapped to their page files.
-const PAGES = {
-  '/dashboard': 'dashboard.html',
-  '/events': 'events.html',
-  '/travel': 'travel.html',
-  '/resources': 'resources.html',
-  '/services': 'resources.html',
-  '/healthcare': 'healthcare.html',
-  '/courses': 'courses.html',
-  '/checkout': 'checkout.html',
-  '/employees': 'employees.html',
-  '/assistant': 'assistant.html',
-  '/labs': 'labs.html',
-  '/labs/mouse': 'mouse-lab.html',
-  '/labs/keyboard': 'keyboard-lab.html',
-  '/about': 'about.html',
-  '/contact': 'contact.html',
-  '/privacy': 'privacy.html',
-  '/terms': 'terms.html',
-  '/login': 'login.html',
-  '/register': 'register.html',
-  '/forgot-password': 'forgot-password.html',
-  '/reset-password': 'reset-password.html'
-};
+// Old URLs that moved. Kept so bookmarks and links keep working.
+const REDIRECTS = { '/services': '/resources', '/labs': '/coursework' };
 
 function createApp() {
   const app = express();
@@ -50,10 +29,11 @@ function createApp() {
   // Frontend (static host used in development and single-server deployments).
   app.use(express.static(config.frontendRoot));
   app.get('/', (req, res) => res.sendFile(path.join(config.frontendRoot, 'index.html')));
-  app.get(/^\/[^/.]+(\/[^/.]+)?\/?$/, (req, res, next) => {
-    const route = req.path.replace(/\/+$/, '');
-    if (PAGES[route]) return res.sendFile(page(PAGES[route]));
-    return next();
+  app.get(/^\/[^.]*$/, (req, res, next) => {
+    const route = req.path.replace(/\/+$/, '') || '/';
+    if (REDIRECTS[route]) return res.redirect(301, REDIRECTS[route]);
+    const found = match(route);
+    return found ? res.sendFile(page(found.file)) : next();
   });
   app.use((req, res) => res.status(404).sendFile(page('404.html')));
 

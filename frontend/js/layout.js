@@ -8,7 +8,7 @@ export const NAV_LINKS = [
   { href: '/travel', label: 'Travel' },
   { href: '/resources', label: 'Resources' },
   { href: '/healthcare', label: 'Healthcare' },
-  { href: '/labs', label: 'Labs' },
+  { href: '/games', label: 'Games' },
   { href: '/assistant', label: 'AI Assistant' }
 ];
 
@@ -64,12 +64,12 @@ export function renderFooter() {
         <div class="footer__cols reveal">
           <div><h4>Explore</h4><ul>
             <li><a href="/dashboard">Dashboard</a></li><li><a href="/resources">Campus Resources</a></li>
-            <li><a href="/events">Events</a></li><li><a href="/travel">Travel Explorer</a></li><li><a href="/healthcare">Healthcare</a></li><li><a href="/courses">Course Registration</a></li><li><a href="/checkout">Checkout Demo</a></li><li><a href="/labs">Interactive Labs</a></li>
+            <li><a href="/events">Events</a></li><li><a href="/travel">Travel Explorer</a></li><li><a href="/healthcare">Healthcare</a></li><li><a href="/leave">Leave &amp; Approvals</a></li><li><a href="/games">Games &amp; Recreation</a></li><li><a href="/coursework">Coursework Demonstrations</a></li>
             <li><a href="/assistant">AI Assistant</a></li></ul></div>
           <div><h4>Connect</h4><ul>
             <li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li>
             <li><a href="/login">Student Login</a></li><li><a href="/#top">Back to top</a></li></ul></div>
-          <div><h4>Campus</h4><address>Main Campus<br>Academic Block A<br>Student Help Desk<br>Mon to Sat, 9:00 to 18:00</address></div>
+          <div><h4>Campus</h4><address>A student project.<br>Check opening hours and contacts<br>with your institution.</address></div>
         </div>
       </div>
       <div class="footer__bar">

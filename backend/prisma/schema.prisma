@@ -7,35 +7,59 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ---------------------------------------------------------------- users and roles
 enum Role {
   STUDENT
   FACULTY
-  ADMIN
+  EVENT_ORGANIZER
+  HEALTHCARE_ADMIN
+  CAMPUS_ADMIN
+  SUPER_ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
 }
 
 model User {
-  id           String   @id @default(uuid())
-  name         String
-  email        String   @unique
-  passwordHash String
-  role         Role     @default(STUDENT)
-  department   String?
-  yearOfStudy  Int?
-  phone        String?
-  bio          String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id             String     @id @default(uuid())
+  name           String
+  email          String     @unique
+  passwordHash   String
+  role           Role       @default(STUDENT)
+  status         UserStatus @default(ACTIVE)
+  registrationNo String?
+  department     String?
+  yearOfStudy    Int?
+  phone          String?
+  bio            String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
 
-  sessions      Session[]
-  resetTokens   PasswordResetToken[]
-  eventRegistrations EventRegistration[]
-  favorites     FavoriteDestination[]
-  appointments  Appointment[]
+  sessions            Session[]
+  resetTokens         PasswordResetToken[]
+  eventRegistrations  EventRegistration[]
+  organizedEvents     Event[]               @relation("EventOrganizer")
+  favorites           FavoriteDestination[]
+  recentViews         RecentDestinationView[]
+  trips               Trip[]
+  tripMemberships     TripMember[]
+  resourceBookmarks   ResourceBookmark[]
+  readingList         ReadingListItem[]
+  serviceRequests     ServiceRequest[]      @relation("RequestRequester")
+  assignedRequests    ServiceRequest[]      @relation("RequestAssignee")
+  leaveRequests       LeaveRequest[]        @relation("LeaveStudent")
+  leaveToReview       LeaveRequest[]        @relation("LeaveReviewer")
+  appointments        Appointment[]
   courseRegistrations CourseRegistration[]
+  notifications       Notification[]
+  auditLogs           AuditLog[]
+  gameScores          GameScore[]
 }
 
 // One row per signed-in browser. The JWT in the HTTP-only cookie carries this id;
-// revoking the row (logout, password reset) invalidates the session server-side.
+// revoking the row (logout, password reset, suspension) invalidates the session server-side.
 model Session {
   id        String    @id @default(uuid())
   userId    String
@@ -60,6 +84,85 @@ model PasswordResetToken {
   @@index([userId])
 }
 
+// ---------------------------------------------------------------- cross-cutting
+enum NotificationType {
+  EVENT
+  REQUEST
+  LEAVE
+  APPOINTMENT
+  SYSTEM
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  body      String?
+  link      String?
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  @@index([userId, readAt])
+  @@index([userId, createdAt])
+}
+
+// Append-only record of important administrative actions. Never stores secrets.
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String?
+  actor      User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  action     String
+  entityType String
+  entityId   String?
+  summary    String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([entityType, entityId])
+}
+
+enum SubjectType {
+  SERVICE_REQUEST
+  LEAVE
+  APPOINTMENT
+}
+
+// Status history shared by the three approval-style workflows.
+model StatusHistory {
+  id          String      @id @default(uuid())
+  subjectType SubjectType
+  subjectId   String
+  actorId     String?
+  actorName   String?
+  fromStatus  String?
+  toStatus    String
+  note        String?
+  createdAt   DateTime    @default(now())
+
+  @@index([subjectType, subjectId, createdAt])
+}
+
+enum AnnouncementStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Announcement {
+  id          String             @id @default(uuid())
+  title       String
+  body        String
+  status      AnnouncementStatus @default(DRAFT)
+  isDemo      Boolean            @default(false)
+  authorId    String?
+  publishedAt DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+// ---------------------------------------------------------------- events
 enum EventCategory {
   TECHNICAL
   CULTURAL
@@ -74,41 +177,77 @@ enum EventMode {
   HYBRID
 }
 
-// isDemo marks seeded demonstration records. Replace them with verified data via prisma/seed.js or an admin tool.
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+}
+
 model Event {
-  id          String        @id @default(uuid())
-  title       String
-  description String
-  category    EventCategory
-  mode        EventMode     @default(IN_PERSON)
-  startsAt    DateTime
-  endsAt      DateTime?
-  venue       String
-  capacity    Int?
-  isDemo      Boolean       @default(true)
-  createdAt   DateTime      @default(now())
+  id                  String        @id @default(uuid())
+  title               String
+  description         String
+  category            EventCategory
+  mode                EventMode     @default(IN_PERSON)
+  status              EventStatus   @default(PUBLISHED)
+  startsAt            DateTime
+  endsAt              DateTime?
+  venue               String
+  onlineLink          String?
+  schedule            String?
+  eligibility         String?
+  instructions        String?
+  organizerId         String?
+  organizer           User?         @relation("EventOrganizer", fields: [organizerId], references: [id], onDelete: SetNull)
+  organizerName       String?
+  coverImage          String?
+  capacity            Int?
+  registrationOpensAt DateTime?
+  registrationClosesAt DateTime?
+  fee                 Int           @default(0)
+  cancelReason        String?
+  isDemo              Boolean       @default(true)
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
 
   registrations EventRegistration[]
 
   @@index([startsAt])
   @@index([category])
+  @@index([status])
+}
+
+enum RegistrationStatus {
+  REGISTERED
+  CANCELLED
 }
 
 model EventRegistration {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  eventId   String
-  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  // Only collected for symposium events.
-  teamSize  Int?
-  track     String?
-  createdAt DateTime @default(now())
+  id            String             @id @default(uuid())
+  referenceNo   String             @unique
+  userId        String
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eventId       String
+  event         Event              @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  status        RegistrationStatus @default(REGISTERED)
+  fullName      String?
+  registrationNo String?
+  email         String?
+  department    String?
+  yearOfStudy   Int?
+  teamSize      Int?
+  track         String?
+  answers       Json?
+  attended      Boolean            @default(false)
+  attendedAt    DateTime?
+  cancelledAt   DateTime?
+  createdAt     DateTime           @default(now())
 
   @@unique([userId, eventId])
-  @@index([eventId])
+  @@index([eventId, status])
 }
 
+// ---------------------------------------------------------------- travel
 enum DestinationType {
   HERITAGE
   NATURE
@@ -135,10 +274,21 @@ model Destination {
   budgetMinInr    Int
   budgetMaxInr    Int
   recommendedDays Int
+  distanceKm      Int?
+  popularity      Int             @default(0)
+  bestTime        String?
+  imageUrl        String?
+  gallery         String[]
   tips            String[]
+  activities      String[]
+  itineraryIdeas  Json?
+  published       Boolean         @default(true)
   isDemo          Boolean         @default(true)
 
   favorites FavoriteDestination[]
+  views     RecentDestinationView[]
+  tripItems TripItem[]
+  trips     Trip[]
 
   @@index([type])
   @@index([budget])
@@ -155,6 +305,68 @@ model FavoriteDestination {
   @@unique([userId, destinationId])
 }
 
+model RecentDestinationView {
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  destinationId String
+  destination   Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  viewedAt      DateTime    @default(now())
+
+  @@id([userId, destinationId])
+}
+
+model Trip {
+  id            String       @id @default(uuid())
+  ownerId       String
+  owner         User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  title         String
+  destinationId String?
+  destination   Destination? @relation(fields: [destinationId], references: [id], onDelete: SetNull)
+  startDate     DateTime?    @db.Date
+  endDate       DateTime?    @db.Date
+  budgetInr     Int?
+  notes         String?
+  shareToken    String?      @unique
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  items   TripItem[]
+  members TripMember[]
+
+  @@index([ownerId])
+}
+
+model TripItem {
+  id            String       @id @default(uuid())
+  tripId        String
+  trip          Trip         @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  position      Int
+  dayNumber     Int          @default(1)
+  title         String
+  destinationId String?
+  destination   Destination? @relation(fields: [destinationId], references: [id], onDelete: SetNull)
+  estCostInr    Int          @default(0)
+  notes         String?
+
+  @@index([tripId, position])
+}
+
+enum TripRole {
+  EDITOR
+  VIEWER
+}
+
+model TripMember {
+  tripId String
+  trip   Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  userId String
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   TripRole @default(EDITOR)
+
+  @@id([tripId, userId])
+}
+
+// ---------------------------------------------------------------- campus resources and service requests
 enum ResourceKind {
   DEPARTMENT
   LIBRARY
@@ -162,49 +374,223 @@ enum ResourceKind {
   SUPPORT
   LINK
   ORGANIZATION
+  CLUB
+  SERVICE
+}
+
+enum ResourceStatus {
+  AVAILABLE
+  LIMITED
+  UNAVAILABLE
+}
+
+model ResourceCategory {
+  id          String     @id @default(uuid())
+  name        String     @unique
+  description String?
+  resources   Resource[]
 }
 
 model Resource {
-  id       String       @id @default(uuid())
-  kind     ResourceKind
-  category String?
-  title    String
-  summary  String
-  details  String?
-  isDemo   Boolean      @default(true)
+  id                String            @id @default(uuid())
+  kind              ResourceKind
+  categoryId        String?
+  category          ResourceCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  title             String
+  summary           String
+  details           String?
+  author            String?
+  status            ResourceStatus    @default(AVAILABLE)
+  eligibility       String?
+  instructions      String?
+  requiredDocuments String[]
+  contactInfo       String?
+  imageUrl          String?
+  acceptsRequests   Boolean           @default(false)
+  formFields        Json?
+  published         Boolean           @default(true)
+  isDemo            Boolean           @default(true)
+  createdAt         DateTime          @default(now())
+
+  bookmarks   ResourceBookmark[]
+  readingList ReadingListItem[]
+  requests    ServiceRequest[]
 
   @@index([kind])
 }
 
-enum TimePreference {
-  MORNING
-  AFTERNOON
-  EVENING
+model ResourceBookmark {
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resourceId String
+  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@id([userId, resourceId])
+}
+
+enum ReadingStatus {
+  WANT_TO_READ
+  READING
+  DONE
+}
+
+model ReadingListItem {
+  userId     String
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resourceId String
+  resource   Resource      @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  status     ReadingStatus @default(WANT_TO_READ)
+  addedAt    DateTime      @default(now())
+
+  @@id([userId, resourceId])
+}
+
+enum RequestStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  INFO_REQUIRED
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+model ServiceRequest {
+  id          String        @id @default(uuid())
+  referenceNo String        @unique
+  requesterId String
+  requester   User          @relation("RequestRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  resourceId  String
+  resource    Resource      @relation(fields: [resourceId], references: [id], onDelete: Restrict)
+  data        Json
+  status      RequestStatus @default(SUBMITTED)
+  assigneeId  String?
+  assignee    User?         @relation("RequestAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  dueAt       DateTime?
+  decisionNote String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([requesterId])
+  @@index([status, dueAt])
+}
+
+// ---------------------------------------------------------------- healthcare (demonstration)
+model HealthService {
+  id          String           @id @default(uuid())
+  name        String
+  category    String
+  description String
+  published   Boolean          @default(true)
+  isDemo      Boolean          @default(true)
+  providers   HealthProvider[]
+  appointments Appointment[]
+}
+
+model HealthProvider {
+  id         String        @id @default(uuid())
+  serviceId  String
+  service    HealthService @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  name       String
+  speciality String
+  bio        String?
+  published  Boolean       @default(true)
+  isDemo     Boolean       @default(true)
+  slots      HealthSlot[]
+  appointments Appointment[]
+}
+
+enum SlotStatus {
+  OPEN
+  BOOKED
+  BLOCKED
+}
+
+model HealthSlot {
+  id         String         @id @default(uuid())
+  providerId String
+  provider   HealthProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  startsAt   DateTime
+  endsAt     DateTime
+  status     SlotStatus     @default(OPEN)
+  appointment Appointment?
+
+  @@unique([providerId, startsAt])
+  @@index([startsAt, status])
 }
 
 enum AppointmentStatus {
   REQUESTED
+  CONFIRMED
+  RESCHEDULE_REQUESTED
+  COMPLETED
   CANCELLED
+  REJECTED
 }
 
-// A demonstration request record. Nothing is sent to a real clinic or hospital.
+// A request record in this demonstration app. Nothing is sent to a real clinic or hospital.
 model Appointment {
-  id             String            @id @default(uuid())
-  userId         String
-  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  patientName    String
-  phone          String
-  department     String
-  preferredDate  DateTime          @db.Date
-  timePreference TimePreference
-  reason         String
-  status         AppointmentStatus @default(REQUESTED)
-  createdAt      DateTime          @default(now())
+  id          String            @id @default(uuid())
+  referenceNo String            @unique
+  userId      String
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  serviceId   String
+  service     HealthService     @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  providerId  String?
+  provider    HealthProvider?   @relation(fields: [providerId], references: [id], onDelete: SetNull)
+  slotId      String?           @unique
+  slot        HealthSlot?       @relation(fields: [slotId], references: [id], onDelete: SetNull)
+  patientName String
+  phone       String
+  reason      String
+  status      AppointmentStatus @default(REQUESTED)
+  adminNote   String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
 
   @@index([userId])
+  @@index([status])
 }
 
-// Sample records for the employee module. Visible to administrators only.
+// ---------------------------------------------------------------- leave and approvals
+enum LeaveCategory {
+  MEDICAL
+  PERSONAL
+  FAMILY
+  ACADEMIC
+  OTHER
+}
+
+enum LeaveStatus {
+  SUBMITTED
+  INFO_REQUIRED
+  APPROVED
+  REJECTED
+  WITHDRAWN
+}
+
+model LeaveRequest {
+  id           String        @id @default(uuid())
+  referenceNo  String        @unique
+  studentId    String
+  student      User          @relation("LeaveStudent", fields: [studentId], references: [id], onDelete: Cascade)
+  reviewerId   String
+  reviewer     User          @relation("LeaveReviewer", fields: [reviewerId], references: [id], onDelete: Restrict)
+  category     LeaveCategory
+  startDate    DateTime      @db.Date
+  endDate      DateTime      @db.Date
+  reason       String
+  status       LeaveStatus   @default(SUBMITTED)
+  decisionNote String?
+  decidedAt    DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([studentId])
+  @@index([reviewerId, status])
+}
+
+// ---------------------------------------------------------------- employees, courses, games
 model Employee {
   id          String   @id @default(uuid())
   employeeId  String   @unique
@@ -226,14 +612,28 @@ enum Semester {
 }
 
 model CourseRegistration {
-  id         String   @id @default(uuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courseCode String
-  semester   Semester
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseCode   String
+  semester     Semester
   academicYear String
-  notes      String?
-  createdAt  DateTime @default(now())
+  notes        String?
+  createdAt    DateTime @default(now())
 
   @@unique([userId, courseCode, semester, academicYear])
+}
+
+model GameScore {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game      String
+  difficulty String  @default("normal")
+  score     Int
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  @@index([game, difficulty, score])
+  @@index([userId, game])
 }

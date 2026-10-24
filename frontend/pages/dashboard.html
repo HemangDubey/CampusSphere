@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Dashboard | CampusSphere</title>
   <meta name="theme-color" content="#fdf8f3">
-  <meta name="api-base" content="">
+  <meta name="robots" content="noindex">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,95 +13,13 @@
   <link rel="stylesheet" href="/css/tokens.css">
   <link rel="stylesheet" href="/css/base.css">
   <link rel="stylesheet" href="/css/components.css">
-  <link rel="stylesheet" href="/css/auth.css">
-  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/app.css">
 </head>
-<body>
+<body class="app-page">
   <a class="skip-link" href="#main">Skip to content</a>
-  <header class="nav" data-nav></header>
-  <main id="main" class="dash">
-    <div class="container">
-      <div data-state="loading" class="loading" role="status"><span class="spinner" aria-hidden="true"></span> Loading your dashboard…</div>
-      <div data-state="error" class="notice notice--error" role="alert" hidden><span class="notice__icon" aria-hidden="true"></span><p data-error-text></p></div>
-
-      <div class="dash__layout" data-state="ready" hidden>
-        <aside class="dash__side" aria-label="Dashboard sections">
-          <nav class="dash__nav">
-            <a href="#overview" class="is-active">Overview</a>
-            <a href="#profile">Profile</a>
-            <a href="/events">Events</a>
-            <a href="/services">Campus resources</a>
-            <a href="/assistant">AI Assistant</a>
-          </nav>
-          <button class="button button--secondary button--sm" type="button" data-logout>Sign out</button>
-        </aside>
-
-        <div class="dash__content">
-          <section id="overview" aria-labelledby="welcome">
-            <span class="label label--accent">Student dashboard</span>
-            <h1 class="display dash__title" id="welcome" data-welcome></h1>
-          </section>
-
-          <section class="dash__cards" aria-label="Quick links">
-            <a class="panel panel--interactive" href="/events"><h2 class="panel__title">Campus events</h2><p>Browse and register for symposiums, workshops and fests.</p></a>
-            <a class="panel panel--interactive" href="/services"><h2 class="panel__title">Library &amp; resources</h2><p>Departments, library and student support.</p></a>
-            <a class="panel panel--interactive" href="/travel"><h2 class="panel__title">Travel explorer</h2><p>Day trips and weekend ideas with rough budgets.</p></a>
-            <a class="panel panel--interactive" href="/healthcare"><h2 class="panel__title">Healthcare</h2><p>Sample services and demo appointment requests.</p></a>
-            <a class="panel panel--interactive" href="/courses"><h2 class="panel__title">Course registration</h2><p>Register for courses this term.</p></a>
-            <a class="panel panel--interactive" href="/checkout"><h2 class="panel__title">Checkout demo</h2><p>A demonstration order and payment flow.</p></a>
-            <a class="panel panel--interactive" data-admin-link href="/employees" hidden><h2 class="panel__title">Employees</h2><p>Administrator-only records.</p></a>
-            <a class="panel panel--interactive" href="/labs"><h2 class="panel__title">Interactive labs</h2><p>Hands-on event and layout demonstrations.</p></a>
-            <a class="panel panel--interactive" href="/assistant"><h2 class="panel__title">AI Assistant</h2><p>Study help and campus questions.</p></a>
-          </section>
-
-          <section class="panel" aria-labelledby="upcoming">
-            <h2 class="panel__title" id="upcoming">Upcoming events</h2>
-            <div data-upcoming role="status" aria-live="polite"></div>
-          </section>
-
-          <section id="profile" class="panel" aria-labelledby="profile-title">
-            <h2 class="panel__title" id="profile-title">Your profile</h2>
-            <p class="dash__email" data-email></p>
-            <div class="notice notice--success" data-profile-success role="status" hidden><span class="notice__icon" aria-hidden="true"></span><p></p></div>
-            <div class="notice notice--error" data-profile-error role="alert" hidden><span class="notice__icon" aria-hidden="true"></span><p></p></div>
-            <form class="form" data-profile-form novalidate>
-              <div class="form-row">
-                <div class="field">
-                  <label class="field__label" for="name">Full name</label>
-                  <input class="input" id="name" name="name" type="text" required minlength="2" maxlength="80" autocomplete="name">
-                  <p class="field__error" id="name-error"></p>
-                </div>
-                <div class="field">
-                  <label class="field__label" for="department">Department</label>
-                  <input class="input" id="department" name="department" type="text" maxlength="80">
-                  <p class="field__error" id="department-error"></p>
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="field">
-                  <label class="field__label" for="yearOfStudy">Year of study</label>
-                  <input class="input" id="yearOfStudy" name="yearOfStudy" type="number" min="1" max="8" inputmode="numeric">
-                  <p class="field__error" id="yearOfStudy-error"></p>
-                </div>
-                <div class="field">
-                  <label class="field__label" for="phone">Phone</label>
-                  <input class="input" id="phone" name="phone" type="tel" pattern="\+?[0-9 ()\-]{7,20}" title="Enter a valid phone number." autocomplete="tel">
-                  <p class="field__error" id="phone-error"></p>
-                </div>
-              </div>
-              <div class="field">
-                <label class="field__label" for="bio">About you</label>
-                <textarea class="textarea" id="bio" name="bio" maxlength="300" rows="3"></textarea>
-                <p class="field__error" id="bio-error"></p>
-              </div>
-              <button class="button" type="submit">Save profile</button>
-            </form>
-          </section>
-        </div>
-      </div>
-    </div>
+  <main id="main" class="page" data-view>
+    <div class="loading" role="status"><span class="spinner" aria-hidden="true"></span> Loading…</div>
   </main>
-  <footer class="footer" data-footer></footer>
-  <script type="module" src="/js/dashboard.js"></script>
+  <script type="module" src="/js/pages/dashboard.js"></script>
 </body>
 </html>

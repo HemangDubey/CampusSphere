@@ -18,7 +18,7 @@ const day = (offset) => { const d = new Date(); d.setDate(d.getDate() + offset);
     ['oneOf', [['a', 'b']], 'a', 'ok'], ['oneOf', [['a', 'b']], 'c', 'bad'],
     ['consent', [], true, 'ok'], ['consent', [], false, 'bad'],
     ['dateWithin', [0, 30], day(0), 'ok'], ['dateWithin', [0, 30], day(-1), 'bad'], ['dateWithin', [0, 30], day(31), 'bad'], ['dateWithin', [0, 30], '2026-02-30', 'bad'],
-    ['pastDate', [], day(-5), 'ok'], ['pastDate', [], day(5), 'bad']
+    ['dateTime', [], '2026-12-31T10:00', 'ok'], ['dateTime', [], '2026-12-31', 'bad'], ['dateTime', [], 'nope', 'bad'], ['httpsUrl', [], 'https://example.com/a.jpg', 'ok'], ['httpsUrl', [], 'http://example.com', 'bad'], ['httpsUrl', [], 'javascript:alert(1)', 'bad'], ['pastDate', [], day(-5), 'ok'], ['pastDate', [], day(5), 'bad']
   ];
   for (const [name, args, value, expected] of cases) {
     const s = server[name](...args)(value, {});

@@ -9,22 +9,28 @@ records, course and symposium forms, a demonstration checkout, interactive event
 
 ## Features and status
 
+Six roles: Student, Faculty/Staff, Event Organizer, Healthcare Admin, Campus Admin, Super Admin. Permissions are enforced by the server; the UI only hides links.
+
 | Area | Status |
 | --- | --- |
-| Landing page, design system | Done (approved design preserved) |
-| Register, login, logout, password reset, profile (PostgreSQL, bcrypt, HTTP-only cookie sessions) | Done. Reset emails are **not sent** (no mail provider); in development the link prints to the server console |
-| Student dashboard | Done |
-| Events (search, filters, details, register/cancel, capacity, my registrations, symposium form) | Done, with demo events |
-| Travel explorer (filters, details, saved destinations) | Done, with approximate demo data and no images, maps or booking |
-| Campus resources, library, departments, support | Done as sample content. Library borrowing/reservation **not implemented** |
-| Healthcare (info, appointment *requests*) | Demonstration only. No real booking, not a medical service |
-| Employee management | Done, administrators only |
-| Course registration, reusable form validation | Done |
-| Checkout | Demonstration only. No gateway, no card data, no transaction ids |
-| Mouse events lab, keyboard events lab | Done |
-| AI Assistant (chat UI, voice dictation, read aloud) | Built and tested with a **stubbed** provider. A real reply has not been verified (see below) |
-| Local Bootstrap demo | Done (`/pages/bootstrap-demo.html`, Bootstrap 5.3.3, no CDN) |
-| Standalone coursework pages Q01–Q41 | **Not built**: the original question wording is not available. See [COURSEWORK_COVERAGE.md](COURSEWORK_COVERAGE.md) |
+| Landing page, design system, collapsible sidebar app shell | Done (landing design preserved; copy corrected to match real features) |
+| Auth (register, login, logout, reset, profile), role and account management | Done. Reset emails are **not sent** |
+| Dashboard (role-aware, notifications, announcements, pending work) | Done |
+| Events: details, registration wizard, cancel, organizer create/edit/publish/cancel, attendance, CSV | Done |
+| Travel: filters, favourites, trip planner (items, expenses, share, collaborators) | Done with sample data, generated covers, no maps/prices/booking |
+| Resources and service requests with reference, tracking and staff queue | Done |
+| Library: search, reading list | Done. Borrowing/reservation **not implemented** |
+| Healthcare: services, providers, slots, booking, reschedule, cancel, staff review | Demonstration only; not a medical service |
+| Leave requests and approvals | Done (demonstration rules) |
+| Notifications, activity history, audit log, reports | Done (in-app only) |
+| Games & Recreation (six games, leaderboards) | Done; scores are self-reported |
+| Admin content management (events, destinations, resources, announcements, healthcare, users) | Done |
+| Employees, courses, checkout | Employees admin-only; checkout demonstration only |
+| AI Assistant (grounded in your own app data, voice dictation, read aloud) | Real reply verified once; voice **not** verified |
+| Mouse/keyboard labs, Bootstrap demo | Done (coursework evidence) |
+| Coursework pages Q01–Q41 | **Not built**: question wording unavailable ([COURSEWORK_COVERAGE.md](COURSEWORK_COVERAGE.md)) |
+
+Other documents: [FUNCTIONALITY_AUDIT.md](FUNCTIONALITY_AUDIT.md), [INTERACTION_VERIFICATION.md](INTERACTION_VERIFICATION.md), [ARCHITECTURE.md](ARCHITECTURE.md), [IMPLEMENTATION_PROGRESS.md](IMPLEMENTATION_PROGRESS.md), [SCREENSHOT_CHECKLIST.md](SCREENSHOT_CHECKLIST.md).
 
 ## Architecture and stack
 
@@ -78,7 +84,7 @@ Everything (pages and API) is served from `http://localhost:3000`, so no CORS se
 | `COOKIE_SAMESITE` | `lax` (default). `none` only for a cross-origin frontend over HTTPS |
 | `SESSION_DAYS`, `AUTH_RATE_LIMIT_MAX` | Session length and auth attempts per 15 minutes per IP |
 | `GROQ_API_KEY` | AI provider key. Server-side only. Empty = the AI Assistant reports "not available" |
-| `GROQ_MODEL` | Model id (default `llama-3.3-70b-versatile`; change it if the provider retires it) |
+| `GROQ_MODEL` | Model id (default `openai/gpt-oss-120b`; change it if the provider retires it) |
 | `AI_TIMEOUT_MS`, `AI_RATE_LIMIT_MAX` | AI request timeout and per-user messages per minute |
 
 Process environment variables win over `backend/.env` (for example a `GROQ_API_KEY` set in your OS). Real secrets
@@ -92,20 +98,20 @@ cd backend
 npx prisma migrate dev --name <change>   # create and apply a migration while developing
 npx prisma migrate deploy                # apply committed migrations (staging/production, non-destructive)
 npm run db:seed                          # demonstration data (safe to re-run)
-npm run admin:promote -- user@example.edu  # make a registered user an administrator
+npm run db:seed -- --reset-demo          # clear demo content (isDemo rows) first, then reseed
+npm run admin:promote -- user@example.edu SUPER_ADMIN  # roles: FACULTY, EVENT_ORGANIZER, HEALTHCARE_ADMIN, CAMPUS_ADMIN, SUPER_ADMIN
 ```
 
-There is no default admin account. Register normally, then promote that user from a machine that has `DATABASE_URL`.
+There is no default admin account; public registration always creates a Student. Register normally, then promote that user (or have a Super Admin change roles in Admin > Users) from a machine that has `DATABASE_URL`.
 Never run `prisma migrate reset` against a production database.
 
 ## Tests
 
 ```bash
-npm test      # needs the database; runs 10 backend and frontend suites
+npm test      # needs the database; runs 16 backend and frontend suites
 ```
 
-Suites: smoke (pages, health, errors), validation rule parity (browser vs server), auth, rate limits, campus modules,
-healthcare/employees/courses/checkout, AI endpoint (**provider stubbed**), privacy (no provider names or keys in the
+Suites: smoke (pages, health, errors), validation rule parity (browser vs server), auth, rate limits, events, travel, resources, leave, healthcare, admin/RBAC, games, misc, AI endpoint (**provider stubbed**), privacy (no provider names or keys in the
 frontend or tracked files), frontend checks (assistant helpers, link integrity, Bootstrap isolation) and security
 (headers, CORS, anonymous access to every private endpoint, production config failure modes, JS syntax).
 There are no automated DOM/browser tests; UI behaviour was verified by hand in a browser (see IMPLEMENTATION_PROGRESS.md).
@@ -139,7 +145,9 @@ HTTPS, set `frontend/js/config.js` `apiBase`, and allow the API origin in the fr
 
 - Standalone coursework pages (Q01–Q41) are missing until the original questions are provided.
 - No email is sent (password reset links appear only in the dev server console).
-- A real AI reply and real voice input/output have not been verified; the provider was unreachable from the development machine.
+- A real AI reply was obtained once from the development machine; real voice input/output has not been verified.
+- No real screenshots were captured; see SCREENSHOT_CHECKLIST.md.
+- Notifications are in-app only; no email, SMS or push.
 - Library borrowing, real travel maps/bookings/prices, real healthcare booking and real payments do not exist.
 - Replies from the AI Assistant render as plain text with code blocks (no rich markdown).
 - No automated browser tests; accessibility was checked by hand only partially (no screen-reader pass).

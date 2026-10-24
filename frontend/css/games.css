@@ -1,0 +1,61 @@
+/* Games and recreation. Tokens only. */
+.game-card__art { height: 110px; border-radius: var(--radius-md); background: var(--color-accent-pink-soft); position: relative; overflow: hidden; }
+.game-card__art::after { content: ''; position: absolute; inset: 0; background-size: 28px 28px; opacity: 0.55; }
+.game-card__art--memory { background: linear-gradient(135deg, rgba(228, 164, 189, 0.55), rgba(253, 248, 243, 0.9)); }
+.game-card__art--memory::after { background-image: radial-gradient(circle at 50% 50%, rgba(38, 38, 38, 0.18) 4px, transparent 5px); }
+.game-card__art--reaction { background: linear-gradient(135deg, rgba(47, 111, 115, 0.4), rgba(253, 248, 243, 0.9)); }
+.game-card__art--reaction::after { background-image: linear-gradient(90deg, rgba(38, 38, 38, 0.14) 2px, transparent 2px); }
+.game-card__art--typing { background: linear-gradient(135deg, rgba(59, 110, 143, 0.35), rgba(253, 248, 243, 0.9)); }
+.game-card__art--typing::after { background-image: linear-gradient(rgba(38, 38, 38, 0.12) 2px, transparent 2px); }
+.game-card__art--pattern { background: linear-gradient(135deg, rgba(228, 164, 189, 0.4), rgba(59, 110, 143, 0.3)); }
+.game-card__art--pattern::after { background-image: radial-gradient(circle, rgba(255, 255, 255, 0.6) 6px, transparent 7px); background-size: 40px 40px; }
+.game-card__art--trivia { background: linear-gradient(135deg, #efe7de, rgba(228, 164, 189, 0.4)); }
+.game-card__art--trivia::after { background-image: radial-gradient(circle at 30% 40%, rgba(38, 38, 38, 0.12) 10px, transparent 11px); background-size: 60px 60px; }
+.game-card__art--maze { background: linear-gradient(135deg, rgba(47, 111, 115, 0.3), rgba(253, 248, 243, 0.9)); }
+.game-card__art--maze::after { background-image: linear-gradient(rgba(38, 38, 38, 0.18) 2px, transparent 2px), linear-gradient(90deg, rgba(38, 38, 38, 0.18) 2px, transparent 2px); }
+
+.game-stage { gap: var(--spacing-sm); }
+.game-hud { margin: 0; padding: 10px 14px; border-radius: var(--radius-sm); background: var(--color-surface-alt); font-weight: var(--font-weight-bold); font-size: var(--font-size-body-sm); }
+.game-area { min-height: 260px; display: grid; align-content: start; gap: var(--spacing-sm); }
+.game-area.is-paused, .is-paused { opacity: 0.35; pointer-events: none; }
+
+.memory { display: grid; gap: 8px; }
+.memory__card { aspect-ratio: 1; border-radius: var(--radius-md); border: 1px solid var(--color-border-strong); background: var(--color-text-primary); color: var(--color-text-inverse); cursor: pointer; font-size: clamp(22px, 5vw, 36px); display: grid; place-items: center; transition: transform var(--duration-fast), background var(--duration-fast); }
+.memory__card:hover { transform: translateY(-2px); }
+.memory__card:focus-visible { outline: 3px solid var(--color-accent-pink); outline-offset: 2px; }
+.memory__card.is-up { background: var(--color-background); color: var(--color-text-primary); }
+.memory__card.is-matched { background: var(--color-success-bg); border-color: var(--color-success); cursor: default; }
+
+.reaction { min-height: 220px; width: 100%; border-radius: var(--radius-lg); border: 0; font-size: 22px; font-weight: var(--font-weight-black); cursor: pointer; background: var(--color-surface-alt); color: var(--color-text-primary); }
+.reaction.is-wait { background: rgba(228, 164, 189, 0.5); }
+.reaction.is-go { background: var(--color-accent-teal); color: #fff; }
+.reaction.is-early { background: var(--color-error-bg); color: var(--color-error); }
+.reaction:focus-visible { outline: 3px solid var(--color-accent-pink); outline-offset: 2px; }
+
+.typing__target { font-size: 20px; line-height: 1.7; margin: 0; padding: 14px; border-radius: var(--radius-md); background: var(--color-surface-alt); font-family: ui-monospace, Consolas, monospace; }
+.typing__target .ok { color: var(--color-success); }
+.typing__target .bad { color: var(--color-error); background: var(--color-error-bg); }
+.typing__target .cur { background: var(--color-accent-pink-soft); border-bottom: 2px solid var(--color-accent-pink-strong); }
+
+.pattern { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 360px; }
+.pattern__pad { aspect-ratio: 1; border-radius: var(--radius-lg); border: 0; cursor: pointer; font-size: 24px; font-weight: var(--font-weight-black); color: rgba(38, 38, 38, 0.55); transition: filter var(--duration-fast), transform var(--duration-fast); }
+.pattern__pad--0 { background: rgba(47, 111, 115, 0.45); } .pattern__pad--1 { background: rgba(228, 164, 189, 0.7); } .pattern__pad--2 { background: rgba(59, 110, 143, 0.45); } .pattern__pad--3 { background: #e6d8c5; }
+.pattern__pad.is-lit { filter: brightness(1.35) saturate(1.4); transform: scale(1.04); box-shadow: 0 0 0 4px var(--color-text-primary); }
+.pattern__pad:focus-visible { outline: 3px solid var(--color-text-primary); outline-offset: 2px; }
+
+.trivia__q { margin: 0; font-size: 20px; line-height: 1.3; }
+.trivia__opts { display: grid; gap: 8px; margin-top: 10px; }
+.trivia__opt { justify-content: flex-start; text-align: left; text-transform: none; letter-spacing: 0; font-weight: var(--font-weight-semibold); }
+.trivia__opt.is-right { background: var(--color-success); color: #fff; border-color: var(--color-success); }
+.trivia__opt.is-wrong { background: var(--color-error); color: #fff; border-color: var(--color-error); }
+kbd { font-family: inherit; font-size: 11px; padding: 1px 6px; border: 1px solid currentColor; border-radius: 4px; margin-right: 6px; opacity: 0.7; }
+
+.maze { display: grid; width: min(100%, 460px); aspect-ratio: 1; background: var(--color-surface); border: 2px solid var(--color-text-primary); }
+.maze__cell { position: relative; }
+.maze__cell.wn { border-top: 2px solid var(--color-text-primary); } .maze__cell.we { border-right: 2px solid var(--color-text-primary); } .maze__cell.ws { border-bottom: 2px solid var(--color-text-primary); } .maze__cell.ww { border-left: 2px solid var(--color-text-primary); }
+.maze__cell.me::after { content: ''; position: absolute; inset: 22%; border-radius: 50%; background: var(--color-accent-pink-strong); }
+.maze__cell.goal { background: var(--color-accent-teal-soft); }
+.maze__cell.goal::before { content: '★'; position: absolute; inset: 0; display: grid; place-items: center; color: var(--color-accent-teal); font-size: 14px; }
+.dpad { display: grid; justify-items: center; gap: 6px; margin-top: 6px; }
+.dpad > div { display: flex; gap: 6px; }
+@media (prefers-reduced-motion: reduce) { .memory__card, .pattern__pad { transition: none; } }

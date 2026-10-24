@@ -25,7 +25,7 @@ These are listed so the mapping is quick once the questions are known. None is c
 | Keyboard events lab | `frontend/pages/keyboard-lab.html`, `frontend/js/labs-keyboard.js` | JavaScript | keydown, keyup, deprecated keypress, key/code, modifiers, scoped shortcut |
 | Bootstrap starter | `frontend/pages/bootstrap-demo.html`, `frontend/vendor/bootstrap-5.3.3/` | Bootstrap (local) | grid, forms, table, badges, modal |
 
-Standalone coursework HTML pages (no-CSS pages, div-only or table layouts) are **not built yet** (Prompt 6). The mouse and keyboard labs are app pages, not standalone files.
+Standalone coursework HTML pages are **not built**: the original Q01–Q41 wording is unavailable, so every question stays `NEEDS ORIGINAL SPECIFICATION`. The mouse and keyboard labs are app pages kept as coursework evidence, not standalone files.
 
 ## Question table
 

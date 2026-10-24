@@ -130,3 +130,23 @@ Verified (actually run)
 - Not run / could not be run: a real AI reply (provider unreachable from this machine), real voice, any deployment, any hosted-database migration, automated DOM/browser tests, screen-reader and cross-browser checks, load tests.
 
 Coursework Q01–Q41: all 41 are `NEEDS ORIGINAL SPECIFICATION`; none is claimed implemented or tested.
+
+## Platform audit, repair and upgrade: DONE (not committed)
+
+Brief: "Critical product audit, functionality repair & premium platform upgrade". Details in FUNCTIONALITY_AUDIT.md and INTERACTION_VERIFICATION.md.
+
+Implemented
+- Six-role RBAC with server-side permissions, object-level checks, audit log, session revocation on role/status change.
+- Collapsible sidebar shell; 35 page modules; event registration and organizer tools; trip planner; resources with service-request workflow;
+  healthcare scheduling; leave approvals; notifications; role-aware dashboard; admin content management; six games with leaderboards.
+- AI Assistant root cause fixed (retired default model hidden by a generic error; IPv6/DNS stalls); permission-scoped grounding.
+- Landing copy corrected to match real features; placeholders replaced or labelled.
+
+Verified (actually run)
+- `npm test`: all 16 suites passed in the final full run. Security suite syntax-checks 127 JS files.
+- Browser (in-app pane): shell, wizards for events/requests/leave/healthcare, trip creation, all six games, admin screens.
+
+Not verified / not done
+- Real microphone dictation and speech synthesis; real screenshots; DOM-level automated tests; deployment templates.
+- Library borrowing; mail/SMS; maps/prices; destination photography.
+- Coursework Q01–Q41: question wording still unavailable.

@@ -65,6 +65,24 @@ const providerLeak = (body) => /groq|llama|gsk_|openai|authorization|bearer/i.te
     assert.equal(calls.at(-1).init.headers.Authorization, 'Bearer test-key-not-real');
     assert.match(sent.messages[0].content, /not.*(invent|medical)|Never invent/i);
 
+    // Grounding: real data is added to the instructions, scoped to the signed-in user
+    const userA = (await db.user.findUnique({ where: { email: `${PREFIX}@example.test` } })).id;
+    const other = await db.user.create({ data: { name: 'Bravo Secretname', email: `${PREFIX}-other@example.test`, passwordHash: 'x' } });
+    const [e1, e2] = await Promise.all([db.event.findFirst({ where: { title: 'Cultural Night' } }), db.event.findFirst({ where: { title: 'Intra-College Sports Meet' } })]);
+    await db.eventRegistration.create({ data: { referenceNo: `REG-TEST-${Date.now()}A`, userId: userA, eventId: e1.id } });
+    await db.eventRegistration.create({ data: { referenceNo: `REG-TEST-${Date.now()}B`, userId: other.id, eventId: e2.id } });
+    r = await api.post('/api/ai/chat', { message: 'What events can I join?' });
+    const sys = JSON.parse(calls.at(-1).init.body).messages[0].content;
+    assert.match(sys, /Upcoming published events:[\s\S]*Annual Tech Symposium/);
+    assert.match(sys, /Registered upcoming events: Cultural Night/);
+    assert.equal(/Registered upcoming events:[^\n]*Sports Meet/.test(sys), false, "another user's registration must not be included");
+    assert.equal(sys.includes('Secretname') || sys.includes(other.email), false, 'no other user data in the context');
+    assert.match(sys, /cannot register you/);
+    assert.equal(sys.includes('passwordHash') || sys.includes('@example.test'), false, 'no emails or hashes in the context');
+    // anonymous callers cannot reach the endpoint at all, so the user-specific block is never built without a session
+    await db.eventRegistration.deleteMany({ where: { referenceNo: { startsWith: 'REG-TEST-' } } });
+    await db.user.delete({ where: { id: other.id } });
+
     // Upstream failures map to generic provider-independent errors
     const cases = [
       [() => json(429, { error: { message: 'rate limit for groq org-123' } }), 429, 'AI_BUSY'],

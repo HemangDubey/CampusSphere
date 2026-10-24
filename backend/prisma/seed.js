@@ -1,74 +1,162 @@
-// Demonstration data only. Every record is flagged isDemo = true and shown as such in the UI.
-// Replace with verified campus data by editing this file or inserting your own rows.
-// Safe to re-run: it only adds records that are missing. Run with: npm run db:seed
+// Development seed data. Every row is flagged isDemo and the UI marks it as sample content.
+// Replace it with verified campus data through the admin screens (or edit this file).
+//   npm run db:seed                  adds anything that is missing (safe to re-run)
+//   npm run db:seed -- --reset-demo  first deletes demo events, destinations, resources, health services and
+//                                    announcements (registrations and requests that point at them go too),
+//                                    then re-creates them. Never run this against a production database.
+// No user accounts are created here: there are no default passwords. Register through the app, then promote a
+// user to a staff role with `npm run admin:promote -- email ROLE`.
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env'), quiet: true });
 const { PrismaClient } = require('@prisma/client');
 
 const db = new PrismaClient();
 const inDays = (d, hour = 10) => { const t = new Date(); t.setDate(t.getDate() + d); t.setHours(hour, 0, 0, 0); return t; };
+// Photos already used by the landing page (verified reachable). Anything without a photo gets a generated cover in the UI.
+const photo = (id, w = 1200) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+const IMG = {
+  library: photo('photo-1481627834876-b7833e8f5570'), lab: photo('photo-1532094349884-543bc11b234d'), seminar: photo('photo-1523580494863-6f3031224c94'),
+  study: photo('photo-1517245386807-bb43f82c33c4'), reading: photo('photo-1498243691581-b145c3f54a5a'), main: photo('photo-1562774053-701939374585'), convocation: photo('photo-1541339907198-e08756dedf3f')
+};
 
 const events = [
-  { title: 'Inter-Department Hackathon', category: 'TECHNICAL', mode: 'IN_PERSON', venue: 'Innovation Lab (sample venue)', capacity: 120, d: 9, h: 9,
-    description: 'A 24-hour build event where student teams prototype a campus-focused idea. Sample listing for demonstration.' },
-  { title: 'Annual Tech Symposium', category: 'SYMPOSIUM', mode: 'HYBRID', venue: 'Main Auditorium (sample venue)', capacity: 300, d: 16, h: 10,
-    description: 'Paper presentations, project expos and guest talks across engineering streams. Sample listing for demonstration.' },
-  { title: 'Cultural Night', category: 'CULTURAL', mode: 'IN_PERSON', venue: 'Open Air Theatre (sample venue)', capacity: null, d: 22, h: 18,
+  { title: 'Inter-Department Hackathon', category: 'TECHNICAL', mode: 'IN_PERSON', venue: 'Innovation Lab (sample venue)', capacity: 120, d: 9, h: 9, len: 24, fee: 0, img: IMG.lab,
+    organizerName: 'Student Technical Council (sample)', eligibility: 'Open to all enrolled students. Teams of up to 4.', instructions: 'Bring a laptop and charger. Problem statements are shared at the opening session.',
+    schedule: '09:00 Opening and problem statements\n10:00 Build starts\n09:00 next day Final demos\n12:00 Results',
+    description: 'A 24-hour build event where student teams prototype a campus-focused idea and demo it to a panel. This is a sample listing used to demonstrate the platform.' },
+  { title: 'Annual Tech Symposium', category: 'SYMPOSIUM', mode: 'HYBRID', venue: 'Main Auditorium (sample venue)', onlineLink: 'https://example.com/symposium-stream', capacity: 300, d: 16, h: 10, len: 8, fee: 150, img: IMG.seminar,
+    organizerName: 'Department of Computer Science (sample)', eligibility: 'Final-year and pre-final-year students may present; everyone may attend.', instructions: 'Choose a track when registering. Paper presenters upload an abstract after registration.',
+    schedule: '10:00 Inaugural talk\n11:00 Paper presentations\n13:00 Lunch\n14:00 Project expo\n16:30 Prize distribution',
+    description: 'Paper presentations, project expos and guest talks across engineering streams. The registration fee shown is a demonstration value; no payment is collected in this app.' },
+  { title: 'Cultural Night', category: 'CULTURAL', mode: 'IN_PERSON', venue: 'Open Air Theatre (sample venue)', capacity: null, d: 22, h: 18, len: 4, fee: 0, img: null,
+    organizerName: 'Cultural Committee (sample)', eligibility: 'Open to everyone on campus.', instructions: 'Gates open 30 minutes before the start. Seating is first come, first served.',
+    schedule: '18:00 Opening act\n18:45 Student performances\n20:30 Closing act',
     description: 'An evening of music, dance and theatre performed by student clubs. Sample listing for demonstration.' },
-  { title: 'Intra-College Sports Meet', category: 'SPORTS', mode: 'IN_PERSON', venue: 'Main Ground (sample venue)', capacity: 200, d: 30, h: 8,
+  { title: 'Intra-College Sports Meet', category: 'SPORTS', mode: 'IN_PERSON', venue: 'Main Ground (sample venue)', capacity: 200, d: 30, h: 8, len: 8, fee: 0, img: null,
+    organizerName: 'Sports Council (sample)', eligibility: 'Students with a valid ID card. Medical fitness is your own responsibility.', instructions: 'Report to your event captain 30 minutes before your heat.',
+    schedule: '08:00 March past\n09:00 Track events\n12:00 Field events\n15:00 Finals',
     description: 'Track, field and team events across departments. Sample listing for demonstration.' },
-  { title: 'Web Development Workshop', category: 'WORKSHOP', mode: 'ONLINE', venue: 'Online (link shared after registration)', capacity: 60, d: 5, h: 15,
+  { title: 'Web Development Workshop', category: 'WORKSHOP', mode: 'ONLINE', venue: 'Online (link shared after registration)', capacity: 60, d: 5, h: 15, len: 3, fee: 0, img: IMG.study,
+    organizerName: 'Web Club (sample)', eligibility: 'Beginners welcome. No prior experience required.', instructions: 'Install a code editor beforehand. The meeting link appears on your registration after you register.',
+    schedule: '15:00 Semantic HTML\n15:45 CSS layout\n16:30 JavaScript events',
     description: 'Hands-on introduction to semantic HTML, CSS and JavaScript events. Sample listing for demonstration.' },
-  { title: 'Research Paper Writing Workshop', category: 'WORKSHOP', mode: 'IN_PERSON', venue: 'Seminar Hall 2 (sample venue)', capacity: 2, d: 12, h: 14,
-    description: 'Structuring, citing and presenting academic papers. Deliberately small capacity to demonstrate a full event. Sample listing.' },
-  { title: 'Student Innovation Symposium', category: 'SYMPOSIUM', mode: 'IN_PERSON', venue: 'Conference Hall (sample venue)', capacity: 150, d: 40, h: 10,
-    description: 'Showcase of final-year and mini projects with peer feedback. Sample listing for demonstration.' }
+  { title: 'Research Paper Writing Workshop', category: 'WORKSHOP', mode: 'IN_PERSON', venue: 'Seminar Hall 2 (sample venue)', capacity: 2, d: 12, h: 14, len: 2, fee: 0, img: IMG.reading,
+    organizerName: 'Library and Research Cell (sample)', eligibility: 'Postgraduate and final-year students.', instructions: 'Bring a draft or an idea. Deliberately tiny capacity so you can see the "full" state.',
+    schedule: '14:00 Structuring a paper\n15:00 Citing sources\n15:30 Q&A',
+    description: 'Structuring, citing and presenting academic papers. This sample has only two seats so the full-event behaviour is easy to demonstrate.' },
+  { title: 'Student Innovation Symposium', category: 'SYMPOSIUM', mode: 'IN_PERSON', venue: 'Conference Hall (sample venue)', capacity: 150, d: 40, h: 10, len: 6, fee: 0, img: IMG.main,
+    organizerName: 'Innovation Cell (sample)', eligibility: 'Final-year and mini-project teams.', instructions: 'Teams register once; the team lead fills the form.',
+    schedule: '10:00 Welcome\n10:30 Project showcase\n13:00 Lunch\n14:00 Peer feedback',
+    description: 'Showcase of final-year and mini projects with peer feedback. Sample listing for demonstration.' },
+  { title: 'Career Guidance Seminar', category: 'WORKSHOP', mode: 'HYBRID', venue: 'Seminar Hall 1 (sample venue)', capacity: 100, d: 7, h: 11, len: 2, fee: 0, img: IMG.seminar,
+    organizerName: 'Placement Cell (sample)', eligibility: 'Pre-final and final-year students.', instructions: 'Bring your questions. Slides are shared after the session.',
+    schedule: '11:00 Talk\n12:00 Open questions',
+    description: 'A general talk about planning your career, preparing a resume and interviews. Sample listing for demonstration.' }
 ];
 
 const destinations = [
-  { slug: 'vellore-fort', name: 'Vellore Fort', region: 'Vellore, Tamil Nadu', type: 'HERITAGE', budget: 'BUDGET', min: 200, max: 800, days: 1,
+  { slug: 'vellore-fort', name: 'Vellore Fort', region: 'Vellore, Tamil Nadu', type: 'HERITAGE', budget: 'BUDGET', min: 200, max: 800, days: 1, km: 5, pop: 40, best: 'October to February, early morning or late afternoon',
     summary: 'A historic fort with a wide moat, close to many Vellore campuses.',
     description: 'A well-known historic landmark in Vellore with ramparts, a moat and a museum on the grounds. A realistic half-day outing for students based in the city.',
-    tips: ['Go early or late afternoon to avoid midday heat.', 'Check current entry timings and fees before you travel.', 'Wear comfortable shoes for uneven stone paths.'] },
-  { slug: 'sripuram-golden-temple', name: 'Sripuram Golden Temple', region: 'Vellore, Tamil Nadu', type: 'SPIRITUAL', budget: 'BUDGET', min: 300, max: 1000, days: 1,
+    tips: ['Go early or late afternoon to avoid midday heat.', 'Check current entry timings and fees before you travel.', 'Wear comfortable shoes for uneven stone paths.'],
+    activities: ['Walk the ramparts', 'Visit the museum', 'Photography at the moat'],
+    ideas: [{ title: 'Half-day fort walk', items: [{ title: 'Auto or bus to the fort', cost: 80 }, { title: 'Entry and museum', cost: 100 }, { title: 'Lunch nearby', cost: 150 }] }] },
+  { slug: 'sripuram-golden-temple', name: 'Sripuram Golden Temple', region: 'Vellore, Tamil Nadu', type: 'SPIRITUAL', budget: 'BUDGET', min: 300, max: 1000, days: 1, km: 10, pop: 35, best: 'Weekday mornings are usually calmer',
     summary: 'A well-known temple complex on the outskirts of Vellore.',
     description: 'A temple complex with landscaped grounds, popular as a day trip from Vellore. Visitor rules such as dress code and photography limits apply.',
-    tips: ['Confirm visiting hours and dress code in advance.', 'Expect queues on weekends and festival days.', 'Carry only what you need; security checks are common.'] },
-  { slug: 'yelagiri-hills', name: 'Yelagiri Hills', region: 'Tirupattur district, Tamil Nadu', type: 'NATURE', budget: 'MODERATE', min: 1500, max: 4500, days: 2,
+    tips: ['Confirm visiting hours and dress code in advance.', 'Expect queues on weekends and festival days.', 'Carry only what you need; security checks are common.'],
+    activities: ['Temple visit', 'Garden walk'],
+    ideas: [{ title: 'Morning visit', items: [{ title: 'Cab share to the temple', cost: 250 }, { title: 'Meal after the visit', cost: 200 }] }] },
+  { slug: 'yelagiri-hills', name: 'Yelagiri Hills', region: 'Tirupattur district, Tamil Nadu', type: 'NATURE', budget: 'MODERATE', min: 1500, max: 4500, days: 2, km: 90, pop: 55, best: 'Post-monsoon months for greener views',
     summary: 'A hill-station weekend within reach of Vellore.',
     description: 'A small hill station with viewpoints, a lake and trekking trails, commonly used for weekend trips from nearby cities.',
-    tips: ['Book stays ahead on weekends and holidays.', 'Roads are winding; plan daylight travel.', 'Carry water and light rain cover.'] },
-  { slug: 'mahabalipuram', name: 'Mahabalipuram', region: 'Chengalpattu district, Tamil Nadu', type: 'HERITAGE', budget: 'MODERATE', min: 2500, max: 6000, days: 2,
+    tips: ['Book stays ahead on weekends and holidays.', 'Roads are winding; plan daylight travel.', 'Carry water and light rain cover.'],
+    activities: ['Short treks', 'Boating at the lake', 'Viewpoint sunsets'],
+    ideas: [{ title: 'Weekend escape', items: [{ title: 'Bus or shared cab', cost: 400 }, { title: 'Budget stay, 1 night', cost: 1200 }, { title: 'Meals and local travel', cost: 900 }] }] },
+  { slug: 'mahabalipuram', name: 'Mahabalipuram', region: 'Chengalpattu district, Tamil Nadu', type: 'HERITAGE', budget: 'MODERATE', min: 2500, max: 6000, days: 2, km: 250, pop: 60, best: 'November to February',
     summary: 'Coastal town known for ancient rock-cut monuments and a beach.',
     description: 'A UNESCO-listed group of monuments beside the Bay of Bengal. Pair the monuments with an evening at the shore.',
-    tips: ['Start with the monuments in the morning light.', 'Check ticket rules for each protected site.', 'Beach swimming can be unsafe; follow local warnings.'] },
-  { slug: 'pondicherry', name: 'Pondicherry (Puducherry)', region: 'Puducherry', type: 'BEACH', budget: 'MODERATE', min: 3000, max: 8000, days: 3,
+    tips: ['Start with the monuments in the morning light.', 'Check ticket rules for each protected site.', 'Beach swimming can be unsafe; follow local warnings.'],
+    activities: ['Shore Temple visit', 'Rock-cut caves', 'Evening at the beach'],
+    ideas: [{ title: 'Two-day monuments and shore', items: [{ title: 'Travel from Chennai or Vellore', cost: 700 }, { title: 'Monument tickets', cost: 300 }, { title: 'Stay, 1 night', cost: 1500 }, { title: 'Food', cost: 800 }] }] },
+  { slug: 'pondicherry', name: 'Pondicherry (Puducherry)', region: 'Puducherry', type: 'BEACH', budget: 'MODERATE', min: 3000, max: 8000, days: 3, km: 160, pop: 80, best: 'October to March',
     summary: 'A coastal town with a French-quarter street layout and seafront.',
     description: 'Known for its seafront promenade, cafes and a distinctive old-town grid. A popular long-weekend option for students in the region.',
-    tips: ['Rent a bicycle or scooter for the old town if you have a valid licence.', 'Book accommodation early for holiday weekends.', 'Check local rules before planning night-time beach plans.'] },
-  { slug: 'chennai-city-break', name: 'Chennai city break', region: 'Chennai, Tamil Nadu', type: 'CITY', budget: 'PREMIUM', min: 4000, max: 12000, days: 3,
+    tips: ['Rent a bicycle or scooter for the old town if you have a valid licence.', 'Book accommodation early for holiday weekends.', 'Check local rules before planning night-time beach plans.'],
+    activities: ['Promenade walk', 'Old-town cafes', 'Beach sunrise'],
+    ideas: [{ title: 'Long weekend', items: [{ title: 'Bus, round trip', cost: 800 }, { title: 'Stay, 2 nights', cost: 3000 }, { title: 'Local transport', cost: 600 }, { title: 'Food and cafes', cost: 1800 }] }] },
+  { slug: 'chennai-city-break', name: 'Chennai city break', region: 'Chennai, Tamil Nadu', type: 'CITY', budget: 'PREMIUM', min: 4000, max: 12000, days: 3, km: 140, pop: 70, best: 'November to February',
     summary: 'A big-city weekend: museums, markets, the Marina and food.',
     description: 'The state capital offers museums, beaches, markets and a wide food scene. Costs vary a lot with where you stay and how you travel.',
-    tips: ['Use public transport or ride-hailing for traffic-heavy hours.', 'Plan one area per day to limit travel time.', 'Check museum closing days.'] }
+    tips: ['Use public transport or ride-hailing for traffic-heavy hours.', 'Plan one area per day to limit travel time.', 'Check museum closing days.'],
+    activities: ['Museum visit', 'Marina beach evening', 'Food walk'],
+    ideas: [{ title: 'Three-day city plan', items: [{ title: 'Train, round trip', cost: 500 }, { title: 'Stay, 2 nights', cost: 3600 }, { title: 'Local transport', cost: 700 }, { title: 'Museums and tickets', cost: 500 }, { title: 'Food', cost: 1500 }] }] }
 ];
 
+const categories = ['Academics', 'Library', 'Student services', 'Campus facilities', 'Support', 'Clubs and societies', 'Links', 'Organisations'];
+
+const F = {
+  bonafide: [
+    { name: 'purpose', label: 'Purpose of the letter', type: 'select', required: true, options: ['Bank account', 'Visa or travel', 'Scholarship', 'Internship', 'Other'] },
+    { name: 'copies', label: 'Number of copies', type: 'number', required: true },
+    { name: 'neededBy', label: 'Needed by', type: 'date', required: true },
+    { name: 'notes', label: 'Anything else the office should know', type: 'textarea', required: false, maxLength: 500 }
+  ],
+  it: [
+    { name: 'issueType', label: 'Type of issue', type: 'select', required: true, options: ['Wi-Fi', 'Student account', 'Lab computer', 'Software installation', 'Other'] },
+    { name: 'description', label: 'Describe the problem', type: 'textarea', required: true, maxLength: 800 }
+  ],
+  lab: [
+    { name: 'facility', label: 'Lab or facility', type: 'select', required: true, options: ['Computer lab', 'Electronics lab', 'Sports complex', 'Seminar room'] },
+    { name: 'preferredDate', label: 'Preferred date', type: 'date', required: true },
+    { name: 'purpose', label: 'Purpose', type: 'textarea', required: true, maxLength: 500 }
+  ],
+  suggest: [
+    { name: 'title', label: 'Title', type: 'text', required: true, maxLength: 150 },
+    { name: 'author', label: 'Author', type: 'text', required: false, maxLength: 100 },
+    { name: 'reason', label: 'Why should the library stock it?', type: 'textarea', required: true, maxLength: 500 }
+  ]
+};
+
+const R = (kind, cat, title, summary, extra = {}) => ({ kind, cat, title, summary, ...extra });
 const resources = [
   ...['Computer Science and Engineering', 'Electronics and Communication', 'Mechanical Engineering', 'Business Administration', 'Mathematics and Sciences']
-    .map((t) => ({ kind: 'DEPARTMENT', category: 'Academics', title: t, summary: 'Sample department entry. Programmes, faculty and contact details are not included.', details: 'Replace this sample with verified department information from your institution.' })),
-  { kind: 'LIBRARY', category: 'Textbooks', title: 'Core textbooks collection', summary: 'Sample category for prescribed engineering and science textbooks.', details: 'Borrowing and availability are not implemented in this project.' },
-  { kind: 'LIBRARY', category: 'Journals', title: 'Journals and periodicals', summary: 'Sample category for print and online academic journals.', details: 'Access rules depend on your institution.' },
-  { kind: 'LIBRARY', category: 'Digital', title: 'Digital library portal', summary: 'Sample entry for e-books and databases.', details: 'No live catalogue is connected.' },
-  { kind: 'LIBRARY', category: 'Past papers', title: 'Previous question papers', summary: 'Sample entry for exam practice material.', details: 'Replace with your institution\'s verified resource list.' },
-  { kind: 'LIBRARY', category: 'Reference', title: 'Reference and thesis section', summary: 'Sample entry for reference-only volumes and project reports.', details: 'In-library use only in most institutions; confirm locally.' },
-  { kind: 'FACILITY', category: 'Services', title: 'Computer labs', summary: 'Sample facility entry for programming and project labs.', details: 'Opening hours are not provided here.' },
-  { kind: 'FACILITY', category: 'Services', title: 'Sports complex', summary: 'Sample facility entry for indoor and outdoor sports.', details: 'Opening hours are not provided here.' },
-  { kind: 'FACILITY', category: 'Services', title: 'Cafeteria and food court', summary: 'Sample facility entry for campus dining.', details: 'Menus and timings are not provided here.' },
-  { kind: 'SUPPORT', category: 'Help', title: 'Student help desk', summary: 'Sample entry for general student queries.', details: 'No phone number or email is shown because none has been verified. Add your institution\'s official contact.' },
-  { kind: 'SUPPORT', category: 'Help', title: 'Counselling and wellbeing', summary: 'Sample entry for student wellbeing support.', details: 'If you need urgent help, contact local emergency services or a trusted person. This app is not a crisis service.' },
-  { kind: 'SUPPORT', category: 'Help', title: 'Placement cell', summary: 'Sample entry for career guidance and recruitment.', details: 'Add the official contact for your institution.' },
-  { kind: 'LINK', category: 'Links', title: 'Official institution website', summary: 'Always verify admin information on your institution\'s own website.', details: 'No URL is hard-coded because none has been verified for your institution.' },
-  { kind: 'ORGANIZATION', category: 'Fictional company', title: 'Example Tech Pvt Ltd (fictional)', summary: 'A made-up company profile used to demonstrate the profile card layout.', details: 'Industry: software services. This organisation does not exist.' },
-  { kind: 'ORGANIZATION', category: 'Fictional company', title: 'Sample Analytics Labs (fictional)', summary: 'A made-up company profile used to demonstrate the profile card layout.', details: 'Industry: data analytics. This organisation does not exist.' }
+    .map((t) => R('DEPARTMENT', 'Academics', t, 'Sample department entry. Programmes, faculty and contact details are not included.', { details: 'Replace this sample with verified department information from your institution.', imageUrl: IMG.main, instructions: 'Use the official departmental website for programmes, faculty and timetables.' })),
+  R('LIBRARY', 'Library', 'Introduction to Algorithms', 'Sample catalogue entry. Not a statement of what any real library holds.', { author: 'Cormen, Leiserson, Rivest, Stein', imageUrl: IMG.library, details: 'A standard reference text on algorithms and data structures. Add it to your reading list to track it.' }),
+  R('LIBRARY', 'Library', 'Clean Code', 'Sample catalogue entry. Not a statement of what any real library holds.', { author: 'Robert C. Martin', imageUrl: IMG.study, details: 'A widely read book about writing readable, maintainable code.' }),
+  R('LIBRARY', 'Library', 'Database System Concepts', 'Sample catalogue entry. Not a statement of what any real library holds.', { author: 'Silberschatz, Korth, Sudarshan', imageUrl: IMG.library, details: 'A common textbook for relational databases and SQL.' }),
+  R('LIBRARY', 'Library', 'Eloquent JavaScript', 'Sample catalogue entry. Not a statement of what any real library holds.', { author: 'Marijn Haverbeke', imageUrl: IMG.study, details: 'A guide to JavaScript, including events and the browser.' }),
+  R('LIBRARY', 'Library', 'Journals and periodicals', 'Sample category for print and online academic journals.', { imageUrl: IMG.reading, details: 'Access rules depend on your institution.' }),
+  R('LIBRARY', 'Library', 'Digital library portal', 'Sample entry for e-books and databases.', { imageUrl: IMG.reading, details: 'No live catalogue is connected to this app.' }),
+  R('LIBRARY', 'Student services', 'Suggest a library resource', 'Ask the library to consider adding a book or journal.', { acceptsRequests: true, formFields: F.suggest, instructions: 'Give the title and a short reason. Requests are reviewed by campus staff.', eligibility: 'Any enrolled student.', imageUrl: IMG.library }),
+  R('SERVICE', 'Student services', 'Enrolment (bonafide) letter', 'Request an enrolment letter for banks, visas, scholarships or internships.', { acceptsRequests: true, formFields: F.bonafide, requiredDocuments: ['Student ID card (bring to collection)'], eligibility: 'Currently enrolled students.', instructions: 'Fill the form. You will receive a reference number and can track progress here. Collection details are given by the office when the request is approved.', status: 'AVAILABLE' }),
+  R('SUPPORT', 'Support', 'IT support', 'Report Wi-Fi, account or lab computer problems.', { acceptsRequests: true, formFields: F.it, instructions: 'Describe the problem so the IT team can reproduce it.', eligibility: 'Students and staff.', status: 'AVAILABLE' }),
+  R('FACILITY', 'Campus facilities', 'Lab and facility access', 'Request time in a lab, the sports complex or a seminar room.', { acceptsRequests: true, formFields: F.lab, imageUrl: IMG.lab, eligibility: 'Students with a faculty-approved purpose.', instructions: 'Requests are reviewed against availability. Opening hours are not published here.', status: 'LIMITED' }),
+  R('FACILITY', 'Campus facilities', 'Computer labs', 'Programming and project labs.', { imageUrl: IMG.lab, details: 'Opening hours are not provided in this sample.' }),
+  R('FACILITY', 'Campus facilities', 'Sports complex', 'Indoor and outdoor sports facilities.', { details: 'Opening hours are not provided in this sample.' }),
+  R('FACILITY', 'Campus facilities', 'Cafeteria and food court', 'Campus dining.', { details: 'Menus and timings are not provided in this sample.' }),
+  R('SUPPORT', 'Support', 'Student help desk', 'General student queries.', { details: 'No phone number or email is shown because none has been verified. An administrator can add the official contact in Resource Management.', contactInfo: null }),
+  R('SUPPORT', 'Support', 'Counselling and wellbeing', 'Student wellbeing support.', { details: 'If you need urgent help, contact local emergency services or a trusted person. This app is not a crisis service.' }),
+  R('SUPPORT', 'Support', 'Placement cell', 'Career guidance and recruitment.', { details: 'An administrator can add the official contact in Resource Management.' }),
+  R('CLUB', 'Clubs and societies', 'Web Club', 'Build websites and learn front-end skills together.', { details: 'Sample club entry. Meeting times are not published here.', instructions: 'Ask at the student activities office how to join.' }),
+  R('CLUB', 'Clubs and societies', 'Robotics Society', 'Hands-on robotics projects and competitions.', { details: 'Sample club entry.', instructions: 'Ask at the student activities office how to join.' }),
+  R('CLUB', 'Clubs and societies', 'Cultural Committee', 'Music, dance and theatre.', { details: 'Sample club entry.', instructions: 'Ask at the student activities office how to join.' }),
+  R('LINK', 'Links', 'Official institution website', 'Always verify administrative information on your institution website.', { details: 'No URL is hard-coded because none has been verified for your institution.' }),
+  R('ORGANIZATION', 'Organisations', 'Example Tech Pvt Ltd (fictional)', 'A made-up company profile used to demonstrate the profile layout.', { details: 'Industry: software services. This organisation does not exist.' }),
+  R('ORGANIZATION', 'Organisations', 'Sample Analytics Labs (fictional)', 'A made-up company profile used to demonstrate the profile layout.', { details: 'Industry: data analytics. This organisation does not exist.' })
+];
+
+const healthServices = [
+  { name: 'General consultation', category: 'Primary care', description: 'First-contact consultation for everyday health questions. Sample service for demonstration.', providers: [{ name: 'Dr. A. Sample (fictional)', speciality: 'General medicine', bio: 'Fictional profile used to demonstrate provider pages.' }, { name: 'Dr. M. Example (fictional)', speciality: 'General medicine', bio: 'Fictional profile used to demonstrate provider pages.' }] },
+  { name: 'Dental check-up', category: 'Dental', description: 'Routine dental check-up. Sample service for demonstration.', providers: [{ name: 'Dr. B. Example (fictional)', speciality: 'Dentistry', bio: 'Fictional profile.' }] },
+  { name: 'Eye care', category: 'Vision', description: 'Vision screening. Sample service for demonstration.', providers: [{ name: 'Dr. C. Demo (fictional)', speciality: 'Ophthalmology', bio: 'Fictional profile.' }] },
+  { name: 'Physiotherapy', category: 'Rehabilitation', description: 'Sports and posture physiotherapy. Sample service for demonstration.', providers: [{ name: 'Dr. D. Placeholder (fictional)', speciality: 'Physiotherapy', bio: 'Fictional profile.' }] },
+  { name: 'Wellbeing counselling', category: 'Wellbeing', description: 'Talk to a counsellor about stress or study pressure. Sample service. In a crisis, contact local emergency services.', providers: [{ name: 'Counsellor E. Sample (fictional)', speciality: 'Counselling', bio: 'Fictional profile.' }] }
+];
+
+const announcements = [
+  { title: 'Welcome to CampusSphere', body: 'This is a student project platform. Events, services and listings may be sample content and are marked accordingly. Verify anything important with your institution.' },
+  { title: 'Event registration tips', body: 'Open an event, press Register, review your details and confirm. You will receive a reference number and can cancel from Events > My events before the event starts.' }
 ];
 
 const employees = [
@@ -77,17 +165,68 @@ const employees = [
   { employeeId: 'EMP-1003', name: 'Sample Employee Three (fictional)', designation: 'Librarian', department: 'Library', email: 'employee3@example.test', phone: null }
 ];
 
+async function reset() {
+  await db.event.deleteMany({ where: { isDemo: true } });
+  await db.destination.deleteMany({ where: { isDemo: true } });
+  await db.serviceRequest.deleteMany({ where: { resource: { isDemo: true } } });
+  await db.resource.deleteMany({ where: { isDemo: true } });
+  await db.appointment.deleteMany({ where: { OR: [{ service: { isDemo: true } }] } });
+  await db.healthService.deleteMany({ where: { isDemo: true } });
+  await db.announcement.deleteMany({ where: { isDemo: true } });
+}
+
 async function main() {
+  if (process.argv.includes('--reset-demo')) { await reset(); console.log('Demo content cleared.'); }
+
+  for (const name of categories) await db.resourceCategory.upsert({ where: { name }, update: {}, create: { name } });
+  const catId = Object.fromEntries((await db.resourceCategory.findMany()).map((c) => [c.name, c.id]));
+
   if (!(await db.event.count({ where: { isDemo: true } }))) {
-    await db.event.createMany({ data: events.map(({ d, h, ...e }) => ({ ...e, startsAt: inDays(d, h), endsAt: inDays(d, h + 3) })) });
+    await db.event.createMany({
+      data: events.map(({ d, h, len, img, ...e }) => ({
+        ...e, status: 'PUBLISHED', isDemo: true, coverImage: img, startsAt: inDays(d, h), endsAt: new Date(inDays(d, h).getTime() + len * 3600000),
+        registrationOpensAt: inDays(-1, 9), registrationClosesAt: inDays(d - 1, 18)
+      }))
+    });
   }
-  for (const { min, max, days, ...d } of destinations) {
-    await db.destination.upsert({ where: { slug: d.slug }, update: {}, create: { ...d, budgetMinInr: min, budgetMaxInr: max, recommendedDays: days } });
+
+  for (const { min, max, days, km, pop, best, ideas, ...d } of destinations) {
+    await db.destination.upsert({
+      where: { slug: d.slug }, update: {},
+      create: { ...d, budgetMinInr: min, budgetMaxInr: max, recommendedDays: days, distanceKm: km, popularity: pop, bestTime: best, itineraryIdeas: ideas, imageUrl: null, gallery: [], isDemo: true }
+    });
   }
-  if (!(await db.resource.count({ where: { isDemo: true } }))) await db.resource.createMany({ data: resources });
-  for (const e of employees) {
-    await db.employee.upsert({ where: { employeeId: e.employeeId }, update: {}, create: { ...e, joinedOn: new Date('2022-07-01'), isDemo: true } });
+
+  if (!(await db.resource.count({ where: { isDemo: true } }))) {
+    await db.resource.createMany({
+      data: resources.map(({ cat, formFields, requiredDocuments, ...x }) => ({ ...x, categoryId: catId[cat], formFields: formFields || undefined, requiredDocuments: requiredDocuments || [], isDemo: true }))
+    });
   }
+
+  if (!(await db.healthService.count({ where: { isDemo: true } }))) {
+    for (const { providers, ...s } of healthServices) {
+      await db.healthService.create({ data: { ...s, isDemo: true, providers: { create: providers.map((p) => ({ ...p, isDemo: true })) } } });
+    }
+  }
+  // Availability for the next two weeks (weekdays, 10:00 to 12:00, 30-minute slots). Re-running only adds missing slots.
+  const providers = await db.healthProvider.findMany({ where: { isDemo: true } });
+  const slots = [];
+  for (const p of providers) {
+    for (let d = 1; d <= 14; d += 1) {
+      const day = inDays(d, 0);
+      if ([0, 6].includes(day.getDay())) continue;
+      for (let m = 0; m < 120; m += 30) {
+        const startsAt = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 10, m);
+        slots.push({ providerId: p.id, startsAt, endsAt: new Date(startsAt.getTime() + 30 * 60000) });
+      }
+    }
+  }
+  await db.healthSlot.createMany({ data: slots, skipDuplicates: true });
+
+  if (!(await db.announcement.count({ where: { isDemo: true } }))) {
+    await db.announcement.createMany({ data: announcements.map((a) => ({ ...a, status: 'PUBLISHED', isDemo: true, publishedAt: new Date() })) });
+  }
+  for (const e of employees) await db.employee.upsert({ where: { employeeId: e.employeeId }, update: {}, create: { ...e, joinedOn: new Date('2022-07-01'), isDemo: true } });
   console.log('Demo data ready.');
 }
 

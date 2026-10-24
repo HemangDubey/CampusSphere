@@ -1,13 +1,11 @@
 // AI Assistant chat page. Talks only to the CampusSphere backend (aiApi.chat); voice uses the browser's
 // built-in Web Speech APIs. Failed requests are shown as errors with a retry; no reply is ever invented.
-import { renderNav, renderFooter, initReveal } from './layout.js';
+import { initShell } from './shell.js';
 import { authApi, aiApi, AI_LIMITS } from './api.js';
 import { esc } from './ui.js';
-import { LANGUAGES, splitBlocks, speechText, boundHistory, errorMessageFor, tooLong } from './assistant-core.js';
+import { LANGUAGES, splitBlocks, speechText, boundHistory, errorMessageFor, tooLong, renderMarkdown } from './assistant-core.js';
 
-renderNav('/assistant');
-renderFooter();
-initReveal();
+await initShell({ active: '/assistant', crumbs: [['Discover'], ['AI Assistant']] });
 
 const $ = (s) => document.querySelector(s);
 const log = $('[data-log]');
@@ -42,7 +40,7 @@ function bubble(m) {
     return `<div class="msg msg--user${m.error ? ' msg--failed' : ''}"><span class="msg__who">You</span><div class="msg__body">${paragraphs(m.content)}</div>
       ${m.error ? `<div class="msg__error" role="alert">${esc(m.errorText)} <button class="button button--secondary button--sm" type="button" data-retry="${m.id}">Retry</button></div>` : ''}</div>`;
   }
-  const body = splitBlocks(m.content).map((b) => (b.type === 'code' ? `<pre><code>${esc(b.content)}</code></pre>` : paragraphs(b.content))).join('');
+  const body = splitBlocks(m.content).map((b) => (b.type === 'code' ? `<pre><code>${esc(b.content)}</code></pre>` : renderMarkdown(b.content))).join('');
   const speaking = state.speakingId === m.id;
   const canSpeak = 'speechSynthesis' in window;
   return `<div class="msg msg--assistant"><span class="msg__who">AI Assistant</span><div class="msg__body">${body}</div>
@@ -250,3 +248,6 @@ window.addEventListener('pagehide', () => { stopListening(); if (synth) synth.ca
 // ---- start ----
 authApi.me().then(() => { state.signedIn = true; }).catch(() => { $('[data-signin]').hidden = false; }).finally(() => { updateControls(); render(); });
 updateCount();
+// Questions typed on the landing page arrive as ?q=... and are placed in the box for review (never auto-sent).
+const preset = new URLSearchParams(location.search).get('q');
+if (preset) { composer.value = preset.slice(0, AI_LIMITS.maxMessage); updateCount(); }

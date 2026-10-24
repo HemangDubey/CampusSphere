@@ -56,14 +56,24 @@ const UUID = '11111111-1111-4111-8111-111111111111';
     r = await fetch(`${base}/api/auth/login`, { method: 'OPTIONS', headers: { Origin: 'https://app.example.test', 'Access-Control-Request-Method': 'POST' } });
     assert.ok(r.status < 300);
 
-    // ---- Every private endpoint refuses anonymous callers
+    // ---- Every private endpoint refuses anonymous callers ('+priv.length+' routes)
     const priv = [
       ['GET', '/api/auth/me'], ['PATCH', '/api/auth/me'], ['POST', '/api/auth/logout'],
       ['GET', '/api/events/mine'], ['POST', `/api/events/${UUID}/register`], ['DELETE', `/api/events/${UUID}/register`],
-      ['GET', '/api/destinations/favorites'], ['PUT', `/api/destinations/${UUID}/favorite`], ['DELETE', `/api/destinations/${UUID}/favorite`],
-      ['POST', '/api/healthcare/appointments'], ['GET', '/api/healthcare/appointments/mine'], ['DELETE', `/api/healthcare/appointments/${UUID}`],
+      ['GET', '/api/manage/events'], ['POST', '/api/manage/events'], ['PUT', `/api/manage/events/${UUID}`], ['POST', `/api/manage/events/${UUID}/publish`], ['POST', `/api/manage/events/${UUID}/cancel`], ['GET', `/api/manage/events/${UUID}/export.csv`],
+      ['GET', '/api/destinations/favorites'], ['GET', '/api/destinations/recent'], ['PUT', `/api/destinations/${UUID}/favorite`], ['DELETE', `/api/destinations/${UUID}/favorite`],
+      ['GET', '/api/trips'], ['POST', '/api/trips'], ['GET', `/api/trips/${UUID}`], ['PUT', `/api/trips/${UUID}/items`], ['DELETE', `/api/trips/${UUID}`],
+      ['GET', '/api/resources/bookmarks'], ['PUT', `/api/resources/${UUID}/bookmark`], ['GET', '/api/reading-list'],
+      ['POST', '/api/service-requests'], ['GET', '/api/service-requests/mine'], ['GET', '/api/manage/requests'], ['POST', `/api/manage/requests/${UUID}/transition`],
+      ['GET', '/api/leave/mine'], ['POST', '/api/leave'], ['GET', '/api/manage/leave'], ['POST', `/api/manage/leave/${UUID}/decision`],
+      ['POST', '/api/healthcare/appointments'], ['GET', '/api/healthcare/appointments/mine'], ['POST', `/api/healthcare/appointments/${UUID}/cancel`],
+      ['GET', '/api/manage/healthcare/appointments'], ['POST', '/api/manage/healthcare/services'], ['POST', `/api/manage/healthcare/providers/${UUID}/slots`],
+      ['GET', '/api/notifications'], ['POST', '/api/notifications/read-all'], ['GET', '/api/activity'], ['GET', '/api/dashboard'],
+      ['GET', '/api/admin/users'], ['PATCH', `/api/admin/users/${UUID}`], ['GET', '/api/admin/audit'], ['GET', '/api/admin/reports'],
+      ['POST', '/api/admin/destinations'], ['POST', '/api/admin/resources'], ['POST', '/api/admin/categories'], ['POST', '/api/admin/announcements'],
       ['GET', '/api/employees'], ['POST', '/api/employees'], ['GET', `/api/employees/${UUID}`], ['PUT', `/api/employees/${UUID}`], ['DELETE', `/api/employees/${UUID}`],
       ['GET', '/api/courses/registrations/mine'], ['POST', '/api/courses/registrations'], ['DELETE', `/api/courses/registrations/${UUID}`],
+      ['POST', '/api/games/scores'], ['GET', '/api/games/scores/mine'],
       ['POST', '/api/ai/chat']
     ];
     for (const [method, p] of priv) {
@@ -96,7 +106,7 @@ const UUID = '11111111-1111-4111-8111-111111111111';
     for (const dir of ['src', 'test', 'scripts', 'prisma']) {
       (function walk(d) { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const f = path.join(d, e.name); if (e.isDirectory()) walk(f); else if (f.endsWith('.js')) files.push(f); } })(path.join(backend, dir));
     }
-    for (const f of fs.readdirSync(path.resolve(backend, '../frontend/js'))) if (f.endsWith('.js')) files.push(path.resolve(backend, '../frontend/js', f));
+    (function walkFrontend(d) { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const f = path.join(d, e.name); if (e.isDirectory()) walkFrontend(f); else if (f.endsWith('.js')) files.push(f); } })(path.resolve(backend, '../frontend/js'));
     for (const f of files) {
       const res = spawnSync(process.execPath, ['--check', f], { encoding: 'utf8' });
       assert.equal(res.status, 0, `syntax error in ${path.relative(backend, f)}: ${res.stderr}`);

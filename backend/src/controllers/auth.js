@@ -5,6 +5,7 @@ const config = require('../config');
 const v = require('../validators/auth');
 const { ok, HttpError } = require('../utils/response');
 const { startSession, clearSessionCookie } = require('../middleware/auth');
+const { permissionsFor } = require('../permissions');
 
 const BCRYPT_ROUNDS = 12;
 // Compared against when the email is unknown so login timing does not reveal which accounts exist.
@@ -12,8 +13,8 @@ const DUMMY_HASH = bcrypt.hashSync('not-a-real-password', BCRYPT_ROUNDS);
 const hashToken = (t) => crypto.createHash('sha256').update(t).digest('hex');
 
 function publicUser(u) {
-  const { id, name, email, role, department, yearOfStudy, phone, bio, createdAt } = u;
-  return { id, name, email, role, department, yearOfStudy, phone, bio, createdAt };
+  const { id, name, email, role, department, yearOfStudy, phone, bio, registrationNo, createdAt } = u;
+  return { id, name, email, role, department, yearOfStudy, phone, bio, registrationNo, createdAt, permissions: permissionsFor(role) };
 }
 
 function validated(result) {
@@ -45,6 +46,7 @@ exports.login = async (req, res, next) => {
     const user = await db.user.findUnique({ where: { email } });
     const match = await bcrypt.compare(password, user ? user.passwordHash : DUMMY_HASH);
     if (!user || !match) throw new HttpError(401, 'INVALID_CREDENTIALS', 'Incorrect email or password.');
+    if (user.status !== 'ACTIVE') throw new HttpError(403, 'ACCOUNT_SUSPENDED', 'This account has been suspended. Please contact an administrator.');
     await startSession(res, user.id);
     ok(res, { user: publicUser(user) });
   } catch (e) { next(e); }

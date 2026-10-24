@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Employee Management | CampusSphere</title>
+  <title>Employee Records | CampusSphere</title>
   <meta name="theme-color" content="#fdf8f3">
-  <meta name="api-base" content="">
+  <meta name="robots" content="noindex">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,56 +13,13 @@
   <link rel="stylesheet" href="/css/tokens.css">
   <link rel="stylesheet" href="/css/base.css">
   <link rel="stylesheet" href="/css/components.css">
-  <link rel="stylesheet" href="/css/campus.css">
+  <link rel="stylesheet" href="/css/app.css">
 </head>
-<body>
+<body class="app-page">
   <a class="skip-link" href="#main">Skip to content</a>
-  <header class="nav" data-nav></header>
-  <main id="main" class="page">
-    <div class="container">
-      <div class="page__head">
-        <span class="label label--accent">Administration</span>
-        <h1 class="display page__title">Employee <em>records</em></h1>
-        <p class="page__lead">Administrators can view, add and edit employee profiles. Records are private.</p>
-      </div>
-      <div data-gate class="notice notice--info" role="status"><span class="notice__icon" aria-hidden="true"></span><p>Checking your access…</p></div>
-
-      <div data-admin hidden>
-        <p class="banner" role="note">Seeded records are <strong>fictional samples</strong>.</p>
-        <form class="filters" data-filters role="search" aria-label="Search employees" novalidate>
-          <div class="field field--wide"><label class="field__label" for="q">Search</label><input class="input" id="q" name="q" type="search" maxlength="80" placeholder="Name, ID or designation"></div>
-          <div class="field"><label class="field__label" for="dept">Department</label><select class="select" id="dept" name="department"><option value="">All departments</option></select></div>
-          <button class="button" type="button" data-new>Add employee</button>
-        </form>
-        <p class="results-note" data-count></p>
-        <div class="cards" data-list></div>
-        <div class="pager" data-pager></div>
-      </div>
-    </div>
+  <main id="main" class="page" data-view>
+    <div class="loading" role="status"><span class="spinner" aria-hidden="true"></span> Loading…</div>
   </main>
-
-  <dialog class="modal" data-dialog aria-labelledby="dlg-title">
-    <div class="modal__head"><h2 id="dlg-title" data-dlg-title>Employee</h2><button class="button button--ghost button--sm" type="button" data-close aria-label="Close">Close</button></div>
-    <div class="modal__body" data-profile></div>
-    <form class="form" data-form novalidate hidden>
-      <div class="notice notice--error" data-form-error role="alert" hidden><span class="notice__icon" aria-hidden="true"></span><p></p></div>
-      <div class="form-row">
-        <div class="field"><label class="field__label" for="employeeId">Employee ID<span class="req" aria-hidden="true">*</span></label><input class="input" id="employeeId" name="employeeId" placeholder="EMP-1001" maxlength="11" required><p class="field__error"></p></div>
-        <div class="field"><label class="field__label" for="name">Full name<span class="req" aria-hidden="true">*</span></label><input class="input" id="name" name="name" maxlength="80" required><p class="field__error"></p></div>
-      </div>
-      <div class="form-row">
-        <div class="field"><label class="field__label" for="designation">Designation<span class="req" aria-hidden="true">*</span></label><input class="input" id="designation" name="designation" maxlength="80" required><p class="field__error"></p></div>
-        <div class="field"><label class="field__label" for="department">Department<span class="req" aria-hidden="true">*</span></label><input class="input" id="department" name="department" maxlength="80" required><p class="field__error"></p></div>
-      </div>
-      <div class="form-row">
-        <div class="field"><label class="field__label" for="email">Email<span class="req" aria-hidden="true">*</span></label><input class="input" id="email" name="email" type="email" required><p class="field__error"></p></div>
-        <div class="field"><label class="field__label" for="phone">Mobile</label><input class="input" id="phone" name="phone" type="tel"><p class="field__error"></p></div>
-      </div>
-      <div class="field"><label class="field__label" for="joinedOn">Joining date<span class="req" aria-hidden="true">*</span></label><input class="input" id="joinedOn" name="joinedOn" type="date" required><p class="field__error"></p></div>
-      <button class="button" type="submit">Save employee</button>
-    </form>
-  </dialog>
-  <footer class="footer" data-footer></footer>
-  <script type="module" src="/js/employees.js"></script>
+  <script type="module" src="/js/pages/employees.js"></script>
 </body>
 </html>

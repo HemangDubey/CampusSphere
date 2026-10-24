@@ -10,9 +10,11 @@ const server = createServer().listen(0, async () => {
     assert.equal(home.status, 200);
     assert.match(home.text, /CampusSphere/);
     assert.doesNotMatch(home.text, /groq/i);
-    for (const p of ['/labs', '/labs/mouse', '/labs/keyboard', '/login', '/register', '/forgot-password', '/reset-password', '/dashboard', '/services', '/events', '/labs', '/assistant', '/about', '/contact', '/privacy', '/terms']) {
-      assert.equal((await get(p)).status, 200, p);
-    }
+    const { APP_PAGES, OTHER_PAGES } = require('../src/pageRoutes');
+    const samples = [...APP_PAGES, ...OTHER_PAGES].map((p) => p.route.replace(/:[a-zA-Z]+/g, 'sample'));
+    for (const p of samples) assert.equal((await get(p)).status, 200, p);
+    assert.equal((await fetch(base + '/services', { redirect: 'manual' })).status, 301);
+    assert.equal((await fetch(base + '/labs', { redirect: 'manual' })).status, 301);
     assert.match((await get('/login')).text, /data-auth-page="login"/);
     for (const p of ['/css/main.css', '/css/auth.css', '/js/main.js', '/js/layout.js', '/js/config.js', '/js/auth.js', '/js/api.js']) assert.equal((await get(p)).status, 200, p);
     assert.equal((await get('/does-not-exist')).status, 404);

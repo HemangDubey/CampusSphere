@@ -71,6 +71,10 @@ function profile(body = {}) {
     value.phone = str(body.phone) || null;
     if (value.phone && !/^\+?[0-9 ()-]{7,20}$/.test(value.phone)) errors.phone = 'Enter a valid phone number.';
   }
+  if (body.registrationNo !== undefined) {
+    value.registrationNo = str(body.registrationNo) || null;
+    if (value.registrationNo && !/^[A-Za-z0-9/-]{4,20}$/.test(value.registrationNo)) errors.registrationNo = 'Use 4 to 20 letters, numbers, dashes or slashes.';
+  }
   if (body.bio !== undefined) {
     value.bio = str(body.bio) || null;
     if (value.bio && value.bio.length > 300) errors.bio = 'Bio must be 300 characters or fewer.';

@@ -1,8 +1,6 @@
-import { renderNav, renderFooter, initReveal } from './layout.js';
+import { initShell } from './shell.js';
 
-renderNav('/labs');
-renderFooter();
-initReveal();
+await initShell({ active: '/coursework', crumbs: [['Discover'], ['Coursework Demonstrations', '/coursework'], ['Keyboard events lab']] });
 
 const input = document.getElementById('kb-input');
 const fields = {};

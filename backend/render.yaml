@@ -21,4 +21,4 @@ services:
       - key: GROQ_API_KEY        # optional: enables the AI Assistant
         sync: false
       - key: GROQ_MODEL
-        value: llama-3.3-70b-versatile
+        value: openai/gpt-oss-120b

@@ -43,6 +43,14 @@ const pastDate = (msg = 'Choose a date that is not in the future.') => (v) => {
   return d.getTime() <= Date.now() ? null : msg;
 };
 
+// Full ISO-8601 date-time ("2026-12-31T10:00" or with offset/Z). Used by the event and slot forms.
+const dateTime = (msg = 'Enter a valid date and time.') => (v) => (empty(v) || (!Number.isNaN(new Date(v).getTime()) && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(String(v))) ? null : msg);
+// Absolute https URL (used for images and links). Plain http and other schemes are rejected.
+const httpsUrl = (msg = 'Enter a link starting with https://') => (v) => {
+  if (empty(v)) return null;
+  try { return new URL(String(v)).protocol === 'https:' && String(v).length <= 500 ? null : msg; } catch { return msg; }
+};
+
 // Runs every rule per field; returns { errors, values } where values are trimmed strings.
 function validate(input, schema) {
   const body = input && typeof input === 'object' && !Array.isArray(input) ? input : {};
@@ -58,4 +66,4 @@ function validate(input, schema) {
   return { errors, values, valid: Object.keys(errors).length === 0 };
 }
 
-module.exports = { required, email, minLength, maxLength, pattern, phoneIN, password, intRange, oneOf, matches, consent, dateWithin, pastDate, validate };
+module.exports = { required, email, minLength, maxLength, pattern, phoneIN, password, intRange, oneOf, matches, consent, dateWithin, pastDate, dateTime, httpsUrl, validate };

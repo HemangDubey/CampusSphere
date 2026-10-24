@@ -38,7 +38,7 @@ module.exports = {
   authRateLimitMax: Number(process.env.AUTH_RATE_LIMIT_MAX) || 10,
   // AI Assistant provider settings: server-side only, never sent to the browser.
   aiApiKey: process.env.GROQ_API_KEY || '',
-  aiModel: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+  aiModel: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
   aiTimeoutMs: Number(process.env.AI_TIMEOUT_MS) || 20000,
   aiRateLimitMax: Number(process.env.AI_RATE_LIMIT_MAX) || 20,
   resetTokenMinutes: 30

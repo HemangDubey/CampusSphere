@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Travel Explorer | CampusSphere</title>
   <meta name="theme-color" content="#fdf8f3">
-  <meta name="api-base" content="">
+  <meta name="robots" content="noindex">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,47 +13,13 @@
   <link rel="stylesheet" href="/css/tokens.css">
   <link rel="stylesheet" href="/css/base.css">
   <link rel="stylesheet" href="/css/components.css">
-  <link rel="stylesheet" href="/css/campus.css">
+  <link rel="stylesheet" href="/css/app.css">
 </head>
-<body>
+<body class="app-page">
   <a class="skip-link" href="#main">Skip to content</a>
-  <header class="nav" data-nav></header>
-  <main id="main" class="page">
-    <div class="container">
-      <div class="page__head">
-        <span class="label label--accent">Travel explorer</span>
-        <h1 class="display page__title">Escape the <em>campus</em></h1>
-        <p class="page__lead">Weekend and day-trip ideas around Vellore and Tamil Nadu, with rough student budgets.</p>
-      </div>
-      <p class="banner" role="note">Budgets are <strong>approximate, illustrative estimates</strong>, not live quotes. This app has no maps, booking or real-time transport data. Check prices, timings and entry rules before you travel.</p>
-
-      <div class="tabs" role="tablist" aria-label="Travel view">
-        <button class="tab" role="tab" aria-selected="true" aria-controls="panel" data-view="all">All destinations</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="panel" data-view="saved">Saved</button>
-      </div>
-
-      <form class="filters" data-filters role="search" aria-label="Filter destinations" novalidate>
-        <div class="field field--wide"><label class="field__label" for="q">Search</label><input class="input" id="q" name="q" type="search" maxlength="80" placeholder="Destination or region"></div>
-        <div class="field"><label class="field__label" for="type">Type</label>
-          <select class="select" id="type" name="type"><option value="">Any type</option><option value="HERITAGE">Heritage</option><option value="NATURE">Nature</option><option value="SPIRITUAL">Spiritual</option><option value="BEACH">Beach</option><option value="CITY">City</option></select></div>
-        <div class="field"><label class="field__label" for="budget">Budget</label>
-          <select class="select" id="budget" name="budget"><option value="">Any budget</option><option value="BUDGET">Budget</option><option value="MODERATE">Moderate</option><option value="PREMIUM">Premium</option></select></div>
-        <button class="button button--secondary" type="reset">Clear filters</button>
-      </form>
-
-      <div id="panel" role="tabpanel" aria-live="polite">
-        <p class="results-note" data-count></p>
-        <div class="cards" data-list></div>
-        <div class="pager" data-pager></div>
-      </div>
-    </div>
+  <main id="main" class="page" data-view>
+    <div class="loading" role="status"><span class="spinner" aria-hidden="true"></span> Loading…</div>
   </main>
-
-  <dialog class="modal" data-dialog aria-labelledby="dlg-title">
-    <div class="modal__head"><h2 id="dlg-title" data-dlg-title></h2><button class="button button--ghost button--sm" type="button" data-close aria-label="Close details">Close</button></div>
-    <div class="modal__body" data-dlg-body></div>
-  </dialog>
-  <footer class="footer" data-footer></footer>
-  <script type="module" src="/js/travel.js"></script>
+  <script type="module" src="/js/pages/travel.js"></script>
 </body>
 </html>
