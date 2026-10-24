@@ -113,7 +113,10 @@ const UUID = '11111111-1111-4111-8111-111111111111';
     }
     (function walkFrontend(d) { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const f = path.join(d, e.name); if (e.isDirectory()) walkFrontend(f); else if (f.endsWith('.js')) files.push(f); } })(path.resolve(backend, '../frontend/js'));
     for (const f of files) {
-      const res = spawnSync(process.execPath, ['--check', f], { encoding: 'utf8' });
+      // Browser files are ES modules; checking them as .js would parse them as CommonJS and miss real errors.
+      let target = f;
+      if (f.includes(`${path.sep}frontend${path.sep}`)) { target = path.join(require('os').tmpdir(), `check-${process.pid}.mjs`); fs.copyFileSync(f, target); }
+      const res = spawnSync(process.execPath, ['--check', target], { encoding: 'utf8' });
       assert.equal(res.status, 0, `syntax error in ${path.relative(backend, f)}: ${res.stderr}`);
     }
     console.log(`Security tests passed (${files.length} JS files syntax-checked)`);
