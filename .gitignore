@@ -17,4 +17,4 @@ backend/dev-accounts.txt
 
 # Documentation kept locally only
 *.md
-!README.md
+!/README.md

@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "node src/server.js",
     "start": "node src/server.js",
-    "test": "node test/smoke.test.js && node test/rules.test.js && node test/auth.test.js && node test/ratelimit.test.js && node test/events.test.js && node test/travel.test.js && node test/resources.test.js && node test/leave.test.js && node test/healthcare.test.js && node test/admin.test.js && node test/misc.test.js && node test/games.test.js && node test/community.test.js && node test/library.test.js && node test/rolerequests.test.js && node test/starter.test.js && node test/ai.test.js && node test/privacy.test.js && node test/frontend.test.js && node test/security.test.js",
+    "test": "node test/smoke.test.js && node test/rules.test.js && node test/auth.test.js && node test/ratelimit.test.js && node test/events.test.js && node test/travel.test.js && node test/resources.test.js && node test/leave.test.js && node test/healthcare.test.js && node test/admin.test.js && node test/misc.test.js && node test/games.test.js && node test/community.test.js && node test/library.test.js && node test/rolerequests.test.js && node test/starter.test.js && node test/seedsafety.test.js && node test/ai.test.js && node test/privacy.test.js && node test/frontend.test.js && node test/security.test.js",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "postinstall": "prisma generate",

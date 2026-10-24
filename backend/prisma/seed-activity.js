@@ -5,7 +5,7 @@
 // when missing, so nothing is duplicated and nothing that exists is overwritten. The only updates are text clean-ups
 // on rows flagged isDemo whose wording still contains placeholder phrases. Real users are never touched; activity is
 // attached to the six local role accounts (created by `npm run dev:accounts` if they are missing).
-// Refuses to run in production unless ALLOW_STARTER_DATA=1.
+// Refuses to run in production, always: it creates local role accounts and starter activity that must never reach real data.
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env'), quiet: true });
 const db = require('../src/db');
@@ -92,7 +92,9 @@ async function accounts() {
   const emails = Object.values(ROLE_EMAILS).map((e) => `${e}@campussphere.test`);
   if ((await db.user.count({ where: { email: { in: emails } } })) < emails.length) await require('../scripts/dev-accounts').run();
   const rows = await db.user.findMany({ where: { email: { in: emails } } });
-  const by = Object.fromEntries(rows.map((u) => [u.role, u]));
+  // Keyed by the account's email, not its current role: an administrator may have changed a role since the account was created.
+  const byEmail = Object.fromEntries(rows.map((u) => [u.email, u]));
+  const by = Object.fromEntries(Object.entries(ROLE_EMAILS).map(([role, local]) => [role, byEmail[`${local}@campussphere.test`]]));
   // Accounts created by an older script version carried a "(dev)" suffix in their display name.
   for (const x of rows) if (/\(dev\)$/.test(x.name)) { x.name = x.name.replace(/\s*\(dev\)$/, ''); await db.user.update({ where: { id: x.id }, data: { name: x.name } }); }
   if (!by.STUDENT.department) await db.user.update({ where: { id: by.STUDENT.id }, data: { department: 'Computer Science', yearOfStudy: 3, registrationNo: 'CS-2023-001' } });
@@ -314,7 +316,7 @@ async function misc(u, upcoming) {
 }
 
 async function main() {
-  if (process.env.NODE_ENV === 'production' && process.env.ALLOW_STARTER_DATA !== '1') { console.error('Refusing to add starter data in production (set ALLOW_STARTER_DATA=1 to override).'); process.exitCode = 1; return; }
+  if (process.env.NODE_ENV === 'production') { console.error('Refusing to add starter data in production.'); process.exitCode = 1; return; }
   const cleaned = await cleanText();
   const u = await accounts();
   const upcoming = await events(u);

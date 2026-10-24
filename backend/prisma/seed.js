@@ -1,11 +1,10 @@
-// Development seed data. Every row is flagged isDemo and the UI marks it as sample content.
-// Replace it with verified campus data through the admin screens (or edit this file).
-//   npm run db:seed                  adds anything that is missing (safe to re-run)
-//   npm run db:seed -- --reset-demo  first deletes demo events, destinations, resources, health services and
-//                                    announcements (registrations and requests that point at them go too),
-//                                    then re-creates them. Never run this against a production database.
-// No user accounts are created here: there are no default passwords. Register through the app, then promote a
-// user to a staff role with `npm run admin:promote -- email ROLE`.
+// Base content: events, destinations, campus resources, library entries, healthcare services, announcements.
+//   npm run db:seed                       adds anything that is missing (idempotent, safe to re-run, never deletes)
+//   npm run db:seed -- --base-only        base content only (also the behaviour when NODE_ENV=production)
+//   npm run db:seed -- --reset-demo       development only: removes seeded rows first. Refused in production.
+// In production this script never creates user accounts, employee records or starter activity, and never deletes
+// anything. Starter activity for local development lives in seed-activity.js. Every text field is checked before
+// insert so placeholder wording can never reach the interface.
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env'), quiet: true });
 const { PrismaClient } = require('@prisma/client');
@@ -20,38 +19,38 @@ const IMG = {
 };
 
 const events = [
-  { title: 'Inter-Department Hackathon', category: 'TECHNICAL', mode: 'IN_PERSON', venue: 'Innovation Lab (sample venue)', capacity: 120, d: 9, h: 9, len: 24, fee: 0, img: IMG.lab,
-    organizerName: 'Student Technical Council (sample)', eligibility: 'Open to all enrolled students. Teams of up to 4.', instructions: 'Bring a laptop and charger. Problem statements are shared at the opening session.',
+  { title: 'Inter-Department Hackathon', category: 'TECHNICAL', mode: 'IN_PERSON', venue: 'Innovation Lab', capacity: 120, d: 9, h: 9, len: 24, fee: 0, img: IMG.lab,
+    organizerName: 'Student Technical Council', eligibility: 'Open to all enrolled students. Teams of up to 4.', instructions: 'Bring a laptop and charger. Problem statements are shared at the opening session.',
     schedule: '09:00 Opening and problem statements\n10:00 Build starts\n09:00 next day Final demos\n12:00 Results',
-    description: 'A 24-hour build event where student teams prototype a campus-focused idea and demo it to a panel. This is a sample listing used to demonstrate the platform.' },
-  { title: 'Annual Tech Symposium', category: 'SYMPOSIUM', mode: 'HYBRID', venue: 'Main Auditorium (sample venue)', onlineLink: 'https://example.com/symposium-stream', capacity: 300, d: 16, h: 10, len: 8, fee: 150, img: IMG.seminar,
-    organizerName: 'Department of Computer Science (sample)', eligibility: 'Final-year and pre-final-year students may present; everyone may attend.', instructions: 'Choose a track when registering. Paper presenters upload an abstract after registration.',
+    description: 'A 24-hour build event where student teams prototype a campus-focused idea and present it to a panel.' },
+  { title: 'Annual Tech Symposium', category: 'SYMPOSIUM', mode: 'HYBRID', venue: 'Main Auditorium', capacity: 300, d: 16, h: 10, len: 8, fee: 150, img: IMG.seminar,
+    organizerName: 'Department of Computer Science', eligibility: 'Final-year and pre-final-year students may present; everyone may attend.', instructions: 'Choose a track when registering. Paper presenters upload an abstract after registration.',
     schedule: '10:00 Inaugural talk\n11:00 Paper presentations\n13:00 Lunch\n14:00 Project expo\n16:30 Prize distribution',
-    description: 'Paper presentations, project expos and guest talks across engineering streams. The registration fee shown is a demonstration value; no payment is collected in this app.' },
-  { title: 'Cultural Night', category: 'CULTURAL', mode: 'IN_PERSON', venue: 'Open Air Theatre (sample venue)', capacity: null, d: 22, h: 18, len: 4, fee: 0, img: null,
-    organizerName: 'Cultural Committee (sample)', eligibility: 'Open to everyone on campus.', instructions: 'Gates open 30 minutes before the start. Seating is first come, first served.',
+    description: 'Paper presentations, project expos and guest talks across engineering streams. Fees are not collected in CampusSphere.' },
+  { title: 'Cultural Night', category: 'CULTURAL', mode: 'IN_PERSON', venue: 'Open Air Theatre', capacity: null, d: 22, h: 18, len: 4, fee: 0, img: null,
+    organizerName: 'Cultural Committee', eligibility: 'Open to everyone on campus.', instructions: 'Gates open 30 minutes before the start. Seating is first come, first served.',
     schedule: '18:00 Opening act\n18:45 Student performances\n20:30 Closing act',
-    description: 'An evening of music, dance and theatre performed by student clubs. Sample listing for demonstration.' },
-  { title: 'Intra-College Sports Meet', category: 'SPORTS', mode: 'IN_PERSON', venue: 'Main Ground (sample venue)', capacity: 200, d: 30, h: 8, len: 8, fee: 0, img: null,
-    organizerName: 'Sports Council (sample)', eligibility: 'Students with a valid ID card. Medical fitness is your own responsibility.', instructions: 'Report to your event captain 30 minutes before your heat.',
+    description: 'An evening of music, dance and theatre performed by student clubs.' },
+  { title: 'Intra-College Sports Meet', category: 'SPORTS', mode: 'IN_PERSON', venue: 'Main Ground', capacity: 200, d: 30, h: 8, len: 8, fee: 0, img: null,
+    organizerName: 'Sports Council', eligibility: 'Students with a valid ID card. Medical fitness is your own responsibility.', instructions: 'Report to your event captain 30 minutes before your heat.',
     schedule: '08:00 March past\n09:00 Track events\n12:00 Field events\n15:00 Finals',
-    description: 'Track, field and team events across departments. Sample listing for demonstration.' },
+    description: 'Track, field and team events across departments.' },
   { title: 'Web Development Workshop', category: 'WORKSHOP', mode: 'ONLINE', venue: 'Online (link shared after registration)', capacity: 60, d: 5, h: 15, len: 3, fee: 0, img: IMG.study,
-    organizerName: 'Web Club (sample)', eligibility: 'Beginners welcome. No prior experience required.', instructions: 'Install a code editor beforehand. The meeting link appears on your registration after you register.',
+    organizerName: 'Web Club', eligibility: 'Beginners welcome. No prior experience required.', instructions: 'Install a code editor beforehand. The meeting link appears on your registration after you register.',
     schedule: '15:00 Semantic HTML\n15:45 CSS layout\n16:30 JavaScript events',
-    description: 'Hands-on introduction to semantic HTML, CSS and JavaScript events. Sample listing for demonstration.' },
-  { title: 'Research Paper Writing Workshop', category: 'WORKSHOP', mode: 'IN_PERSON', venue: 'Seminar Hall 2 (sample venue)', capacity: 2, d: 12, h: 14, len: 2, fee: 0, img: IMG.reading,
-    organizerName: 'Library and Research Cell (sample)', eligibility: 'Postgraduate and final-year students.', instructions: 'Bring a draft or an idea. Deliberately tiny capacity so you can see the "full" state.',
+    description: 'Hands-on introduction to semantic HTML, CSS and JavaScript events.' },
+  { title: 'Research Paper Writing Workshop', category: 'WORKSHOP', mode: 'IN_PERSON', venue: 'Seminar Hall 2', capacity: 40, d: 12, h: 14, len: 2, fee: 0, img: IMG.reading,
+    organizerName: 'Library and Research Cell', eligibility: 'Postgraduate and final-year students.', instructions: 'Bring a draft or an idea.',
     schedule: '14:00 Structuring a paper\n15:00 Citing sources\n15:30 Q&A',
-    description: 'Structuring, citing and presenting academic papers. This sample has only two seats so the full-event behaviour is easy to demonstrate.' },
-  { title: 'Student Innovation Symposium', category: 'SYMPOSIUM', mode: 'IN_PERSON', venue: 'Conference Hall (sample venue)', capacity: 150, d: 40, h: 10, len: 6, fee: 0, img: IMG.main,
-    organizerName: 'Innovation Cell (sample)', eligibility: 'Final-year and mini-project teams.', instructions: 'Teams register once; the team lead fills the form.',
+    description: 'Structuring, citing and presenting academic papers.' },
+  { title: 'Student Innovation Symposium', category: 'SYMPOSIUM', mode: 'IN_PERSON', venue: 'Conference Hall', capacity: 150, d: 40, h: 10, len: 6, fee: 0, img: IMG.main,
+    organizerName: 'Innovation Cell', eligibility: 'Final-year and mini-project teams.', instructions: 'Teams register once; the team lead fills the form.',
     schedule: '10:00 Welcome\n10:30 Project showcase\n13:00 Lunch\n14:00 Peer feedback',
-    description: 'Showcase of final-year and mini projects with peer feedback. Sample listing for demonstration.' },
-  { title: 'Career Guidance Seminar', category: 'WORKSHOP', mode: 'HYBRID', venue: 'Seminar Hall 1 (sample venue)', capacity: 100, d: 7, h: 11, len: 2, fee: 0, img: IMG.seminar,
-    organizerName: 'Placement Cell (sample)', eligibility: 'Pre-final and final-year students.', instructions: 'Bring your questions. Slides are shared after the session.',
+    description: 'Showcase of final-year and mini projects with peer feedback.' },
+  { title: 'Career Guidance Seminar', category: 'WORKSHOP', mode: 'HYBRID', venue: 'Seminar Hall 1', capacity: 100, d: 7, h: 11, len: 2, fee: 0, img: IMG.seminar,
+    organizerName: 'Placement Cell', eligibility: 'Pre-final and final-year students.', instructions: 'Bring your questions. Slides are shared after the session.',
     schedule: '11:00 Talk\n12:00 Open questions',
-    description: 'A general talk about planning your career, preparing a resume and interviews. Sample listing for demonstration.' }
+    description: 'A general talk about planning your career, preparing a resume and interviews.' }
 ];
 
 const destinations = [
@@ -121,48 +120,46 @@ const F = {
 const R = (kind, cat, title, summary, extra = {}) => ({ kind, cat, title, summary, ...extra });
 const resources = [
   ...['Computer Science and Engineering', 'Electronics and Communication', 'Mechanical Engineering', 'Business Administration', 'Mathematics and Sciences']
-    .map((t) => R('DEPARTMENT', 'Academics', t, 'Sample department entry. Programmes, faculty and contact details are not included.', { details: 'Replace this sample with verified department information from your institution.', imageUrl: IMG.main, instructions: 'Use the official departmental website for programmes, faculty and timetables.' })),
-  R('LIBRARY', 'Library', 'Introduction to Algorithms', 'Sample catalogue entry. Not a statement of what any real library holds.', { author: 'Cormen, Leiserson, Rivest, Stein', imageUrl: IMG.library, details: 'A standard reference text on algorithms and data structures. Add it to your reading list to track it.' }),
-  R('LIBRARY', 'Library', 'Clean Code', 'Sample catalogue entry. Not a statement of what any real library holds.', { author: 'Robert C. Martin', imageUrl: IMG.study, details: 'A widely read book about writing readable, maintainable code.' }),
-  R('LIBRARY', 'Library', 'Database System Concepts', 'Sample catalogue entry. Not a statement of what any real library holds.', { author: 'Silberschatz, Korth, Sudarshan', imageUrl: IMG.library, details: 'A common textbook for relational databases and SQL.' }),
-  R('LIBRARY', 'Library', 'Eloquent JavaScript', 'Sample catalogue entry. Not a statement of what any real library holds.', { author: 'Marijn Haverbeke', imageUrl: IMG.study, details: 'A guide to JavaScript, including events and the browser.' }),
-  R('LIBRARY', 'Library', 'Journals and periodicals', 'Sample category for print and online academic journals.', { imageUrl: IMG.reading, details: 'Access rules depend on your institution.' }),
-  R('LIBRARY', 'Library', 'Digital library portal', 'Sample entry for e-books and databases.', { imageUrl: IMG.reading, details: 'No live catalogue is connected to this app.' }),
+    .map((t) => R('DEPARTMENT', 'Academics', t, 'Academic department.', { details: 'Programme, faculty and contact details have not been published here yet.', imageUrl: IMG.main, instructions: 'Use the official departmental website for programmes, faculty and timetables.' })),
+  R('LIBRARY', 'Library', 'Introduction to Algorithms', 'A comprehensive reference on algorithm design and analysis.', { publisher: 'MIT Press', tags: ['algorithms', 'data structures', 'computer science'], author: 'Cormen, Leiserson, Rivest, Stein', imageUrl: IMG.library, details: 'A standard reference text on algorithms and data structures. Add it to your reading list to track it.' }),
+  R('LIBRARY', 'Library', 'Clean Code', 'Practical guidance on writing readable, maintainable code.', { publisher: 'Prentice Hall', publishedYear: 2008, tags: ['programming', 'software engineering'], author: 'Robert C. Martin', imageUrl: IMG.study, details: 'A widely read book about writing readable, maintainable code.' }),
+  R('LIBRARY', 'Library', 'Database System Concepts', 'Foundations of relational databases, SQL and transaction processing.', { publisher: 'McGraw-Hill', tags: ['databases', 'sql'], author: 'Silberschatz, Korth, Sudarshan', imageUrl: IMG.library, details: 'A common textbook for relational databases and SQL.' }),
+  R('LIBRARY', 'Library', 'Eloquent JavaScript', 'A modern introduction to programming with JavaScript.', { publisher: 'No Starch Press', tags: ['javascript', 'web', 'programming'], author: 'Marijn Haverbeke', imageUrl: IMG.study, details: 'A guide to JavaScript, including events and the browser.' }),
+  R('LIBRARY', 'Library', 'Journals and periodicals', 'Print and online academic journals.', { imageUrl: IMG.reading, details: 'Access rules depend on your institution.' }),
+  R('LIBRARY', 'Library', 'Digital library portal', 'E-books and research databases.', { imageUrl: IMG.reading, details: 'No live catalogue is connected to this app.' }),
   R('LIBRARY', 'Student services', 'Suggest a library resource', 'Ask the library to consider adding a book or journal.', { acceptsRequests: true, formFields: F.suggest, instructions: 'Give the title and a short reason. Requests are reviewed by campus staff.', eligibility: 'Any enrolled student.', imageUrl: IMG.library }),
   R('SERVICE', 'Student services', 'Enrolment (bonafide) letter', 'Request an enrolment letter for banks, visas, scholarships or internships.', { acceptsRequests: true, formFields: F.bonafide, requiredDocuments: ['Student ID card (bring to collection)'], eligibility: 'Currently enrolled students.', instructions: 'Fill the form. You will receive a reference number and can track progress here. Collection details are given by the office when the request is approved.', status: 'AVAILABLE' }),
   R('SUPPORT', 'Support', 'IT support', 'Report Wi-Fi, account or lab computer problems.', { acceptsRequests: true, formFields: F.it, instructions: 'Describe the problem so the IT team can reproduce it.', eligibility: 'Students and staff.', status: 'AVAILABLE' }),
   R('FACILITY', 'Campus facilities', 'Lab and facility access', 'Request time in a lab, the sports complex or a seminar room.', { acceptsRequests: true, formFields: F.lab, imageUrl: IMG.lab, eligibility: 'Students with a faculty-approved purpose.', instructions: 'Requests are reviewed against availability. Opening hours are not published here.', status: 'LIMITED' }),
-  R('FACILITY', 'Campus facilities', 'Computer labs', 'Programming and project labs.', { imageUrl: IMG.lab, details: 'Opening hours are not provided in this sample.' }),
-  R('FACILITY', 'Campus facilities', 'Sports complex', 'Indoor and outdoor sports facilities.', { details: 'Opening hours are not provided in this sample.' }),
-  R('FACILITY', 'Campus facilities', 'Cafeteria and food court', 'Campus dining.', { details: 'Menus and timings are not provided in this sample.' }),
+  R('FACILITY', 'Campus facilities', 'Computer labs', 'Programming and project labs.', { imageUrl: IMG.lab, details: 'Opening hours have not been published yet.' }),
+  R('FACILITY', 'Campus facilities', 'Sports complex', 'Indoor and outdoor sports facilities.', { details: 'Opening hours have not been published yet.' }),
+  R('FACILITY', 'Campus facilities', 'Cafeteria and food court', 'Campus dining.', { details: 'Menus and timings have not been published yet.' }),
   R('SUPPORT', 'Support', 'Student help desk', 'General student queries.', { details: 'No phone number or email is shown because none has been verified. An administrator can add the official contact in Resource Management.', contactInfo: null }),
   R('SUPPORT', 'Support', 'Counselling and wellbeing', 'Student wellbeing support.', { details: 'If you need urgent help, contact local emergency services or a trusted person. This app is not a crisis service.' }),
   R('SUPPORT', 'Support', 'Placement cell', 'Career guidance and recruitment.', { details: 'An administrator can add the official contact in Resource Management.' }),
-  R('CLUB', 'Clubs and societies', 'Web Club', 'Build websites and learn front-end skills together.', { details: 'Sample club entry. Meeting times are not published here.', instructions: 'Ask at the student activities office how to join.' }),
-  R('CLUB', 'Clubs and societies', 'Robotics Society', 'Hands-on robotics projects and competitions.', { details: 'Sample club entry.', instructions: 'Ask at the student activities office how to join.' }),
-  R('CLUB', 'Clubs and societies', 'Cultural Committee', 'Music, dance and theatre.', { details: 'Sample club entry.', instructions: 'Ask at the student activities office how to join.' }),
+  R('CLUB', 'Clubs and societies', 'Web Club', 'Build websites and learn front-end skills together.', { details: 'Meeting times have not been published yet.', instructions: 'Ask at the student activities office how to join.' }),
+  R('CLUB', 'Clubs and societies', 'Robotics Society', 'Hands-on robotics projects and competitions.', { details: 'Ask the club for meeting times.', instructions: 'Ask at the student activities office how to join.' }),
+  R('CLUB', 'Clubs and societies', 'Cultural Committee', 'Music, dance and theatre.', { details: 'Ask the club for meeting times.', instructions: 'Ask at the student activities office how to join.' }),
   R('LINK', 'Links', 'Official institution website', 'Always verify administrative information on your institution website.', { details: 'No URL is hard-coded because none has been verified for your institution.' }),
-  R('ORGANIZATION', 'Organisations', 'Example Tech Pvt Ltd (fictional)', 'A made-up company profile used to demonstrate the profile layout.', { details: 'Industry: software services. This organisation does not exist.' }),
-  R('ORGANIZATION', 'Organisations', 'Sample Analytics Labs (fictional)', 'A made-up company profile used to demonstrate the profile layout.', { details: 'Industry: data analytics. This organisation does not exist.' })
 ];
 
 const healthServices = [
-  { name: 'General consultation', category: 'Primary care', description: 'First-contact consultation for everyday health questions. Sample service for demonstration.', providers: [{ name: 'Dr. A. Sample (fictional)', speciality: 'General medicine', bio: 'Fictional profile used to demonstrate provider pages.' }, { name: 'Dr. M. Example (fictional)', speciality: 'General medicine', bio: 'Fictional profile used to demonstrate provider pages.' }] },
-  { name: 'Dental check-up', category: 'Dental', description: 'Routine dental check-up. Sample service for demonstration.', providers: [{ name: 'Dr. B. Example (fictional)', speciality: 'Dentistry', bio: 'Fictional profile.' }] },
-  { name: 'Eye care', category: 'Vision', description: 'Vision screening. Sample service for demonstration.', providers: [{ name: 'Dr. C. Demo (fictional)', speciality: 'Ophthalmology', bio: 'Fictional profile.' }] },
-  { name: 'Physiotherapy', category: 'Rehabilitation', description: 'Sports and posture physiotherapy. Sample service for demonstration.', providers: [{ name: 'Dr. D. Placeholder (fictional)', speciality: 'Physiotherapy', bio: 'Fictional profile.' }] },
-  { name: 'Wellbeing counselling', category: 'Wellbeing', description: 'Talk to a counsellor about stress or study pressure. Sample service. In a crisis, contact local emergency services.', providers: [{ name: 'Counsellor E. Sample (fictional)', speciality: 'Counselling', bio: 'Fictional profile.' }] }
+  { name: 'General consultation', category: 'Primary care', description: 'First-contact consultation for everyday health questions.', providers: [{ name: 'General physician', speciality: 'General medicine', bio: 'General physician at the campus health centre.' }, { name: 'Second general physician', speciality: 'General medicine', bio: 'Second general physician at the campus health centre.' }] },
+  { name: 'Dental check-up', category: 'Dental', description: 'Routine dental check-up.', providers: [{ name: 'Dentist', speciality: 'Dentistry', bio: 'Dentist at the campus health centre.' }] },
+  { name: 'Eye care', category: 'Vision', description: 'Vision screening.', providers: [{ name: 'Eye care specialist', speciality: 'Ophthalmology', bio: 'Eye care specialist at the campus health centre.' }] },
+  { name: 'Physiotherapy', category: 'Rehabilitation', description: 'Sports and posture physiotherapy.', providers: [{ name: 'Physiotherapist', speciality: 'Physiotherapy', bio: 'Physiotherapist at the campus health centre.' }] },
+  { name: 'Wellbeing counselling', category: 'Wellbeing', description: 'Talk to a counsellor about stress or study pressure. In a crisis, contact local emergency services.', providers: [{ name: 'Counsellor', speciality: 'Counselling', bio: 'Counsellor at the campus health centre.' }] }
 ];
 
 const announcements = [
-  { title: 'Welcome to CampusSphere', body: 'This is a student project platform. Events, services and listings may be sample content and are marked accordingly. Verify anything important with your institution.' },
+  { title: 'Welcome to CampusSphere', body: 'CampusSphere brings events, campus services, the library and the student community together. Confirm anything important with your institution.' },
   { title: 'Event registration tips', body: 'Open an event, press Register, review your details and confirm. You will receive a reference number and can cancel from Events > My events before the event starts.' }
 ];
 
 const employees = [
-  { employeeId: 'EMP-1001', name: 'Sample Employee One (fictional)', designation: 'Assistant Professor', department: 'Computer Science', email: 'employee1@example.test', phone: '9876500001' },
-  { employeeId: 'EMP-1002', name: 'Sample Employee Two (fictional)', designation: 'Lab Technician', department: 'Electronics', email: 'employee2@example.test', phone: null },
-  { employeeId: 'EMP-1003', name: 'Sample Employee Three (fictional)', designation: 'Librarian', department: 'Library', email: 'employee3@example.test', phone: null }
+  { employeeId: 'EMP-1001', name: 'Computer Science faculty', designation: 'Assistant Professor', department: 'Computer Science', email: 'employee1@campussphere.test', phone: null },
+  { employeeId: 'EMP-1002', name: 'Electronics lab technician', designation: 'Lab Technician', department: 'Electronics', email: 'employee2@campussphere.test', phone: null },
+  { employeeId: 'EMP-1003', name: 'Library staff', designation: 'Librarian', department: 'Library', email: 'employee3@campussphere.test', phone: null }
 ];
 
 async function reset() {
@@ -175,8 +172,23 @@ async function reset() {
   await db.announcement.deleteMany({ where: { isDemo: true } });
 }
 
+// Wording that must never reach the interface. Checked against every string in the data above before anything is written.
+const PLACEHOLDER = /sample|fictional|demonstrat|made-up|placeholder|\bdemo\b|demo data|lorem|example\.(com|org|net|test)/i;
+function assertClean(label, value, trail = label) {
+  if (typeof value === 'string') { if (PLACEHOLDER.test(value)) throw new Error(`Seed text contains placeholder wording at ${trail}: "${value.slice(0, 60)}"`); return; }
+  if (Array.isArray(value)) value.forEach((v, i) => assertClean(label, v, `${trail}[${i}]`));
+  else if (value && typeof value === 'object') Object.entries(value).forEach(([k, v]) => assertClean(label, v, `${trail}.${k}`));
+}
+const isProduction = () => process.env.NODE_ENV === 'production';
+
 async function main() {
-  if (process.argv.includes('--reset-demo')) { await reset(); console.log('Demo content cleared.'); }
+  for (const [name, data] of Object.entries({ events, destinations, resources, healthServices, announcements })) assertClean(name, data);
+  if (!isProduction()) assertClean('employees', employees);
+  if (process.argv.includes('--reset-demo')) {
+    if (isProduction()) throw new Error('--reset-demo deletes seeded rows and is refused when NODE_ENV=production.');
+    await reset();
+    console.log('Demo content cleared.');
+  }
 
   for (const name of categories) await db.resourceCategory.upsert({ where: { name }, update: {}, create: { name } });
   const catId = Object.fromEntries((await db.resourceCategory.findMany()).map((c) => [c.name, c.id]));
@@ -226,9 +238,13 @@ async function main() {
   if (!(await db.announcement.count({ where: { isDemo: true } }))) {
     await db.announcement.createMany({ data: announcements.map((a) => ({ ...a, status: 'PUBLISHED', isDemo: true, publishedAt: new Date() })) });
   }
-  for (const e of employees) await db.employee.upsert({ where: { employeeId: e.employeeId }, update: {}, create: { ...e, joinedOn: new Date('2022-07-01'), isDemo: true } });
+  // Staff records are administrative data: never invented in production.
+  if (!isProduction()) for (const e of employees) await db.employee.upsert({ where: { employeeId: e.employeeId }, update: {}, create: { ...e, joinedOn: new Date('2022-07-01'), isDemo: true } });
   console.log('Base content ready.');
-  if (!process.argv.includes('--base-only')) await require('./seed-activity').main();
+  if (isProduction()) console.log('Production: no accounts, employee records or starter activity were created.');
+  else if (!process.argv.includes('--base-only')) await require('./seed-activity').main();
 }
 
-main().catch((e) => { console.error(e); process.exitCode = 1; }).finally(() => db.$disconnect());
+module.exports = { events, destinations, resources, healthServices, announcements, employees, assertClean, PLACEHOLDER };
+if (require.main === module) main().catch((e) => { console.error(e.message); process.exitCode = 1; }).finally(() => db.$disconnect());
+else db.$disconnect();

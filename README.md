@@ -115,7 +115,7 @@ Environment variables set in the operating system take precedence over `backend/
 cd backend
 npx prisma migrate dev --name <change>       # create and apply a migration while developing
 npx prisma migrate deploy                    # apply committed migrations (staging and production)
-npm run db:seed                              # base content plus starter content for every role (idempotent)
+npm run db:seed                              # base content (plus starter content for the role accounts outside production); idempotent
 npm run db:seed:activity                     # starter content for the role accounts only
 npm run db:seed -- --reset-demo              # remove seeded content, then reseed
 npm run admin:promote -- user@example.edu SUPER_ADMIN
@@ -175,8 +175,16 @@ CampusSphere runs as a single Node service that serves both the API and the page
 
 1. Provision PostgreSQL and copy its connection string.
 2. Create a web service with root directory `backend`, build command `npm install`, start command `npx prisma migrate deploy && node src/server.js`, and health check `/api/health`. A starting configuration is provided in `backend/render.yaml`.
-3. Set `NODE_ENV=production`, `DATABASE_URL` and `JWT_SECRET`, plus `GROQ_API_KEY` to enable the AI assistant.
-4. Register an account, then promote it with `npm run admin:promote -- you@example.edu SUPER_ADMIN` using the production `DATABASE_URL`.
+3. Set `DATABASE_URL` (use the direct, non-pooled connection string with `sslmode=require`) and, optionally, `GROQ_API_KEY` to enable the AI assistant. `NODE_ENV`, `NODE_VERSION` and a generated `JWT_SECRET` come from the blueprint.
+4. Optionally add the base content once, from a machine that has the production `DATABASE_URL`:
+
+   ```bash
+   cd backend
+   NODE_ENV=production npm run db:seed
+   ```
+
+   In production this only adds missing content. It never creates accounts, employee records or activity, and never deletes anything.
+5. Register an account, then promote it with `npm run admin:promote -- you@example.edu SUPER_ADMIN` using the production `DATABASE_URL`.
 
 To host the frontend separately, `frontend/vercel.json` proxies `/api` to the backend so cookies stay first-party. For a cross-origin setup, set `CORS_ORIGINS`, `COOKIE_SAMESITE=none`, serve both origins over HTTPS and set `apiBase` in `frontend/js/config.js`.
 

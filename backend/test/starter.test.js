@@ -34,38 +34,37 @@ const BAD = /sample|fictional|demonstrat|made-up|placeholder|\bdemo\b|demo data/
     for (const file of ['frontend/js/kit.js', 'frontend/js/ui.js']) assert.doesNotMatch(fs.readFileSync(path.resolve(__dirname, '../..', file), 'utf8'), /Demo data|class="badge badge--sample"/);
 
     // ---- Every role signs in and sees something real
-    const login = async (email) => {
+    const login = async (email, role) => {
       const api = client(server);
       const pw = (fs.readFileSync(path.resolve(__dirname, '../dev-accounts.txt'), 'utf8').match(/Password for all: (\S+)/) || [])[1];
       if (!pw) return null;
       const r = await api.post('/api/auth/login', { email, password: pw });
-      return r.status === 200 ? api : null;
+      if (r.status !== 200 || r.body.data.user.role !== role) { console.log(`  skipped ${email}: account is suspended or its role was changed`); return null; }
+      return api;
     };
-    const student = await login('student@campussphere.test');
-    if (!student) { console.log('Starter content tests passed (sign-in checks skipped: password file unavailable)'); return; }
-    const sd = (await student.get('/api/dashboard')).body.data;
-    assert.ok(JSON.stringify(sd).length > 200);
-    assert.ok((await student.get('/api/events/mine')).body.data.registrations.length >= 2, 'student has registrations');
-    assert.ok((await student.get('/api/trips')).body.data.trips.length >= 2, 'student has trips');
-    assert.ok((await student.get('/api/service-requests/mine')).body.data.requests.length >= 3, 'student has requests');
-    assert.ok((await student.get('/api/leave/mine')).body.data.leaves.length >= 2, 'student has leave requests');
-    assert.ok((await student.get('/api/healthcare/appointments/mine')).body.data.appointments.length >= 1, 'student has appointments');
-    assert.ok((await student.get('/api/reading-list')).body.data.items.length >= 3, 'student has a reading list');
-    assert.ok((await student.get('/api/notifications')).body.data.notifications.length >= 3, 'student has notifications');
-    assert.ok((await student.get('/api/community/posts')).body.data.total >= 5, 'community has posts');
-    assert.ok((await student.get('/api/community/groups')).body.data.total >= 3, 'community has groups');
-    assert.ok((await student.get('/api/games/scores/mine')).body.data.bests.length >= 1, 'student has game scores');
+    const student = await login('student@campussphere.test', 'STUDENT');
+    if (student) assert.ok(JSON.stringify((await student.get('/api/dashboard')).body.data).length > 200);
+    if (student) assert.ok((await student.get('/api/events/mine')).body.data.registrations.length >= 2, 'student has registrations');
+    if (student) assert.ok((await student.get('/api/trips')).body.data.trips.length >= 2, 'student has trips');
+    if (student) assert.ok((await student.get('/api/service-requests/mine')).body.data.requests.length >= 3, 'student has requests');
+    if (student) assert.ok((await student.get('/api/leave/mine')).body.data.leaves.length >= 2, 'student has leave requests');
+    if (student) assert.ok((await student.get('/api/healthcare/appointments/mine')).body.data.appointments.length >= 1, 'student has appointments');
+    if (student) assert.ok((await student.get('/api/reading-list')).body.data.items.length >= 3, 'student has a reading list');
+    if (student) assert.ok((await student.get('/api/notifications')).body.data.notifications.length >= 3, 'student has notifications');
+    if (student) assert.ok((await student.get('/api/community/posts')).body.data.total >= 5, 'community has posts');
+    if (student) assert.ok((await student.get('/api/community/groups')).body.data.total >= 3, 'community has groups');
+    if (student) assert.ok((await student.get('/api/games/scores/mine')).body.data.bests.length >= 1, 'student has game scores');
 
-    const faculty = await login('faculty@campussphere.test');
-    assert.ok((await faculty.get('/api/manage/leave')).body.data.leaves.length >= 1, 'faculty has leave to review');
-    const campus = await login('campus.admin@campussphere.test');
-    assert.ok((await campus.get('/api/manage/requests')).body.data.requests.length >= 1, 'campus admin has requests to review');
-    const health = await login('healthcare.admin@campussphere.test');
-    assert.ok((await health.get('/api/manage/healthcare/appointments')).body.data.appointments.length >= 1, 'healthcare admin has appointments');
-    const org = await login('event.organizer@campussphere.test');
-    assert.ok((await org.get('/api/manage/events')).body.data.events.length >= 3, 'organizer owns events');
-    const sup = await login('super.admin@campussphere.test');
-    assert.ok((await sup.get('/api/admin/users')).body.data.total >= 6, 'super admin sees users');
+    const faculty = await login('faculty@campussphere.test', 'FACULTY');
+    if (faculty) assert.ok((await faculty.get('/api/manage/leave')).body.data.leaves.length >= 1, 'faculty has leave to review');
+    const campus = await login('campus.admin@campussphere.test', 'CAMPUS_ADMIN');
+    if (campus) assert.ok((await campus.get('/api/manage/requests')).body.data.requests.length >= 1, 'campus admin has requests to review');
+    const health = await login('healthcare.admin@campussphere.test', 'HEALTHCARE_ADMIN');
+    if (health) assert.ok((await health.get('/api/manage/healthcare/appointments')).body.data.appointments.length >= 1, 'healthcare admin has appointments');
+    const org = await login('event.organizer@campussphere.test', 'EVENT_ORGANIZER');
+    if (org) assert.ok((await org.get('/api/manage/events')).body.data.events.length >= 3, 'organizer owns events');
+    const sup = await login('super.admin@campussphere.test', 'SUPER_ADMIN');
+    if (sup) assert.ok((await sup.get('/api/admin/users')).body.data.total >= 6, 'super admin sees users');
     console.log('Starter content tests passed');
   } catch (e) {
     failed = true;

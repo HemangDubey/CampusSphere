@@ -177,7 +177,10 @@ const iso = (days) => { const d = new Date(); d.setDate(d.getDate() + days); ret
   } finally {
     await db.appointment.deleteMany({ where: { service: { name: { startsWith: PREFIX } } } });
     await db.healthService.deleteMany({ where: { id: { in: made.services } } });
+    // Free the seeded slots this run booked, so repeated runs do not use up the shared availability.
+    const mine = await db.appointment.findMany({ where: { user: { email: { startsWith: PREFIX } }, slotId: { not: null } }, select: { slotId: true } });
     await db.user.deleteMany({ where: { email: { startsWith: PREFIX } } });
+    if (mine.length) await db.healthSlot.updateMany({ where: { id: { in: mine.map((m) => m.slotId) }, appointment: null }, data: { status: 'OPEN' } });
     await db.$disconnect();
     server.close();
     if (failed) process.exitCode = 1;
