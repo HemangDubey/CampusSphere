@@ -1,5 +1,5 @@
 # CampusSphere  
-
+ 
 **Your campus, in one place.** CampusSphere is a full-stack campus platform that brings events, travel planning, campus services, a digital library, student community, healthcare scheduling, leave approvals and an AI assistant into a single role-aware web application.
 
 ## Features
